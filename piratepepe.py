@@ -9,8 +9,7 @@ from requests import api
 from requests.models import RequestEncodingMixin
 
 debug = True
-ipfsgateway = "http://cf-ipfs.com/ipfs/"
-#ipfsgateway = "https://ipfs.io/ipfs/"
+ipfsgatewaylist = ["http://cf-ipfs.com/ipfs/", "https://ipfs.io/ipfs/","https://gateway.ipfs.io/ipfs/","https://ipfs.fleek.co/ipfs/","https://gateway.pinata.cloud/ipfs/","https://ipfs.telos.miami/ipfs/","https://ipfs.mihir.ch/ipfs/","https://crustwebsites.net/ipfs/","https://ipfs.eternum.io/ipfs/","https://ipfs.eternum.io/ipfs/","https://video.oneloveipfs.com/ipfs/"]
 
 def print_debug(text):
     if debug:
@@ -34,24 +33,28 @@ def scanpepefile():
     return pepelist
 
 def downloadpepe(name, url, filename):
-
     filepath = name + "/" + filename
 
-    url = url.replace("https://ipfs.io/ipfs/", ipfsgateway)
-
-    
+    strippedurl = url.replace("https://ipfs.io/ipfs/", "")
 
     if not os.path.isfile(filepath):
-        print('Downloading NFT: ' + filepath + ' from: ' + url)
-        try:
-            urllib.request.urlretrieve(url, name + "/" + filename )
-        except:
+        for gateway in ipfsgatewaylist:
+            url = gateway + strippedurl
+
+            print('Attempting to download NFT: ' + filepath + ' from: ' + url)
+
             try:
-                os.remove(filepath)
+                urllib.request.urlretrieve(url, name + "/" + filename )
+                break
             except:
-                pass
+                try:
+                    print("Download Failed")
+                    os.remove(filepath)
+                except:
+                    pass
     else:
         print_debug('Already downloaded: ' + filepath)
+         
 
 def processpepenftjson(pepenftjson):
     nftjson = (str(pepenftjson).replace("'",'"'))
@@ -72,29 +75,35 @@ def processpepenftjson(pepenftjson):
     downloadpepe(pepenftjson['name'], pepenftjson['hifi_media']['video'],       "video.mp4")
 
 def main():
+        failure = False
         pepelist = scanpepefile()
 
         for pepeipfs in pepelist:
             print("\nFound Pepe!")
 
-            request = ipfsgateway + pepeipfs
+        for gateway in ipfsgatewaylist:
+            request = gateway + pepeipfs # Use first to fetch json, potentially fix later
 
             print("http request url: " + request)
+
 
             try:
                 response = requests.get(request)
             except:
                 pass
 
-            print("http response: " + str(response))
-
             if response.status_code != 200 and response.status_code != 400:
                 print("All is heck, HTTP: " + str(response.status_code))
-                exit(1)
+                failure = True
+            else:
+                failure = False
+                break
 
+        if not failure:
             pepenftjson = response.json()
-
             processpepenftjson(pepenftjson)
+        else:
+            print("Every ipfs gateway defined sucks")
 
 if __name__ == '__main__':
     main()
