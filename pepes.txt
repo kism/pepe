@@ -1,4 +1,3 @@
-# https://etherscan.io/token/0x937a2cd137fe77db397c51975b0caaaa29559cf7?a=1#readContract
 QmTUTQw7AqGYgDQEJECxzcNqZbVSWVYFbiMvvLUY6PZSbk
 QmSWExPQTeMF873sQKSR31R1R9bxiUYfNJmmEbYvSt72dS
 QmTTTDrBxZnD3bybvRitcn7ptbHF9qgBH3zNWm13VRpcqZ
@@ -19,12 +18,16 @@ QmdLGoAZjDyGnYDksoVfygkyXaWDJMTopwPH4fcM5tq2a6
 Qma3DFyPptKT5YRr5LQZaoWbUqd3Ej7xsNcgWFAKYmT6Ap
 QmPnxLBttNXPfJKBYfXpxMsUzQ7fRan4mpFBZ3YiWFE8p1
 QmPJRS29vAQwRRJh5pAhKHHEPeytCEwwG9ho52RX77dmZE
+QmRA1brW5hZsivXNMdk8ec9aQcaTFXSysxwHyfrtYzkGzt
+QmeAvgc7xuqLY6NifkMGoaC6ffVCwnTvhQSYn4rMC9Uv8Y
 
 
-
-
-
-
+# To get more pepes, go to
+# https://etherscan.io/token/0x937a2cd137fe77db397c51975b0caaaa29559cf7?a=1#readContract
+# Expand "17. tokenURI"
+# Enter the number of the token that you want to retreive
+# Click Query
+# Paste the string that is after ipfs://
 
 
 
