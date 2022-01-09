@@ -81,29 +81,29 @@ def main():
         for pepeipfs in pepelist:
             print("\nFound Pepe!")
 
-        for gateway in ipfsgatewaylist:
-            request = gateway + pepeipfs # Use first to fetch json, potentially fix later
+            for gateway in ipfsgatewaylist:
+                request = gateway + pepeipfs
 
-            print("http request url: " + request)
+                print("http request url: " + request)
 
 
-            try:
-                response = requests.get(request)
-            except:
-                pass
+                try:
+                    response = requests.get(request)
+                except:
+                    pass
 
-            if response.status_code != 200 and response.status_code != 400:
-                print("All is heck, HTTP: " + str(response.status_code))
-                failure = True
+                if response.status_code != 200 and response.status_code != 400:
+                    print("All is heck, HTTP: " + str(response.status_code))
+                    failure = True
+                else:
+                    failure = False
+                    break
+
+            if not failure:
+                pepenftjson = response.json()
+                processpepenftjson(pepenftjson)
             else:
-                failure = False
-                break
-
-        if not failure:
-            pepenftjson = response.json()
-            processpepenftjson(pepenftjson)
-        else:
-            print("Every ipfs gateway defined sucks")
+                print("Every ipfs gateway defined sucks")
 
 if __name__ == '__main__':
     main()
