@@ -2,11 +2,15 @@
 
 import json
 import requests
+import urllib
+import io
 import os
 from requests import api
 from requests.models import RequestEncodingMixin
 
 debug = True
+ipfsgateway = "http://cf-ipfs.com/ipfs/"
+#ipfsgateway = "https://ipfs.io/ipfs/"
 
 def print_debug(text):
     if debug:
@@ -29,6 +33,26 @@ def scanpepefile():
 
     return pepelist
 
+def downloadpepe(name, url, filename):
+
+    filepath = name + "/" + filename
+
+    url = url.replace("https://ipfs.io/ipfs/", ipfsgateway)
+
+    
+
+    if not os.path.isfile(filepath):
+        print('Downloading NFT: ' + filepath + ' from: ' + url)
+        try:
+            urllib.request.urlretrieve(url, name + "/" + filename )
+        except:
+            try:
+                os.remove(filepath)
+            except:
+                pass
+    else:
+        print_debug('Already downloaded: ' + filepath)
+
 def processpepenftjson(pepenftjson):
     nftjson = (str(pepenftjson).replace("'",'"'))
     try:
@@ -41,13 +65,19 @@ def processpepenftjson(pepenftjson):
     nftjsonfile.write(nftjson)
     nftjsonfile.close()
 
+    downloadpepe(pepenftjson['name'], pepenftjson['image'],                     "card.gif")
+    downloadpepe(pepenftjson['name'], pepenftjson['animation_url'],             "card.glb")
+    downloadpepe(pepenftjson['name'], pepenftjson['hifi_media']['card_front'],  "front.png")
+    downloadpepe(pepenftjson['name'], pepenftjson['hifi_media']['card_back'],   "back.png")
+    downloadpepe(pepenftjson['name'], pepenftjson['hifi_media']['video'],       "video.mp4")
+
 def main():
         pepelist = scanpepefile()
 
         for pepeipfs in pepelist:
             print("\nFound Pepe!")
 
-            request = "https://ipfs.io/ipfs/" + pepeipfs
+            request = ipfsgateway + pepeipfs
 
             print("http request url: " + request)
 
