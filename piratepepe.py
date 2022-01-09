@@ -23,12 +23,12 @@ ipfsgatewaylist = [
     "https://video.oneloveipfs.com/ipfs/",
 ]
 
-
+# Debug messages in yellow if the debug global is true
 def print_debug(text):
     if debug:
         print("\033[93m" + text + "\033[0m")
 
-
+# Scan pepes.text for ipfs links
 def scanpepefile():
     # Open File, dump tolist
     file = open("pepes.txt", "r")
@@ -36,7 +36,7 @@ def scanpepefile():
     file.close()
     listfresh = []
     for element in pepelist:
-        if element[0] == "Q":
+        if element[0] == "Q": # Ignore everything that doesnt start with a Q since thats what all them things seem to start with
             listfresh.append(element.strip())
         else:
             print_debug("Not a pepe: " + element.strip())
@@ -51,10 +51,10 @@ def scanpepefile():
 def downloadpepe(name, url, filename):
     filepath = name + "/" + filename
 
-    strippedurl = url.replace("https://ipfs.io/ipfs/", "")
+    strippedurl = url.replace("https://ipfs.io/ipfs/", "") # the nft json for this collection has the ipfs.io gateway hardcoded in lmao, maybe this is normal 🤷
 
-    if not os.path.isfile(filepath):
-        for gateway in ipfsgatewaylist:
+    if not os.path.isfile(filepath): # if the asset hasn't already been downloaded
+        for gateway in ipfsgatewaylist: # try all gateways to download asset
             url = gateway + strippedurl
 
             print("Attempting to download NFT: " + filepath + " from: " + url, end="")
@@ -82,11 +82,13 @@ def processpepenftjson(pepenftjson):
     except FileExistsError:
         pass
 
+    # Save the json file of the nft, this is the only thing on the etherium blockchain
     nftjsonfile = open(pepenftjson["name"] + "/" + "nft.json", "w")
     print_debug(nftjson)
     nftjsonfile.write(nftjson)
     nftjsonfile.close()
 
+    # Download all the things from the json, these are ipfs links
     downloadpepe(pepenftjson["name"], pepenftjson["image"], "card.gif")
     downloadpepe(pepenftjson["name"], pepenftjson["animation_url"], "card.glb")
     downloadpepe(pepenftjson["name"], pepenftjson["hifi_media"]["card_front"], "front.png")
@@ -101,11 +103,10 @@ def main():
     for pepeipfs in pepelist:
         print("\nFound Pepe!")
 
-        for gateway in ipfsgatewaylist:
+        for gateway in ipfsgatewaylist: # Iterate through a list of ipfs gateways since they probably suck
             request = gateway + pepeipfs
 
-            print("http request url: " + request)
-
+            # Here we are getting the json that 'is' the nft, has the links to all the related assets
             try:
                 response = requests.get(request)
             except:
@@ -118,6 +119,7 @@ def main():
                 failure = False
                 break
 
+        # we have the nft json, lets grab the assets
         if not failure:
             pepenftjson = response.json()
             processpepenftjson(pepenftjson)
