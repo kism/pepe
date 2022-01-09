@@ -29,7 +29,7 @@ def print_debug(text):
         print("\033[93m" + text + "\033[0m")
 
 # Scan pepes.text for ipfs links
-def scanpepefile():
+def scanpepe_file():
     # Open File, dump tolist
     file = open("pepes.txt", "r")
     pepelist = file.readlines()
@@ -48,7 +48,7 @@ def scanpepefile():
     return pepelist
 
 
-def downloadpepe(name, url, filename):
+def download_pepe(name, url, filename):
     filepath = name + "/" + filename
 
     strippedurl = url.replace("https://ipfs.io/ipfs/", "") # the nft json for this collection has the ipfs.io gateway hardcoded in lmao, maybe this is normal 🤷
@@ -75,7 +75,7 @@ def downloadpepe(name, url, filename):
         print_debug("Already downloaded: " + filepath)
 
 
-def processpepenftjson(pepenftjson):
+def process_pepe_nft_json(pepenftjson):
     nftjson = str(pepenftjson).replace("'", '"')
     try:
         os.mkdir(pepenftjson["name"])
@@ -89,19 +89,19 @@ def processpepenftjson(pepenftjson):
     nftjsonfile.close()
 
     # Download all the things from the json, these are ipfs links
-    downloadpepe(pepenftjson["name"], pepenftjson["image"], "card.gif")
-    downloadpepe(pepenftjson["name"], pepenftjson["animation_url"], "card.glb")
-    downloadpepe(pepenftjson["name"], pepenftjson["hifi_media"]["card_front"], "front.png")
-    downloadpepe(pepenftjson["name"], pepenftjson["hifi_media"]["card_back"], "back.png")
-    downloadpepe(pepenftjson["name"], pepenftjson["hifi_media"]["video"], "video.mp4")
+    download_pepe(pepenftjson["name"], pepenftjson["image"], "card.gif")
+    download_pepe(pepenftjson["name"], pepenftjson["animation_url"], "card.glb")
+    download_pepe(pepenftjson["name"], pepenftjson["hifi_media"]["card_front"], "front.png")
+    download_pepe(pepenftjson["name"], pepenftjson["hifi_media"]["card_back"], "back.png")
+    download_pepe(pepenftjson["name"], pepenftjson["hifi_media"]["video"], "video.mp4")
 
 
 def main():
     failure = False
-    pepelist = scanpepefile()
+    pepelist = scanpepe_file()
 
     for pepeipfs in pepelist:
-        print("\nFound Pepe!")
+        print("\nFound Pepe!, lets download some nft json...")
 
         for gateway in ipfsgatewaylist: # Iterate through a list of ipfs gateways since they probably suck
             request = gateway + pepeipfs
@@ -113,7 +113,7 @@ def main():
                 pass
 
             if response.status_code != 200 and response.status_code != 400:
-                print("All is heck, HTTP: " + str(response.status_code))
+                print("All is heck. Gateway: " + gateway + " sucks, HTTP: " + str(response.status_code))
                 failure = True
             else:
                 failure = False
@@ -122,7 +122,7 @@ def main():
         # we have the nft json, lets grab the assets
         if not failure:
             pepenftjson = response.json()
-            processpepenftjson(pepenftjson)
+            process_pepe_nft_json(pepenftjson)
         else:
             print("Every defined ipfs gateway sucks")
 
