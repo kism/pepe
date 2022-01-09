@@ -13,3 +13,7 @@ This collection has some really nice animations though, I think Matt is working 
 I made this to scrape all the NFT assets of this collection.
 
 Racists can GTFO, Pepe has been reclaimed by the sane.
+
+`git clone https://github.com/kism/pepe.git`
+`cd pepe`
+`python3 piratepepe.sh`
