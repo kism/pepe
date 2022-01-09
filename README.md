@@ -14,6 +14,8 @@ I made this to scrape all the NFT assets of this collection.
 
 Racists can GTFO, Pepe has been reclaimed by the sane.
 
+## Usage
+
 `git clone https://github.com/kism/pepe.git`
 
 `cd pepe`
