@@ -25,6 +25,8 @@ def scanpepefile():
     for element in pepelist:
         if element[0] == 'Q':
             listfresh.append(element.strip())
+        else:
+            print_debug("Not a pepe: " + element.strip())
     pepelist = listfresh
     print(pepelist)
 
@@ -41,17 +43,20 @@ def downloadpepe(name, url, filename):
         for gateway in ipfsgatewaylist:
             url = gateway + strippedurl
 
-            print('Attempting to download NFT: ' + filepath + ' from: ' + url)
+            print('Attempting to download NFT: ' + filepath + ' from: ' + url, end='')
 
             try:
                 urllib.request.urlretrieve(url, name + "/" + filename )
+                print(" \033[92mSuccess!\033[0m")
                 break
             except:
                 try:
-                    print("Download Failed")
+                    print(" \033[91mDownload Failed\033[0m",end='')
                     os.remove(filepath)
                 except:
                     pass
+
+            print(" trying next gateway...")
     else:
         print_debug('Already downloaded: ' + filepath)
          
@@ -86,7 +91,6 @@ def main():
 
                 print("http request url: " + request)
 
-
                 try:
                     response = requests.get(request)
                 except:
@@ -103,7 +107,7 @@ def main():
                 pepenftjson = response.json()
                 processpepenftjson(pepenftjson)
             else:
-                print("Every ipfs gateway defined sucks")
+                print("Every defined ipfs gateway sucks")
 
 if __name__ == '__main__':
     main()
