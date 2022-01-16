@@ -2,8 +2,8 @@
 
 # pepe.py
 # https://github.com/kism/pepe
-# I hate NFTs but this collection is cool
-# Every NFT collection is a Ponzi scheme
+# I hate NFTs but Matt Furie is cool, Every NFT collection is a Ponzi scheme
+
 # The NFT collection is incomplete
 # I intend to keep pepestxt updated with the latest releases.
 
