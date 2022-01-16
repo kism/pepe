@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+# pepe.py
+# https://github.com/kism/pepe
+# Grab the latest version of this script and pepe.txt
+# The NFT collection is incomplete
+# I intend to keep pepe.txt updated with the latest releases.
+
 import json
 from socket import IP_DEFAULT_MULTICAST_LOOP
 import requests
@@ -12,6 +18,7 @@ from requests import api
 from requests.models import RequestEncodingMixin
 
 debug = False
+criticalfileskipped = False
 
 ipfsgatewaylist = [
     "http://cf-ipfs.com/ipfs/",
@@ -31,28 +38,50 @@ ipfsgatewaylist = [
     "https://video.oneloveipfs.com/ipfs/",
 ]
 
+# pepes.txt
+# To get more pepes, go to
+# https://etherscan.io/token/0x937a2cd137fe77db397c51975b0caaaa29559cf7?a=1#readContract
+# Expand "17. tokenURI"
+# Enter the number of the token that you want to retreive
+# Click Query
+# Paste the string that is after ipfs://
+pepestxt = """
+QmTUTQw7AqGYgDQEJECxzcNqZbVSWVYFbiMvvLUY6PZSbk
+QmSWExPQTeMF873sQKSR31R1R9bxiUYfNJmmEbYvSt72dS
+QmTTTDrBxZnD3bybvRitcn7ptbHF9qgBH3zNWm13VRpcqZ
+QmRU7LPbApzbauzwqLvo5WRukt4UdpozuiHgHukghGM2HG
+QmdjbRhj7TGUtBHxmWQko8YuXiQFpJZH3GGgvTLpM7ThDB
+QmcjPwyQzCcm4ss9GnxxbZy5bpt2pXe4yLS5v7kvfUfGXe
+QmWyHdusyDaZwXUfyMm5jZGjdpmSPaBBpdBxVcf4TPproq
+QmccrhaUKXSf6tiw4PQGkzfjnVVmWdeg1BF6682a2E7j4F
+QmfFsoWAD1ABdvvZsWZErCmX7rhfEeHKgpD7svoBNLacTV
+QmQTzRiw1suHjWdLbbsNGDrtLApqjcoN38CV7bQmqydzkH
+QmQLMS1fzGed6pkAEsTLee5JmWWXeF5oF3sPs5CQ76j91W
+QmcDV1dyTaF5vft5FPcDizei7rgZLQ6cY5zq3Z37N5sWz4
+QmV8RHoEEv774ixawjfNtDvvfayh7hxsL7kdyBQCs4r9F6
+QmXxkKtH87jmGzub4hyvDH9PVa6VHvzwErdjmhxC2p9Tsf
+QmaNQv7vKppAivXtChKwzQukq92osP3yZs9HZqtBHd26dL
+QmZNMMmUJYZazvECuRss9harpEzzaNSMxTtrjx3f2vGE9T
+QmdLGoAZjDyGnYDksoVfygkyXaWDJMTopwPH4fcM5tq2a6
+Qma3DFyPptKT5YRr5LQZaoWbUqd3Ej7xsNcgWFAKYmT6Ap
+QmPnxLBttNXPfJKBYfXpxMsUzQ7fRan4mpFBZ3YiWFE8p1
+QmPJRS29vAQwRRJh5pAhKHHEPeytCEwwG9ho52RX77dmZE
+QmRA1brW5hZsivXNMdk8ec9aQcaTFXSysxwHyfrtYzkGzt
+QmeAvgc7xuqLY6NifkMGoaC6ffVCwnTvhQSYn4rMC9Uv8Y
+QmZ5T5CVJgweN1FNA6eoFKKby7NNnYRSS7VD9dnkCxHLvA
+QmRnzMxFA2aesbeuHWSzhTDK5wUKjef1r8PrDdHXHc6AUB
+"""
 
 def print_debug(text):  # Debug messages in yellow if the debug global is true
     if debug:
         print("\033[93m" + text + "\033[0m")
 
 
-def no_pepes():
-    print("No Pepes found, go back to http://github.com/kism/pepe and grab it, or create and fill a file called pepes.txt with 'Rarepepe by Matt Furie' tokenURIs.")
-    exit(1)
+def scan_pepe_file():  # Scan pepetxt var for ipfs links
+    pepelist = pepestxt
 
-
-def scan_pepe_file():  # Scan pepes.text for ipfs links
-    # Open File, dump tolist
-    try:
-        file = open("pepes.txt", "r")
-    except:
-        no_pepes()
-
-    pepelist = file.readlines()
-    file.close()
     listfresh = []
-    for element in pepelist:
+    for element in pepelist.split():
         if element[0] == "Q":  # Ignore everything that doesnt start with a Q since thats what all them things seem to start with
             listfresh.append(element.strip())
         else:
@@ -60,19 +89,15 @@ def scan_pepe_file():  # Scan pepes.text for ipfs links
     pepelist = listfresh
     print_debug("Pepe list: " + str(pepelist))
 
-    file.close()
-
-    if len(pepelist) == 0:
-        no_pepes()
-    else:
-        print("Found " + str(len(pepelist)) + " tokenURIs to look for Pepe")
+    print("Found " + str(len(pepelist)) + " tokenURIs to look for Pepe")
 
     return pepelist
 
 
-def download_pepe(name, url, filename):
+def download_pepe(url, filename):
+    global criticalfileskipped
     filepath = "output/" + filename
-
+    
     # the nft json for this collection has the ipfs.io gateway hardcoded in lmao, maybe this is normal 🤷
     strippedurl = url.replace("https://ipfs.io/ipfs/", "")
 
@@ -89,9 +114,11 @@ def download_pepe(name, url, filename):
             try:
                 urllib.request.urlretrieve(url, "output/" + filename)
                 print("  \033[92mSuccess!\033[0m")
+                criticalfileskipped = False
                 break
             except:
                 print("  \033[91mDownload Failed\033[0m", end=', ')
+                criticalfileskipped = True
                 try:
                     if not url.endswith("mp4"):
                         print("\033[91mremoving from gateway list\033[0m, ", end='')
@@ -116,22 +143,22 @@ def process_pepe_nft_json(pepenftjson):
     except FileExistsError:
         pass
 
-    # Save the json file of the nft, this is the only thing on the etherium blockchain
+    # Save the json file of the nft, this might be whats considered the ipfs object metadata
     nftjsonfile = open("output/" + pepenftjson["name"] + ".json", "w")
     print_debug(nftjson)
     nftjsonfile.write(nftjson)
     nftjsonfile.close()
 
     # Download all the things from the json, these are ipfs links
-    download_pepe(pepenftjson["name"], pepenftjson["image"],                    pepenftjson["name"] + ' - ' + "card.gif")
-    download_pepe(pepenftjson["name"], pepenftjson["animation_url"],            pepenftjson["name"] + ' - ' + "card.glb")
-    download_pepe(pepenftjson["name"], pepenftjson["hifi_media"]["card_front"], pepenftjson["name"] + ' - ' + "front.png")
-    download_pepe(pepenftjson["name"], pepenftjson["hifi_media"]["card_back"],  pepenftjson["name"] + ' - ' + "back.png")
-    download_pepe(pepenftjson["name"], pepenftjson["hifi_media"]["video"],      pepenftjson["name"] + ' - ' + "video.mp4")
-
+    download_pepe(pepenftjson["image"],                    pepenftjson["name"] + ' - ' + "card.gif")
+    download_pepe(pepenftjson["animation_url"],            pepenftjson["name"] + ' - ' + "card.glb")
+    download_pepe(pepenftjson["hifi_media"]["card_front"], pepenftjson["name"] + ' - ' + "front.png")
+    download_pepe(pepenftjson["hifi_media"]["card_back"],  pepenftjson["name"] + ' - ' + "back.png")
+    download_pepe(pepenftjson["hifi_media"]["video"],      pepenftjson["name"] + ' - ' + "video.mp4") # So far I only expect some ipfs gateways will reject .mp4 downloads
 
 def main():
     failure = False
+    exitcode = 1
     print("\n\033[47m\033[30m pirate\033[92mpepe\033[30m.py \033[0m")
     print_debug("Debug on!\n")
 
@@ -182,16 +209,22 @@ def main():
 
     if len(ipfsgatewaylist) > 0:
         print_debug("ipfs gateways that made it to the end: " + str(ipfsgatewaylist))
-        print("All the Pepes should be downloaded!")
+        if not criticalfileskipped:
+            print("All the Pepes should be downloaded!")
+            exitcode = 0
+        else:
+            print("Some Downloads failed, this probably means that only a gateway that is working for you doesn't have large file support")
     else:
-        print("\033[91mEvery ipfs gateway failed\033[0m!")
+        print("\033[91mEvery ipfs gateway failed lmao\033[0m!")
+        
+    if criticalfileskipped:
         print("There will be some missing Pepes")
         print("Run the script again to try again.")
         print("You might want to find some new ipfs gateways and add them to the script, or get a new IP address since some ipfs gateways will rate-limit or block you for downloading too much.")
 
+    exit(exitcode)
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and (sys.argv[1] == "-d" or sys.argv[1] == "--debug"):
         debug = True
-
     main()
