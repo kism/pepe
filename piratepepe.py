@@ -6,6 +6,7 @@ import requests
 import urllib
 import io
 import os
+import sys
 import random
 from requests import api
 from requests.models import RequestEncodingMixin
@@ -132,11 +133,13 @@ def process_pepe_nft_json(pepenftjson):
 def main():
     failure = False
     print("\n\033[47m\033[30m pirate\033[92mpepe\033[30m.py \033[0m")
+    print_debug("Debug on!\n")
 
     pepelist = scan_pepe_file()
 
     for pepeipfs in pepelist:
         print("\n\033[47m\033[30m Looking for \033[92mPepe\033[30m and his NFT json... \033[0m")
+
         # Randomise the gateway list so we try a different gateway first
         random.shuffle(ipfsgatewaylist)
 
@@ -188,4 +191,7 @@ def main():
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and (sys.argv[1] == "-d" or sys.argv[1] == "--debug"):
+        debug = True
+
     main()
