@@ -12,7 +12,7 @@ This collection has some really nice animations though, I think Matt is working 
 
 I made this to scrape all the NFT assets of this collection.
 
-Racists can GTFO, Pepe has been reclaimed by the sane. widepeepoHappy
+Racists can GTFO, Pepe has been reclaimed. widepeepoHappy
 
 ## How to do
 
