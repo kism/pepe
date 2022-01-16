@@ -2,9 +2,10 @@
 
 # pepe.py
 # https://github.com/kism/pepe
-# Grab the latest version of this script and pepe.txt
+# I hate NFTs but this collection is cool
+# Every NFT collection is a Ponzi scheme
 # The NFT collection is incomplete
-# I intend to keep pepe.txt updated with the latest releases.
+# I intend to keep pepestxt updated with the latest releases.
 
 import json
 from socket import IP_DEFAULT_MULTICAST_LOOP
@@ -38,7 +39,8 @@ ipfsgatewaylist = [
     "https://video.oneloveipfs.com/ipfs/",
 ]
 
-# pepes.txt
+# This is a big list of NFT tokenURIs for the Matt Furie Rare Pepe NFT Collection
+# The Project's website is https://rarepepe.fun
 # To get more pepes, go to
 # https://etherscan.io/token/0x937a2cd137fe77db397c51975b0caaaa29559cf7?a=1#readContract
 # Expand "17. tokenURI"
