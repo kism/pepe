@@ -60,7 +60,7 @@ def download_pepe(name, url, filename):
             print("Attempting to download NFT: " + filepath + " from: " + url, end="")
 
             try:
-                urllib.request.urlretrieve(url, name + "/" + filename)
+                urllib.request.urlretrieve(url, "output/" + filename)
                 print(" \033[92mSuccess!\033[0m")
                 break
             except:
