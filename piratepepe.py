@@ -49,7 +49,7 @@ def scanpepe_file():
 
 
 def download_pepe(name, url, filename):
-    filepath = name + "/" + filename
+    filepath = "output/" + filename
 
     strippedurl = url.replace("https://ipfs.io/ipfs/", "") # the nft json for this collection has the ipfs.io gateway hardcoded in lmao, maybe this is normal 🤷
 
@@ -78,22 +78,22 @@ def download_pepe(name, url, filename):
 def process_pepe_nft_json(pepenftjson):
     nftjson = str(pepenftjson).replace("'", '"')
     try:
-        os.mkdir(pepenftjson["name"])
+        os.mkdir("output")
     except FileExistsError:
         pass
 
     # Save the json file of the nft, this is the only thing on the etherium blockchain
-    nftjsonfile = open(pepenftjson["name"] + "/" + "nft.json", "w")
+    nftjsonfile = open("output/" + pepenftjson["name"] + ".json", "w")
     print_debug(nftjson)
     nftjsonfile.write(nftjson)
     nftjsonfile.close()
 
     # Download all the things from the json, these are ipfs links
-    download_pepe(pepenftjson["name"], pepenftjson["image"], "card.gif")
-    download_pepe(pepenftjson["name"], pepenftjson["animation_url"], "card.glb")
-    download_pepe(pepenftjson["name"], pepenftjson["hifi_media"]["card_front"], "front.png")
-    download_pepe(pepenftjson["name"], pepenftjson["hifi_media"]["card_back"], "back.png")
-    download_pepe(pepenftjson["name"], pepenftjson["hifi_media"]["video"], "video.mp4")
+    download_pepe(pepenftjson["name"], pepenftjson["image"],                    pepenftjson["name"] + ' - ' + "card.gif")
+    download_pepe(pepenftjson["name"], pepenftjson["animation_url"],            pepenftjson["name"] + ' - ' + "card.glb")
+    download_pepe(pepenftjson["name"], pepenftjson["hifi_media"]["card_front"], pepenftjson["name"] + ' - ' + "front.png")
+    download_pepe(pepenftjson["name"], pepenftjson["hifi_media"]["card_back"],  pepenftjson["name"] + ' - ' + "back.png")
+    download_pepe(pepenftjson["name"], pepenftjson["hifi_media"]["video"],      pepenftjson["name"] + ' - ' + "video.mp4")
 
 
 def main():
