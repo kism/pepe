@@ -72,6 +72,8 @@ QmRA1brW5hZsivXNMdk8ec9aQcaTFXSysxwHyfrtYzkGzt
 QmeAvgc7xuqLY6NifkMGoaC6ffVCwnTvhQSYn4rMC9Uv8Y
 QmZ5T5CVJgweN1FNA6eoFKKby7NNnYRSS7VD9dnkCxHLvA
 QmRnzMxFA2aesbeuHWSzhTDK5wUKjef1r8PrDdHXHc6AUB
+QmU9wnWqmYQ542GTkhdLjy1nbJT7FRQSTMbq31rxoTv4tH
+QmNhVY2gANALdtZTQZW4c6H9oRBz4SKMs4vpGruaGFs1Zo
 """
 
 def print_debug(text):  # Debug messages in yellow if the debug global is true
