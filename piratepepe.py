@@ -71,6 +71,7 @@ QmU9wnWqmYQ542GTkhdLjy1nbJT7FRQSTMbq31rxoTv4tH
 QmNhVY2gANALdtZTQZW4c6H9oRBz4SKMs4vpGruaGFs1Zo
 """
 
+
 def print_debug(text):  # Debug messages in yellow if the debug global is true
     if debug:
         print("\033[93m" + text + "\033[0m")
@@ -96,7 +97,7 @@ def scan_pepe_file():  # Scan pepetxt var for ipfs links
 def download_pepe(url, filename):
     global criticalfileskipped
     filepath = "output/" + filename
-    
+
     # the nft json for this collection has the ipfs.io gateway hardcoded in lmao, maybe this is normal 🤷
     strippedurl = url.replace("https://ipfs.io/ipfs/", "")
 
@@ -124,7 +125,7 @@ def download_pepe(url, filename):
                         ipfsgatewaylist.remove(gateway)
                     else:
                         print("gateway might not have large file support, ", end='')
-   
+
                     os.remove(filepath)
                 except:
                     pass
@@ -153,7 +154,8 @@ def process_pepe_nft_json(pepenftjson):
     download_pepe(pepenftjson["animation_url"],            pepenftjson["name"] + ' - ' + "card.glb")
     download_pepe(pepenftjson["hifi_media"]["card_front"], pepenftjson["name"] + ' - ' + "front.png")
     download_pepe(pepenftjson["hifi_media"]["card_back"],  pepenftjson["name"] + ' - ' + "back.png")
-    download_pepe(pepenftjson["hifi_media"]["video"],      pepenftjson["name"] + ' - ' + "video.mp4") # So far I only expect some ipfs gateways will reject .mp4 downloads
+    download_pepe(pepenftjson["hifi_media"]["video"],      pepenftjson["name"] + ' - ' + "video.mp4")
+
 
 def main():
     failure = False
@@ -214,13 +216,14 @@ def main():
             print("Some Downloads failed, this probably means that only a gateway that is working for you doesn't have large file support")
     else:
         print("\033[91mEvery ipfs gateway failed lmao\033[0m!")
-        
+
     if criticalfileskipped:
         print("There will be some missing Pepes")
         print("Run the script again to try again.")
         print("You might want to find some new ipfs gateways and add them to the script, or get a new IP address since some ipfs gateways will rate-limit or block you for downloading too much.")
 
     exit(exitcode)
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and (sys.argv[1] == "-d" or sys.argv[1] == "--debug"):
