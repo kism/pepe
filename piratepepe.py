@@ -5,17 +5,13 @@
 # I hate NFTs but Matt Furie is cool, Every NFT collection is a Ponzi scheme
 
 # The NFT collection is incomplete
-# I intend to keep pepestxt updated with the latest releases.
+# I intend to keep pepestxt updated with the latest releases on the repo, i'll be pretty lazy with it though.
 
-#import json
 import requests
 import urllib
-#import io
 import os
 import sys
 import random
-from requests import api
-from requests.models import RequestEncodingMixin
 
 debug = False
 criticalfileskipped = False
