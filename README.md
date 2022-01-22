@@ -16,7 +16,7 @@ Racists can GTFO, Pepe has been reclaimed. widepeepoHappy
 
 ## How to do
 
-`git clone https://github.com/kism/pepe.git`
-`cd pepe`
-`pip3 install requests`
-`python3 piratepepe.sh`
+  git clone https://github.com/kism/pepe.git
+  cd pepe
+  pip3 install requests
+  python3 piratepepe.sh
