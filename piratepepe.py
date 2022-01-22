@@ -7,11 +7,10 @@
 # The NFT collection is incomplete
 # I intend to keep pepestxt updated with the latest releases.
 
-import json
-from socket import IP_DEFAULT_MULTICAST_LOOP
+#import json
 import requests
 import urllib
-import io
+#import io
 import os
 import sys
 import random
@@ -202,7 +201,6 @@ def main():
 
         # we have the nft json, lets grab the assets
         if not failure:
-
             pepenftjson = response.json()
             print("Found a Rare Pepe!: " + pepenftjson['name'] + "")
             process_pepe_nft_json(pepenftjson)
