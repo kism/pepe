@@ -20,4 +20,6 @@ Racists can GTFO, Pepe has been reclaimed. widepeepoHappy
 
 `cd pepe`
 
+`pip3 install requests`
+
 `python3 piratepepe.sh`
