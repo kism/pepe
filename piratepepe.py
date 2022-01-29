@@ -82,7 +82,8 @@ def scan_pepe_file():  # Scan pepetxt var for ipfs links
 
     listfresh = []
     for element in pepelist.split():
-        if element[0] == "Q":  # Ignore everything that doesnt start with a Q since thats what all them things seem to start with
+        # Ignore everything that doesn't start with a Q since that's what all them things seem to start with
+        if element[0] == "Q":
             listfresh.append(element.strip())
         else:
             print_debug("Not a pepe: " + element.strip())
@@ -167,6 +168,7 @@ def main():
 
     for pepeipfs in pepelist:
         print("\n\033[47m\033[30m Looking for \033[92mPepe\033[30m and his NFT json... \033[0m")
+        response = None
 
         # Randomise the gateway list so we try a different gateway first
         random.shuffle(ipfsgatewaylist)
@@ -177,14 +179,16 @@ def main():
 
             print("Trying: " + request)
 
-            # Here we are getting the json that the nft points to, as I understand the etherium contract points at an ipfs object that has a json file that points to the other assets on ipfs
+            # Here we are getting the json that the nft points to,
+            # as I understand the etherium contract points at an ipfs object that
+            # has a json file that points to the other assets on ipfs
             response = None
             try:
                 response = requests.get(request, timeout=5)
             except:
                 pass
 
-            if response != None:
+            if response is not None:
                 if response.status_code != 200 and response.status_code != 400:
                     print("Gateway: " + gateway + " sucks, HTTP: " + str(response.status_code) + ", \033[91mremoving from gateway list\033[0m")
                     ipfsgatewaylist.remove(gateway)
