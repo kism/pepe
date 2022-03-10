@@ -22,4 +22,4 @@ Racists can get out, Pepe has been reclaimed. widepeepoHappy
 
 `pip3 install requests`
 
-`python3 piratepepe.sh`
+`python3 piratepepe.py`
