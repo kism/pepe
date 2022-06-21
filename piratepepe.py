@@ -32,6 +32,11 @@ ipfsgatewaylist = [
     "https://hardbin.com/ipfs/",
     "https://ipfs.tubby.cloud/ipfs/",
     "https://video.oneloveipfs.com/ipfs/",
+    "https://ipfs.astyanax.io/ipfs/",
+    "https://ipfs.infura-ipfs.io/ipfs/",
+    "https://ipfs.dweb.link/ipfs/",
+    "https://ipfs.best-practice.se/ipfs/",
+    "https://ipfs.2read.net/ipfs/"
 ]
 
 # This is a big list of NFT tokenURIs for the Matt Furie Rare Pepe NFT Collection
