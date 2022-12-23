@@ -40,7 +40,6 @@ ipfsgatewaylist = [
 "https://cloudflare-ipfs.com/ipfs/",
 "https://ipfs.mihir.ch/ipfs/",
 "https://jorropo.net/ipfs/",
-"https://via0.com/ipfs/",
 "https://ipfs.litnet.work/ipfs/",
 "https://ipfs.lain.la/ipfs/",
 "https://ipfs.subutai.io/ipfs/",
