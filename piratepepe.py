@@ -43,7 +43,8 @@ ipfsgatewaylist = [
 "https://ipfs.litnet.work/ipfs/",
 "https://ipfs.lain.la/ipfs/",
 "https://ipfs.subutai.io/ipfs/",
-"https://ipfs.yt/ipfs/"
+"https://ipfs.yt/ipfs/",
+"https://4everland.io/ipfs/"
 ]
 
 # This is a big list of NFT tokenURIs for the Matt Furie Rare Pepe NFT Collection
