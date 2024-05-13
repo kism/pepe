@@ -322,7 +322,7 @@ def main():
             failure = False
             request = gateway + pepeipfs
 
-            print("Trying: " + request)
+            print("Trying: " + request, end='')
 
             # Here we are getting the json that the nft points to,
             # as I understand the etherium contract points at an ipfs object that
@@ -330,6 +330,7 @@ def main():
             response = None
             try:
                 response = requests.get(request, timeout=5)
+                print()
             except requests.exceptions.ConnectionError:
                 print("ConnectionError")
                 response = None
