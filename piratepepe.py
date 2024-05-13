@@ -238,7 +238,7 @@ def download_pepe(url, filename):
                         print("gateway might not have large file support, ", end="")
 
                     os.remove(filepath)
-                except KeyError:  # TEMP TEMP FIXME
+                except FileNotFoundError:
                     pass
 
             print("trying next gateway...")
