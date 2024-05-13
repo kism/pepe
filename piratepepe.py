@@ -12,7 +12,7 @@ import os
 import sys
 import random
 import requests
-
+from collections import Counter
 
 debug = False
 criticalfileskipped = False
@@ -270,15 +270,15 @@ def process_pepe_nft_json(pepenftjson):
 
 
 def main():
+    global ipfsgatewaylist
     failure = False
     exitcode = 1
     print("\n\033[47m\033[30m pirate\033[92mpepe\033[30m.py \033[0m")
     print_debug("Debug on!\n")
 
-    duplicate_ipfsgateways = set([x for x in ipfsgatewaylist if ipfsgatewaylist.count(x) > 1])
-    if len(duplicate_ipfsgateways) > 0:
-        for gw in duplicate_ipfsgateways:
-            print("Duplicate gateway: " + gw)
+    for item, count in Counter(ipfsgatewaylist).items():
+        if count > 1:
+            print("Duplicate gateway: " + item)
 
     ipfsgatewaylist = list(dict.fromkeys(ipfsgatewaylist))
 
@@ -309,7 +309,7 @@ def main():
             except requests.exceptions.ConnectionError:
                 response = None
 
-            if not response:
+            if not response.status_code:
                 print(
                     "Gateway: "
                     + gateway
