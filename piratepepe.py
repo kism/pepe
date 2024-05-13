@@ -284,7 +284,7 @@ def main():
     print(
         Back.WHITE
         + Fore.BLACK
-        + "pirate"
+        + " pirate"
         + Fore.GREEN
         + "pepe"
         + Fore.BLACK
@@ -357,6 +357,7 @@ def main():
             else:
                 try:
                     pepenftjson = response.json()
+                    break
                 except requests.exceptions.JSONDecodeError:
                     print(
                         "Gateway: "
@@ -375,11 +376,12 @@ def main():
         # we have the nft json, lets grab the assets
         if failure:
             print(
-                Back.RED
-                + "All is heck "
+                Fore.RED
+                + "All is heck"
                 + Style.RESET_ALL
-                + "every defined ipfs gateway sucks"
+                + " every defined ipfs gateway sucks"
             )
+            criticalfileskipped = True
             break
 
     print(Back.WHITE + Fore.BLACK + " Done! " + Style.RESET_ALL)
@@ -387,7 +389,7 @@ def main():
     if len(ipfsgatewaylist) > 0:
         print_debug("ipfs gateways that made it to the end: " + str(ipfsgatewaylist))
         if not criticalfileskipped:
-            print("All the Pepes should be downloaded! FIX THIS")
+            print("All the Pepes should be downloaded!")
             exitcode = 0
         else:
             print(
