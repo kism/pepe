@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "pepe"
+version = "0.1.0"
+description = "Download the official Matt Furie PEPE NFTs"
+license = "MIT"
+authors = ["Kieran Gee <kieran.lost.the.game@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.31.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.4.0"
+pylance = "^0.10.15"
+ruff = "^0.4.3"
+
+[tool.black]
+line-length = 120
+
+[tool.ruff]
+line-length = 120
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

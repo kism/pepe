@@ -7,11 +7,12 @@
 # The NFT collection is incomplete
 # I intend to keep pepestxt updated with the latest releases on the repo, i'll be pretty lazy with it though.
 
-import requests
 import urllib
 import os
 import sys
 import random
+import requests
+
 
 debug = False
 criticalfileskipped = False
@@ -20,6 +21,7 @@ ipfsgatewaylist = [
     "http://cf-ipfs.com/ipfs/",
     "https://ipfs.io/ipfs/",
     "https://gateway.ipfs.io/ipfs/",
+    "https://storry.tv/ipfs/",
     "https://ipfs.fleek.co/ipfs/",
     "https://gateway.pinata.cloud/ipfs/",
     "https://ipfs.telos.miami/ipfs/",
@@ -45,6 +47,14 @@ ipfsgatewaylist = [
     "https://ipfs.subutai.io/ipfs/",
     "https://ipfs.yt/ipfs/",
     "https://4everland.io/ipfs/",
+    "https://trustless-gateway.link/ipfs/",
+    "https://ipfs.runfission.com/ipfs/",
+    "https://ipfs.runfission.com/ipfs/",
+    "https://ipfs.eth.aragon.network/ipfs/",
+    "https://4everland.io/ipfs/",
+    "https://w3s.link/ipfs/",
+    "https://w3s.link/ipfs/",
+    "https://nftstorage.link/ipfs/",
 ]
 
 # This is a big list of NFT tokenURIs for the Matt Furie Rare Pepe NFT Collection
@@ -201,10 +211,7 @@ def download_pepe(url, filename):
             url = gateway + strippedurl
 
             print(
-                "Attempting to download Pepe NFT Asset: '"
-                + filename
-                + "' from: "
-                + url,
+                "Attempting to download Pepe NFT Asset: '" + filename + "' from: " + url,
                 end="\n",
             )
 
@@ -213,7 +220,7 @@ def download_pepe(url, filename):
                 print("  \033[92mSuccess!\033[0m")
                 criticalfileskipped = False
                 break
-            except:
+            except Exception:
                 print("  \033[91mDownload Failed\033[0m", end=", ")
                 criticalfileskipped = True
                 try:
@@ -224,7 +231,7 @@ def download_pepe(url, filename):
                         print("gateway might not have large file support, ", end="")
 
                     os.remove(filepath)
-                except:
+                except Exception:
                     pass
 
             print("trying next gateway...")
@@ -248,19 +255,13 @@ def process_pepe_nft_json(pepenftjson):
 
     # Download all the things from the json, these are ipfs links
     download_pepe(pepenftjson["image"], pepenftjson["name"] + " - " + "card.gif")
-    download_pepe(
-        pepenftjson["animation_url"], pepenftjson["name"] + " - " + "card.glb"
-    )
+    download_pepe(pepenftjson["animation_url"], pepenftjson["name"] + " - " + "card.glb")
     download_pepe(
         pepenftjson["hifi_media"]["card_front"],
         pepenftjson["name"] + " - " + "front.png",
     )
-    download_pepe(
-        pepenftjson["hifi_media"]["card_back"], pepenftjson["name"] + " - " + "back.png"
-    )
-    download_pepe(
-        pepenftjson["hifi_media"]["video"], pepenftjson["name"] + " - " + "video.mp4"
-    )
+    download_pepe(pepenftjson["hifi_media"]["card_back"], pepenftjson["name"] + " - " + "back.png")
+    download_pepe(pepenftjson["hifi_media"]["video"], pepenftjson["name"] + " - " + "video.mp4")
 
 
 def main():
@@ -272,9 +273,7 @@ def main():
     pepelist = scan_pepe_file()
 
     for pepeipfs in pepelist:
-        print(
-            "\n\033[47m\033[30m Looking for \033[92mPepe\033[30m and his NFT json... \033[0m"
-        )
+        print("\n\033[47m\033[30m Looking for \033[92mPepe\033[30m and his NFT json... \033[0m")
         response = None
 
         # Randomise the gateway list so we try a different gateway first
@@ -292,7 +291,7 @@ def main():
             response = None
             try:
                 response = requests.get(request, timeout=5)
-            except:
+            except Exception:
                 pass
 
             if response is not None:
@@ -310,11 +309,7 @@ def main():
                     failure = False
                     break
             else:
-                print(
-                    "Gateway: "
-                    + gateway
-                    + " timed out, \033[91mremoving from gateway list\033[0m"
-                )
+                print("Gateway: " + gateway + " timed out, \033[91mremoving from gateway list\033[0m")
                 ipfsgatewaylist.remove(gateway)
                 failure = True
 
