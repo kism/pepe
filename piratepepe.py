@@ -220,7 +220,7 @@ def download_pepe(url, filename):
                 print("  \033[92mSuccess!\033[0m")
                 criticalfileskipped = False
                 break
-            except Exception:
+            except KeyError: # TEMP TEMP FIXME
                 print("  \033[91mDownload Failed\033[0m", end=", ")
                 criticalfileskipped = True
                 try:
@@ -231,7 +231,7 @@ def download_pepe(url, filename):
                         print("gateway might not have large file support, ", end="")
 
                     os.remove(filepath)
-                except Exception:
+                except KeyError: # TEMP TEMP FIXME
                     pass
 
             print("trying next gateway...")
@@ -291,7 +291,7 @@ def main():
             response = None
             try:
                 response = requests.get(request, timeout=5)
-            except Exception:
+            except KeyError: # TODO FIXME
                 pass
 
             if response is not None:
