@@ -339,7 +339,7 @@ def main():
                 response = None
 
             if not response:
-                print("Complete gateway failure: " + gateway)
+                print(Fore.RED + "Complete gateway failure" + Style.RESET_ALL + ": " + gateway)
                 ipfsgatewaylist.remove(gateway)
                 failure = True
             elif response.status_code != 200 and response.status_code != 400:
@@ -361,9 +361,9 @@ def main():
                     print(
                         "Gateway: "
                         + gateway
-                        + " gave us garbage json"
+                        + " gave us garbage json, "
                         + Fore.RED
-                        + ", removing from gateway list"
+                        + "removing from gateway list"
                         + Style.RESET_ALL
                     )
                     ipfsgatewaylist.remove(gateway)
