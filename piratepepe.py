@@ -11,8 +11,10 @@ import urllib
 import os
 import sys
 import random
-import requests
 from collections import Counter
+
+import requests
+from colorama import Fore, Back, Style
 
 debug = False
 criticalfileskipped = False
@@ -169,7 +171,7 @@ QmXCHLCWNqcdA9i9QwVkpVc1wcEvtNRGp7Wxo3ZpHrkFyn
 
 def print_debug(text):  # Debug messages in yellow if the debug global is true
     if debug:
-        print("\033[93m" + text + "\033[0m")
+        print(Fore.YELLOW + str(text) + Style.RESET_ALL)
 
 
 def scan_pepe_file():  # Scan pepetxt var for ipfs links
@@ -215,15 +217,22 @@ def download_pepe(url, filename):
 
             try:
                 urllib.request.urlretrieve(url, "output/" + filename)
-                print("  \033[92mSuccess!\033[0m")
+                print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
                 criticalfileskipped = False
                 break
             except KeyError:  # TEMP TEMP FIXME
-                print("  \033[91mDownload Failed\033[0m", end=", ")
+                print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
                 criticalfileskipped = True
                 try:
                     if not url.endswith("mp4"):
-                        print("\033[91mremoving from gateway list\033[0m, ", end="")
+                        print(
+                            Back.RED
+                            + Fore.BLACK
+                            + "removing from gateway list"
+                            + Style.RESET_ALL
+                            + ",",
+                            end="",
+                        )
                         ipfsgatewaylist.remove(gateway)
                     else:
                         print("gateway might not have large file support, ", end="")
@@ -272,7 +281,16 @@ def main():
     global ipfsgatewaylist
     failure = False
     exitcode = 1
-    print("\n\033[47m\033[30m pirate\033[92mpepe\033[30m.py \033[0m")
+    print(
+        Back.WHITE
+        + Fore.BLACK
+        + "pirate"
+        + Fore.GREEN
+        + "pepe"
+        + Fore.BLACK
+        + ".py "
+        + Style.RESET_ALL
+    )
     print_debug("Debug on!\n")
 
     for item, count in Counter(ipfsgatewaylist).items():
@@ -285,7 +303,14 @@ def main():
 
     for pepeipfs in pepelist:
         print(
-            "\n\033[47m\033[30m Looking for \033[92mPepe\033[30m and his NFT json... \033[0m"
+            Back.WHITE
+            + Fore.BLACK
+            + " Looking for "
+            + Fore.GREEN
+            + "Pepe"
+            + Fore.BLACK
+            + "and his NFT json... "
+            + Style.RESET_ALL
         )
         response = None
 
@@ -322,7 +347,9 @@ def main():
                     + gateway
                     + " sucks, HTTP: "
                     + str(response.status_code)
-                    + ", \033[91mremoving from gateway list\033[0m"
+                    + Fore.RED
+                    + ", removing from gateway list"
+                    + Style.RESET_ALL
                 )
                 ipfsgatewaylist.remove(gateway)
                 failure = True
@@ -334,7 +361,9 @@ def main():
                         "Gateway: "
                         + gateway
                         + " gave us garbage json"
-                        + ", \033[91mremoving from gateway list\033[0m"
+                        + Fore.RED
+                        + ", removing from gateway list"
+                        + Style.RESET_ALL
                     )
                     ipfsgatewaylist.remove(gateway)
                     failure = True
@@ -344,22 +373,27 @@ def main():
 
         # we have the nft json, lets grab the assets
         if failure:
-            print("\033[91mAll is heck\033[0m, every defined ipfs gateway sucks")
+            print(
+                Back.RED
+                + "All is heck "
+                + Style.RESET_ALL
+                + "every defined ipfs gateway sucks"
+            )
             break
 
-    print("\n\033[47m\033[30m Done! \033[0m")
+    print(Back.WHITE + Fore.BLACK + " Done! " + Style.RESET_ALL)
 
     if len(ipfsgatewaylist) > 0:
         print_debug("ipfs gateways that made it to the end: " + str(ipfsgatewaylist))
         if not criticalfileskipped:
-            print("All the Pepes should be downloaded!")
+            print("All the Pepes should be downloaded! FIX THIS")
             exitcode = 0
         else:
             print(
                 "Some Downloads failed, this probably means that only a gateway that is working for you doesn't have large file support"
             )
     else:
-        print("\033[91mEvery ipfs gateway failed lmao\033[0m!")
+        print(Fore.RED + "Every ipfs gateway failed lmao" + Style.RESET_ALL)
 
     if criticalfileskipped:
         print("There will be some missing Pepes")
