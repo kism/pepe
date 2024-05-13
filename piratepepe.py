@@ -27,7 +27,6 @@ ipfsgatewaylist = [
     "https://ipfs.telos.miami/ipfs/",
     "https://crustwebsites.net/ipfs/",
     "https://ipfs.eternum.io/ipfs/",
-    "https://ipfs.yt/ipfs/",
     "https://ipfs.2read.net/",
     "https://ipfs.azurewebsites.net/ipfs/",
     "https://hardbin.com/ipfs/",
@@ -307,14 +306,14 @@ def main():
             try:
                 response = requests.get(request, timeout=5)
             except requests.exceptions.ConnectionError:
-                print("ConnectionError: " + request, end="")
+                print("ConnectionError")
                 response = None
             except requests.exceptions.ReadTimeout:
-                print("ReadTimeout: " + request, end="")
+                print("ReadTimeout")
                 response = None
 
             if not response:
-                print("\nComplete gateway failure: " + gateway)
+                print("Complete gateway failure: " + gateway)
                 ipfsgatewaylist.remove(gateway)
                 failure = True
             elif response.status_code != 200 and response.status_code != 400:
