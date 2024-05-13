@@ -391,7 +391,7 @@ def main():
             criticalfileskipped = True
             break
 
-    print(Back.WHITE + Fore.BLACK + " Done! " + Style.RESET_ALL)
+    print("\n" + Back.WHITE + Fore.BLACK + " Done! " + Style.RESET_ALL)
 
     if len(ipfsgatewaylist) > 0:
         print_debug("ipfs gateways that made it to the end: " + str(ipfsgatewaylist))
