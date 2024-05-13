@@ -5,7 +5,7 @@ This script downloads the Matt Furie Pepe collection.
 I hate NFTs as a concept, imo it's all a Ponzi scheme.
 
 I will always hate on any crypto currentcy that is:
-1. A ponzi scheme (all of them) 
+1. A ponzi scheme (all of them)
 2. Uses a proof of work algorithm
 
 This collection has some really nice animations though, I think Matt is working with whoever did the animations for the 'Feels Good Man' documentary.
@@ -23,3 +23,8 @@ Racists can get out, Pepe has been reclaimed. widepeepoHappy
 `pip3 install requests`
 
 `python3 piratepepe.py`
+
+## Todo
+
+* Exceptions
+* Colourama

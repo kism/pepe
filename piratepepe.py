@@ -306,19 +306,18 @@ def main():
             response = None
             try:
                 response = requests.get(request, timeout=5)
-            except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+            except requests.exceptions.ConnectionError:
+                print("ConnectionError: " + request, end="")
+                response = None
+            except requests.exceptions.ReadTimeout:
+                print("ReadTimeout: " + request, end="")
                 response = None
 
-            if not response.status_code:
-                print(
-                    "Gateway: "
-                    + gateway
-                    + " timed out, \033[91mremoving from gateway list\033[0m"
-                )
+            if not response:
+                print("Complete gateway failure: " + gateway)
                 ipfsgatewaylist.remove(gateway)
                 failure = True
-
-            if response.status_code != 200 and response.status_code != 400:
+            elif response.status_code != 200 and response.status_code != 400:
                 print(
                     "Gateway: "
                     + gateway
