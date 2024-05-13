@@ -345,7 +345,7 @@ def main():
                     ipfsgatewaylist.remove(gateway)
                     failure = True
 
-        print("Found a Rare Pepe!: " + pepenftjson["name"] + "")
+        print("Found a Rare Pepe! : " + pepenftjson["name"] + "")
         process_pepe_nft_json(pepenftjson)
 
         # we have the nft json, lets grab the assets
