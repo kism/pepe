@@ -279,6 +279,11 @@ def main():
     print("\n\033[47m\033[30m pirate\033[92mpepe\033[30m.py \033[0m")
     print_debug("Debug on!\n")
 
+    duplicate_ipfsgateways = set([x for x in ipfsgatewaylist if ipfsgatewaylist.count(x) > 1])
+    if len(duplicate_ipfsgateways) > 0:
+        for gw in duplicate_ipfsgateways:
+            print("Duplicate gateway: " + gw)
+
     pepelist = scan_pepe_file()
 
     for pepeipfs in pepelist:
