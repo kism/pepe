@@ -328,16 +328,25 @@ def main():
                 ipfsgatewaylist.remove(gateway)
                 failure = True
             else:
-                failure = False
-                break  # We have the nfw json
+                try:
+                    pepenftjson = response.json()
+                except requests.exceptions.JSONDecodeError:
+                    print(
+                        "Gateway: "
+                        + gateway
+                        + " gave us garbage json"
+                        + ", \033[91mremoving from gateway list\033[0m"
+                    )
+                    ipfsgatewaylist.remove(gateway)
+                    failure = True
+
+        print("Found a Rare Pepe!: " + pepenftjson["name"] + "")
+        process_pepe_nft_json(pepenftjson)
 
         # we have the nft json, lets grab the assets
-        if not failure:
-            pepenftjson = response.json()
-            print("Found a Rare Pepe!: " + pepenftjson["name"] + "")
-            process_pepe_nft_json(pepenftjson)
-        else:
+        if failure:
             print("\033[91mAll is heck\033[0m, every defined ipfs gateway sucks")
+            break
 
     print("\n\033[47m\033[30m Done! \033[0m")
 
