@@ -306,7 +306,7 @@ def main():
             response = None
             try:
                 response = requests.get(request, timeout=5)
-            except requests.exceptions.ConnectionError:
+            except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
                 response = None
 
             if not response.status_code:
