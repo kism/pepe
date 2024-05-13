@@ -208,10 +208,7 @@ def download_pepe(url, filename):
             url = gateway + strippedurl
 
             print(
-                "Attempting to download Pepe NFT Asset: '"
-                + filename
-                + "' from: "
-                + url,
+                "Attempting to download Pepe NFT Asset: '" + filename + "' from: " + url,
                 end="\n",
             )
 
@@ -225,20 +222,13 @@ def download_pepe(url, filename):
                 criticalfileskipped = True
                 try:
                     if not url.endswith("mp4"):
-                        print(
-                            Back.RED
-                            + Fore.BLACK
-                            + "removing from gateway list"
-                            + Style.RESET_ALL
-                            + ",",
-                            end="",
-                        )
+                        print(Back.RED + Fore.BLACK + "removing from gateway list" + Style.RESET_ALL)
                         ipfsgatewaylist.remove(gateway)
                     else:
                         print("gateway might not have large file support, ", end="")
 
                     os.remove(filepath)
-                except FileNotFoundError:
+                except FileNotFoundError:  # Only need to remove partially downloaded file if it exists
                     pass
 
             print("trying next gateway...")
@@ -262,35 +252,20 @@ def process_pepe_nft_json(pepenftjson):
 
     # Download all the things from the json, these are ipfs links
     download_pepe(pepenftjson["image"], pepenftjson["name"] + " - " + "card.gif")
-    download_pepe(
-        pepenftjson["animation_url"], pepenftjson["name"] + " - " + "card.glb"
-    )
+    download_pepe(pepenftjson["animation_url"], pepenftjson["name"] + " - " + "card.glb")
     download_pepe(
         pepenftjson["hifi_media"]["card_front"],
         pepenftjson["name"] + " - " + "front.png",
     )
-    download_pepe(
-        pepenftjson["hifi_media"]["card_back"], pepenftjson["name"] + " - " + "back.png"
-    )
-    download_pepe(
-        pepenftjson["hifi_media"]["video"], pepenftjson["name"] + " - " + "video.mp4"
-    )
+    download_pepe(pepenftjson["hifi_media"]["card_back"], pepenftjson["name"] + " - " + "back.png")
+    download_pepe(pepenftjson["hifi_media"]["video"], pepenftjson["name"] + " - " + "video.mp4")
 
 
 def main():
     global ipfsgatewaylist
     failure = False
     exitcode = 1
-    print(
-        Back.WHITE
-        + Fore.BLACK
-        + " pirate"
-        + Fore.GREEN
-        + "pepe"
-        + Fore.BLACK
-        + ".py "
-        + Style.RESET_ALL
-    )
+    print(Back.WHITE + Fore.BLACK + " pirate" + Fore.GREEN + "pepe" + Fore.BLACK + ".py " + Style.RESET_ALL)
     print_debug("Debug on!\n")
 
     for item, count in Counter(ipfsgatewaylist).items():
@@ -322,7 +297,7 @@ def main():
             failure = False
             request = gateway + pepeipfs
 
-            print("Trying: " + request, end='')
+            print("Trying: " + request, end="")
 
             # Here we are getting the json that the nft points to,
             # as I understand the etherium contract points at an ipfs object that
@@ -375,12 +350,7 @@ def main():
 
         # we have the nft json, lets grab the assets
         if failure:
-            print(
-                Fore.RED
-                + "All is heck"
-                + Style.RESET_ALL
-                + " every defined ipfs gateway sucks"
-            )
+            print(Fore.RED + "All is heck" + Style.RESET_ALL + " every defined ipfs gateway sucks")
             criticalfileskipped = True
             break
 
