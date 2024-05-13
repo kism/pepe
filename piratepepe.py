@@ -17,34 +17,34 @@ debug = False
 criticalfileskipped = False
 
 ipfsgatewaylist = [
-"http://cf-ipfs.com/ipfs/",
-"https://ipfs.io/ipfs/",
-"https://gateway.ipfs.io/ipfs/",
-"https://ipfs.fleek.co/ipfs/",
-"https://gateway.pinata.cloud/ipfs/",
-"https://ipfs.telos.miami/ipfs/",
-"https://ipfs.mihir.ch/ipfs/",
-"https://crustwebsites.net/ipfs/",
-"https://ipfs.eternum.io/ipfs/",
-"https://ipfs.yt/ipfs/",
-"https://ipfs.2read.net/",
-"https://ipfs.azurewebsites.net/ipfs/",
-"https://hardbin.com/ipfs/",
-"https://ipfs.tubby.cloud/ipfs/",
-"https://video.oneloveipfs.com/ipfs/",
-"https://ipfs.astyanax.io/ipfs/",
-"https://ipfs.infura-ipfs.io/ipfs/",
-"https://ipfs.dweb.link/ipfs/",
-"https://ipfs.best-practice.se/ipfs/",
-"https://ipfs.2read.net/ipfs/",
-"https://cloudflare-ipfs.com/ipfs/",
-"https://ipfs.mihir.ch/ipfs/",
-"https://jorropo.net/ipfs/",
-"https://ipfs.litnet.work/ipfs/",
-"https://ipfs.lain.la/ipfs/",
-"https://ipfs.subutai.io/ipfs/",
-"https://ipfs.yt/ipfs/",
-"https://4everland.io/ipfs/"
+    "http://cf-ipfs.com/ipfs/",
+    "https://ipfs.io/ipfs/",
+    "https://gateway.ipfs.io/ipfs/",
+    "https://ipfs.fleek.co/ipfs/",
+    "https://gateway.pinata.cloud/ipfs/",
+    "https://ipfs.telos.miami/ipfs/",
+    "https://ipfs.mihir.ch/ipfs/",
+    "https://crustwebsites.net/ipfs/",
+    "https://ipfs.eternum.io/ipfs/",
+    "https://ipfs.yt/ipfs/",
+    "https://ipfs.2read.net/",
+    "https://ipfs.azurewebsites.net/ipfs/",
+    "https://hardbin.com/ipfs/",
+    "https://ipfs.tubby.cloud/ipfs/",
+    "https://video.oneloveipfs.com/ipfs/",
+    "https://ipfs.astyanax.io/ipfs/",
+    "https://ipfs.infura-ipfs.io/ipfs/",
+    "https://ipfs.dweb.link/ipfs/",
+    "https://ipfs.best-practice.se/ipfs/",
+    "https://ipfs.2read.net/ipfs/",
+    "https://cloudflare-ipfs.com/ipfs/",
+    "https://ipfs.mihir.ch/ipfs/",
+    "https://jorropo.net/ipfs/",
+    "https://ipfs.litnet.work/ipfs/",
+    "https://ipfs.lain.la/ipfs/",
+    "https://ipfs.subutai.io/ipfs/",
+    "https://ipfs.yt/ipfs/",
+    "https://4everland.io/ipfs/",
 ]
 
 # This is a big list of NFT tokenURIs for the Matt Furie Rare Pepe NFT Collection
@@ -200,7 +200,13 @@ def download_pepe(url, filename):
         for gateway in ipfsgatewaylist[:]:
             url = gateway + strippedurl
 
-            print("Attempting to download Pepe NFT Asset: '" + filename + "' from: " + url, end='\n')
+            print(
+                "Attempting to download Pepe NFT Asset: '"
+                + filename
+                + "' from: "
+                + url,
+                end="\n",
+            )
 
             try:
                 urllib.request.urlretrieve(url, "output/" + filename)
@@ -208,14 +214,14 @@ def download_pepe(url, filename):
                 criticalfileskipped = False
                 break
             except:
-                print("  \033[91mDownload Failed\033[0m", end=', ')
+                print("  \033[91mDownload Failed\033[0m", end=", ")
                 criticalfileskipped = True
                 try:
                     if not url.endswith("mp4"):
-                        print("\033[91mremoving from gateway list\033[0m, ", end='')
+                        print("\033[91mremoving from gateway list\033[0m, ", end="")
                         ipfsgatewaylist.remove(gateway)
                     else:
-                        print("gateway might not have large file support, ", end='')
+                        print("gateway might not have large file support, ", end="")
 
                     os.remove(filepath)
                 except:
@@ -241,11 +247,20 @@ def process_pepe_nft_json(pepenftjson):
     nftjsonfile.close()
 
     # Download all the things from the json, these are ipfs links
-    download_pepe(pepenftjson["image"],                    pepenftjson["name"] + ' - ' + "card.gif")
-    download_pepe(pepenftjson["animation_url"],            pepenftjson["name"] + ' - ' + "card.glb")
-    download_pepe(pepenftjson["hifi_media"]["card_front"], pepenftjson["name"] + ' - ' + "front.png")
-    download_pepe(pepenftjson["hifi_media"]["card_back"],  pepenftjson["name"] + ' - ' + "back.png")
-    download_pepe(pepenftjson["hifi_media"]["video"],      pepenftjson["name"] + ' - ' + "video.mp4")
+    download_pepe(pepenftjson["image"], pepenftjson["name"] + " - " + "card.gif")
+    download_pepe(
+        pepenftjson["animation_url"], pepenftjson["name"] + " - " + "card.glb"
+    )
+    download_pepe(
+        pepenftjson["hifi_media"]["card_front"],
+        pepenftjson["name"] + " - " + "front.png",
+    )
+    download_pepe(
+        pepenftjson["hifi_media"]["card_back"], pepenftjson["name"] + " - " + "back.png"
+    )
+    download_pepe(
+        pepenftjson["hifi_media"]["video"], pepenftjson["name"] + " - " + "video.mp4"
+    )
 
 
 def main():
@@ -257,7 +272,9 @@ def main():
     pepelist = scan_pepe_file()
 
     for pepeipfs in pepelist:
-        print("\n\033[47m\033[30m Looking for \033[92mPepe\033[30m and his NFT json... \033[0m")
+        print(
+            "\n\033[47m\033[30m Looking for \033[92mPepe\033[30m and his NFT json... \033[0m"
+        )
         response = None
 
         # Randomise the gateway list so we try a different gateway first
@@ -280,21 +297,31 @@ def main():
 
             if response is not None:
                 if response.status_code != 200 and response.status_code != 400:
-                    print("Gateway: " + gateway + " sucks, HTTP: " + str(response.status_code) + ", \033[91mremoving from gateway list\033[0m")
+                    print(
+                        "Gateway: "
+                        + gateway
+                        + " sucks, HTTP: "
+                        + str(response.status_code)
+                        + ", \033[91mremoving from gateway list\033[0m"
+                    )
                     ipfsgatewaylist.remove(gateway)
                     failure = True
                 else:
                     failure = False
                     break
             else:
-                print("Gateway: " + gateway + " timed out, \033[91mremoving from gateway list\033[0m")
+                print(
+                    "Gateway: "
+                    + gateway
+                    + " timed out, \033[91mremoving from gateway list\033[0m"
+                )
                 ipfsgatewaylist.remove(gateway)
                 failure = True
 
         # we have the nft json, lets grab the assets
         if not failure:
             pepenftjson = response.json()
-            print("Found a Rare Pepe!: " + pepenftjson['name'] + "")
+            print("Found a Rare Pepe!: " + pepenftjson["name"] + "")
             process_pepe_nft_json(pepenftjson)
         else:
             print("\033[91mAll is heck\033[0m, every defined ipfs gateway sucks")
@@ -307,14 +334,18 @@ def main():
             print("All the Pepes should be downloaded!")
             exitcode = 0
         else:
-            print("Some Downloads failed, this probably means that only a gateway that is working for you doesn't have large file support")
+            print(
+                "Some Downloads failed, this probably means that only a gateway that is working for you doesn't have large file support"
+            )
     else:
         print("\033[91mEvery ipfs gateway failed lmao\033[0m!")
 
     if criticalfileskipped:
         print("There will be some missing Pepes")
         print("Run the script again to try again.")
-        print("You might want to find some new ipfs gateways and add them to the script, or get a new IP address since some ipfs gateways will rate-limit or block you for downloading too much.")
+        print(
+            "You might want to find some new ipfs gateways and add them to the script, or get a new IP address since some ipfs gateways will rate-limit or block you for downloading too much."
+        )
 
     exit(exitcode)
 
