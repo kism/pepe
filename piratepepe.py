@@ -279,6 +279,7 @@ def process_pepe_nft_json(pepenftjson):
 
 def main():
     global ipfsgatewaylist
+    global criticalfileskipped
     failure = False
     exitcode = 1
     print(
