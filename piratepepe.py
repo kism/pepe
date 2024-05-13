@@ -220,7 +220,7 @@ def download_pepe(url, filename):
                 print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
                 criticalfileskipped = False
                 break
-            except KeyError:  # TEMP TEMP FIXME
+            except urllib.error.HTTPError:
                 print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
                 criticalfileskipped = True
                 try:
@@ -309,7 +309,7 @@ def main():
             + Fore.GREEN
             + "Pepe"
             + Fore.BLACK
-            + "and his NFT json... "
+            + " and his NFT json... "
             + Style.RESET_ALL
         )
         response = None
