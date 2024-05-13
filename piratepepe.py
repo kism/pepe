@@ -25,7 +25,6 @@ ipfsgatewaylist = [
     "https://ipfs.fleek.co/ipfs/",
     "https://gateway.pinata.cloud/ipfs/",
     "https://ipfs.telos.miami/ipfs/",
-    "https://ipfs.mihir.ch/ipfs/",
     "https://crustwebsites.net/ipfs/",
     "https://ipfs.eternum.io/ipfs/",
     "https://ipfs.yt/ipfs/",
@@ -46,13 +45,10 @@ ipfsgatewaylist = [
     "https://ipfs.lain.la/ipfs/",
     "https://ipfs.subutai.io/ipfs/",
     "https://ipfs.yt/ipfs/",
-    "https://4everland.io/ipfs/",
     "https://trustless-gateway.link/ipfs/",
-    "https://ipfs.runfission.com/ipfs/",
     "https://ipfs.runfission.com/ipfs/",
     "https://ipfs.eth.aragon.network/ipfs/",
     "https://4everland.io/ipfs/",
-    "https://w3s.link/ipfs/",
     "https://w3s.link/ipfs/",
     "https://nftstorage.link/ipfs/",
 ]
@@ -283,6 +279,8 @@ def main():
     if len(duplicate_ipfsgateways) > 0:
         for gw in duplicate_ipfsgateways:
             print("Duplicate gateway: " + gw)
+
+    ipfsgatewaylist = list(dict.fromkeys(ipfsgatewaylist))
 
     pepelist = scan_pepe_file()
 
