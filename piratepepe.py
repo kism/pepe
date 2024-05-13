@@ -281,6 +281,7 @@ def main():
 
         # Iterate through a list of ipfs gateways since they probably suck
         for gateway in ipfsgatewaylist[:]:
+            failure = False
             request = gateway + pepeipfs
 
             print("Trying: " + request)
@@ -291,27 +292,25 @@ def main():
             response = None
             try:
                 response = requests.get(request, timeout=5)
-            except KeyError: # TODO FIXME
-                pass
-
-            if response is not None:
-                if response.status_code != 200 and response.status_code != 400:
-                    print(
-                        "Gateway: "
-                        + gateway
-                        + " sucks, HTTP: "
-                        + str(response.status_code)
-                        + ", \033[91mremoving from gateway list\033[0m"
-                    )
-                    ipfsgatewaylist.remove(gateway)
-                    failure = True
-                else:
-                    failure = False
-                    break
-            else:
+            except requests.exceptions.ConnectionError: # TODO FIXME
                 print("Gateway: " + gateway + " timed out, \033[91mremoving from gateway list\033[0m")
                 ipfsgatewaylist.remove(gateway)
                 failure = True
+
+            if response.status_code != 200 and response.status_code != 400:
+                print(
+                    "Gateway: "
+                    + gateway
+                    + " sucks, HTTP: "
+                    + str(response.status_code)
+                    + ", \033[91mremoving from gateway list\033[0m"
+                )
+                ipfsgatewaylist.remove(gateway)
+                failure = True
+            else:
+                failure = False
+                break # We have the nfw json
+
 
         # we have the nft json, lets grab the assets
         if not failure:
