@@ -228,7 +228,7 @@ def download_pepe(url, filename):
             )
 
             try:
-                with requests.get(url, stream=True) as r:
+                with requests.get(url, stream=True, timeout=240) as r:
                     with open("output/" + filename, "wb") as f:
                         shutil.copyfileobj(r.raw, f)
 
