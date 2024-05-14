@@ -12,7 +12,7 @@ echo "-- Checking files for incorrect content type --"
 readarray -d '' files < <(find "$directory" -type f -print0)
 readarray -t sorted_files < <(printf '%s\n' "${files[@]}" | sort)
 for file in "${sorted_files[@]}"; do
-    echo "Checking: \"$file\"..."
+    echo "FILE checking: \"$file\"..."
     if file "$file" | grep -q "text"; then
         echo " Adding \"$file\" to the borked file list"
         borked_files+=("$file")
@@ -27,7 +27,7 @@ readarray -d '' files < <(find "$directory" -type f \( -name "*.png" -o -name "*
 readarray -t sorted_files < <(printf '%s\n' "${files[@]}" | sort)
 
 for file in "${sorted_files[@]}"; do
-    echo "FFMPEG: checking: \"$file\"..."
+    echo "FFMPEG checking: \"$file\"..."
     ffmpeg -v error -i "$file" -f null -
     if [ $? -ne 0 ]; then
         echo " Adding \"$file\" to the borked file list"
