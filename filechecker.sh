@@ -7,7 +7,8 @@ directory="output"
 files=()
 borked_files=()
 
-echo "Checking files for text when it shouldnt be..."
+echo
+echo "-- Checking files for incorrect content type --"
 readarray -d '' files < <(find "$directory" -type f -print0)
 readarray -t sorted_files < <(printf '%s\n' "${files[@]}" | sort)
 for file in "${sorted_files[@]}"; do
@@ -21,7 +22,8 @@ for file in "${sorted_files[@]}"; do
     fi
 done
 
-echo "Checking AV files with ffmpeg..."
+echo
+echo "-- Checking AV files with ffmpeg --"
 readarray -d '' files < <(find "$directory" -type f \( -name "*.png" -o -name "*.mp4" -o -name "*.gif" \) -print0)
 readarray -t sorted_files < <(printf '%s\n' "${files[@]}" | sort)
 
