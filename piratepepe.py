@@ -173,6 +173,7 @@ QmeQUZt3LopXcefYhwXwrmYpgu9Sv8H81fJBmy18LPjW8n
 QmXCHLCWNqcdA9i9QwVkpVc1wcEvtNRGp7Wxo3ZpHrkFyn
 """
 
+
 def print_debug(text):  # Debug messages in yellow if the debug global is true
     if debug:
         print(Fore.YELLOW + str(text) + Style.RESET_ALL)
@@ -197,12 +198,11 @@ def scan_pepe_file(start_point):  # Scan pepetxt var for ipfs links
         pepelist = pepelist[start_point:]
         print(f"Trimming first {start_point} tokenURIs in list")
 
-
     return pepelist
 
 
 def download_pepe(url, filename):
-    global critical_file_skipped
+    file_downloaded = False
     filepath = "output/" + filename
 
     # the nft json for this collection has the ipfs.io gateway hardcoded in lmao, maybe this is normal 🤷
@@ -221,45 +221,38 @@ def download_pepe(url, filename):
             url = gateway + strippedurl
 
             print(
-                "Attempting to download Pepe NFT Asset: '"
-                + filename
-                + "' from: "
-                + url,
+                "Attempting to download Pepe NFT Asset: '" + filename + "' from: " + url,
                 end="\n",
             )
 
             try:
                 urllib.request.urlretrieve(url, "output/" + filename)
                 print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
-                critical_file_skipped = False
+                file_downloaded = True
                 break
             except (urllib.error.HTTPError, urllib.error.URLError, socket.gaierror):
                 print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
-                critical_file_skipped = True
                 try:
                     if not url.endswith("mp4"):
-                        print(
-                            Back.RED
-                            + Fore.BLACK
-                            + "removing from gateway list"
-                            + Style.RESET_ALL
-                        )
+                        print(Back.RED + Fore.BLACK + "removing from gateway list" + Style.RESET_ALL)
                         ipfsgatewaylist.remove(gateway)
                     else:
                         print("gateway might not have large file support, ", end="")
 
                     os.remove(filepath)
-                except (
-                    FileNotFoundError
-                ):  # Only need to remove partially downloaded file if it exists
+                except FileNotFoundError:  # Only need to remove partially downloaded file if it exists
                     pass
 
             print("trying next gateway...")
     else:
         print("Already downloaded: " + filename)
+        file_downloaded = True
+
+    return file_downloaded
 
 
 def process_pepe_nft_json(pepenftjson):
+    global critical_file_skipped
     # No idea why python json uses a single quote
     nftjson = str(pepenftjson).replace("'", '"')
     try:
@@ -274,18 +267,20 @@ def process_pepe_nft_json(pepenftjson):
     nftjsonfile.close()
 
     # Download all the things from the json, these are ipfs links
-    download_pepe(pepenftjson["image"], pepenftjson["name"] + " - " + "card.gif")
-    download_pepe(
+    critical_file_skipped = critical_file_skipped and download_pepe(
+        pepenftjson["image"], pepenftjson["name"] + " - " + "card.gif"
+    )
+    critical_file_skipped = critical_file_skipped and download_pepe(
         pepenftjson["animation_url"], pepenftjson["name"] + " - " + "card.glb"
     )
-    download_pepe(
+    critical_file_skipped = critical_file_skipped and download_pepe(
         pepenftjson["hifi_media"]["card_front"],
         pepenftjson["name"] + " - " + "front.png",
     )
-    download_pepe(
+    critical_file_skipped = critical_file_skipped and download_pepe(
         pepenftjson["hifi_media"]["card_back"], pepenftjson["name"] + " - " + "back.png"
     )
-    download_pepe(
+    critical_file_skipped = critical_file_skipped and download_pepe(
         pepenftjson["hifi_media"]["video"], pepenftjson["name"] + " - " + "video.mp4"
     )
 
@@ -295,16 +290,7 @@ def main():
     global critical_file_skipped
     failure = False
     exitcode = 1
-    print(
-        Back.WHITE
-        + Fore.BLACK
-        + " pirate"
-        + Fore.GREEN
-        + "pepe"
-        + Fore.BLACK
-        + ".py "
-        + Style.RESET_ALL
-    )
+    print(Back.WHITE + Fore.BLACK + " pirate" + Fore.GREEN + "pepe" + Fore.BLACK + ".py " + Style.RESET_ALL)
     print_debug("Debug on!\n")
 
     for item, count in Counter(ipfsgatewaylist).items():
@@ -353,13 +339,7 @@ def main():
                 response = None
 
             if not response:
-                print(
-                    Fore.RED
-                    + "Complete gateway failure"
-                    + Style.RESET_ALL
-                    + ": "
-                    + gateway
-                )
+                print(Fore.RED + "Complete gateway failure" + Style.RESET_ALL + ": " + gateway)
                 ipfsgatewaylist.remove(gateway)
                 failure = True
             elif response.status_code != 200 and response.status_code != 400:
@@ -395,12 +375,7 @@ def main():
 
         # we have the nft json, lets grab the assets
         if failure:
-            print(
-                Fore.RED
-                + "All is heck"
-                + Style.RESET_ALL
-                + " every defined ipfs gateway sucks"
-            )
+            print(Fore.RED + "All is heck" + Style.RESET_ALL + " every defined ipfs gateway sucks")
             critical_file_skipped = True
             break
 
@@ -430,8 +405,8 @@ def main():
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        if (sys.argv[1] == "-d" or sys.argv[1] == "--debug"):
+        if sys.argv[1] == "-d" or sys.argv[1] == "--debug":
             debug = True
-        if (sys.argv[1] == "-s" or sys.argv[1] == "--start"):
+        if sys.argv[1] == "-s" or sys.argv[1] == "--start":
             start_point = int(sys.argv[2])
     main()
