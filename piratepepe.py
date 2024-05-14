@@ -290,40 +290,40 @@ def download_pepe(url, file_name):
     return file_downloaded
 
 
-def process_pepe_nft_json(pepenftjson):
+def process_pepe_nft_json(pepe_nft_json):
     """Process the json for the toke, call the download functions."""
     global critical_file_skipped
     # No idea why python json uses a single quote
-    nftjson = str(pepenftjson).replace("'", '"')
+    nftjson = str(pepe_nft_json).replace("'", '"')
     with contextlib.suppress(FileExistsError):
         os.mkdir("output")
 
     # Save the json file of the nft, this might be whats considered the ipfs object metadata
-    with open("output/" + pepenftjson["name"] + ".json", "w") as nftjsonfile:
+    with open("output/" + pepe_nft_json["name"] + ".json", "w") as nftjsonfile:
         nftjsonfile.write(nftjson)
 
     # Download all the things from the json, these are ipfs links
     critical_file_skipped = (
-        download_pepe(pepenftjson["image"], pepenftjson["name"] + " - " + "card.gif") and critical_file_skipped
+        download_pepe(pepe_nft_json["image"], pepe_nft_json["name"] + " - " + "card.gif") and critical_file_skipped
     )
     critical_file_skipped = (
-        download_pepe(pepenftjson["animation_url"], pepenftjson["name"] + " - " + "card.glb") and critical_file_skipped
+        download_pepe(pepe_nft_json["animation_url"], pepe_nft_json["name"] + " - " + "card.glb") and critical_file_skipped
     )
     try:
         temp_filecheck = download_pepe(
-            pepenftjson["hifi_media"]["card_front"], pepenftjson["name"] + " - " + "front.png"
+            pepe_nft_json["hifi_media"]["card_front"], pepe_nft_json["name"] + " - " + "front.png"
         )
         critical_file_skipped = critical_file_skipped and temp_filecheck
     except KeyError:
         print("No key 'card_front', this is the case with some of the Sparklers.")
     try:
-        temp_filecheck = download_pepe(pepenftjson["hifi_media"]["card_back"], pepenftjson["name"] + " - " + "back.png")
+        temp_filecheck = download_pepe(pepe_nft_json["hifi_media"]["card_back"], pepe_nft_json["name"] + " - " + "back.png")
         critical_file_skipped = critical_file_skipped and temp_filecheck
     except KeyError:
         print("No key 'card_back', this is the case with the Sparklers.")
 
     critical_file_skipped = (
-        download_pepe(pepenftjson["hifi_media"]["video"], pepenftjson["name"] + " - " + "video.mp4")
+        download_pepe(pepe_nft_json["hifi_media"]["video"], pepe_nft_json["name"] + " - " + "video.mp4")
         and critical_file_skipped
     )
 
@@ -383,10 +383,10 @@ def main():
                 response = None
 
             if not response:
-                print(Fore.RED + "Complete gateway failure" + Style.RESET_ALL + ": " + gateway + " no response")
+                print(Fore.RED + "Complete gateway failure" + Style.RESET_ALL + ": " + gateway + " None")
                 ipfsgatewaylist.remove(gateway)
                 failure = True
-            elif response.ok:
+            elif not response.ok:
                 print(
                     "Gateway: "
                     + gateway
@@ -400,7 +400,7 @@ def main():
                 failure = True
             else:
                 try:
-                    pepenftjson = response.json()
+                    pepe_nft_json = response.json()
                     break
                 except requests.exceptions.JSONDecodeError:
                     print(
@@ -414,8 +414,8 @@ def main():
                     ipfsgatewaylist.remove(gateway)
                     failure = True
 
-        print("Found a Rare Pepe! : " + pepenftjson["name"] + "")
-        process_pepe_nft_json(pepenftjson)
+        print("Found a Rare Pepe! : " + pepe_nft_json["name"] + "")
+        process_pepe_nft_json(pepe_nft_json)
 
         # we have the nft json, lets grab the assets
         if failure:
