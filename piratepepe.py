@@ -258,7 +258,6 @@ def download_pepe_asset(stripped_url, file_name):
             try:
                 if not url.endswith("mp4"):
                     print(Fore.RED + "removing from gateway list" + Style.RESET_ALL)
-                    ipfs_gateway_list.remove(gateway)
                     gw_failure = True
                 else:
                     print("gateway might not have large file support, ", end="")
@@ -401,35 +400,21 @@ def process_pepes(pepe_list):
 
             if not response:
                 print(Fore.RED + "Complete gateway failure" + Style.RESET_ALL + ": " + gateway + " None")
-                ipfs_gateway_list.remove(gateway)
                 failure = True
             elif not response.ok:
-                print(
-                    "Gateway: "
-                    + gateway
-                    + " sucks, HTTP: "
-                    + str(response.status_code)
-                    + Fore.RED
-                    + ", removing from gateway list"
-                    + Style.RESET_ALL
-                )
-                ipfs_gateway_list.remove(gateway)
+                print("Gateway: " + gateway + " sucks, HTTP: " + str(response.status_code))
                 failure = True
             else:
                 try:
                     pepe_nft_json = response.json()
                     break
                 except requests.exceptions.JSONDecodeError:
-                    print(
-                        "Gateway: "
-                        + gateway
-                        + " gave us garbage json, "
-                        + Fore.RED
-                        + "removing from gateway list"
-                        + Style.RESET_ALL
-                    )
-                    ipfs_gateway_list.remove(gateway)
+                    print("Gateway: " + gateway + " gave us garbage json")
                     failure = True
+
+            if failure:
+                print(Fore.RED + "Removing from gateway list" + Style.RESET_ALL)
+                ipfs_gateway_list.remove(gateway)
 
         print("Found a Rare Pepe! : " + pepe_nft_json["name"] + "")
         process_pepe_nft_json(pepe_nft_json)
@@ -485,9 +470,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Matt Furie rarepepes.fun downloader")
     parser.add_argument("-d", "--debug", action="store_true", help="Increase output verbosity")
     parser.add_argument("-s", "--start", type=int, default=0, help="Number of times to run")
+    parser.add_argument("-o", "--output", type=str, default="output", help="Number of times to run")
     args = parser.parse_args()
     start_point = args.start
     debug = args.debug
+    output_folder = args.output
     try:
         main()
     except KeyboardInterrupt:
