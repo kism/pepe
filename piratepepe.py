@@ -241,7 +241,7 @@ def download_pepe(url, file_name):
                         shutil.copyfileobj(r.raw, f)
 
                 with open("output/" + file_name, "r") as f:
-                    file_type = mime.from_buffer(file_name)
+                    file_type = mime.from_buffer(f)
                     if file_type.startswith('text'):
                         for line in f:
                             if line == "Hello from IPFS Gateway Checker":
