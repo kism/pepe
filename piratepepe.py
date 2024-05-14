@@ -7,13 +7,11 @@
 # The NFT collection is incomplete
 # I intend to keep pepes_txt updated with the latest releases on the repo, i'll be pretty lazy with it though.
 
-import urllib
 import os
 import random
-import socket
-import http.client
 import argparse
 import shutil
+import json
 from collections import Counter
 
 import requests
@@ -268,7 +266,7 @@ def process_pepe_nft_json(pepenftjson):
     # Save the json file of the nft, this might be whats considered the ipfs object metadata
     nftjsonfile = open("output/" + pepenftjson["name"] + ".json", "w")
     print_debug("nftjson")
-    print_debug(nftjson)
+    print_debug(json.dumps(nftjson, indent=2))
     nftjsonfile.write(nftjson)
     nftjsonfile.close()
 
