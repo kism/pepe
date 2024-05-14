@@ -26,6 +26,7 @@ critical_file_skipped = False
 start_point = 0
 output_folder = "output"
 slow_mode = False
+shitlist = {}
 
 ipfs_gateway_list = [
     "https://gateway.pinata.cloud/ipfs/",
@@ -165,6 +166,15 @@ def print_debug(text: str) -> None:
     if debug:
         print(Fore.YELLOW + str(text) + Style.RESET_ALL)
 
+def add_to_ipfs_shitlist(gateway: str) -> None:
+    """Keep a tally of gateway failures."""
+    if gateway not in shitlist:
+        shitlist[gateway] = 1
+    else:
+        shitlist[gateway] += 1
+
+
+
 
 def scan_pepe_file(start_point: int) -> list:
     """Scan pepe_txt var for ipfs links."""
@@ -242,7 +252,6 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
             print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
             try:
                 if not url.endswith("mp4"):
-                    print(Fore.RED + "removing from gateway list" + Style.RESET_ALL)
                     gw_failure = True
                 else:
                     print("gateway might not have large file support, ", end="")
@@ -254,10 +263,10 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
 
         if gw_failure:
             print("Gateway didn't give us the file correctly")
-            print(Fore.RED + "removing from gateway list" + Style.RESET_ALL)
+            print(Fore.RED + "CRINGE" + Style.RESET_ALL)
             with contextlib.suppress(FileNotFoundError):
                 os.remove(file_path)
-            # ipfs_gateway_list.remove(gateway)
+            add_to_ipfs_shitlist(gateway)
         else:
             print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
             file_downloaded = True
@@ -387,8 +396,8 @@ def grab_pepe_json(pepe_ipfs: str) -> str:
                 failure = True
 
         if failure:
-            print(Fore.RED + "Removing from gateway list" + Style.RESET_ALL)
-            # ipfs_gateway_list.remove(gateway)
+            print(Fore.RED + "CRINGE" + Style.RESET_ALL)
+            add_to_ipfs_shitlist(gateway)
 
     return pepe_nft_json
 
@@ -436,10 +445,11 @@ def main() -> None:
 
     print("\n" + Back.WHITE + Fore.BLACK + " Done! " + Style.RESET_ALL)
 
-    if len(ipfs_gateway_list) > 0:
-        print("ipfs gateways that made it to the end:")
-        for gateway in ipfs_gateway_list:
-            print(f" {gateway}")
+    if len(shitlist.items()) > 0:
+        print("ipfs gateway scoreboard:")
+        for gateway, score in dict(sorted(shitlist.items(), key=lambda item: item[1], reverse=True):
+            print(f"Gateway: {gateway}")
+            print(f"  Fails: {score}")
         if not critical_file_skipped:
             print("All the Pepes should be downloaded!")
             exitcode = 0
