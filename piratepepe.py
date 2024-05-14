@@ -447,7 +447,7 @@ def main() -> None:
 
     if len(shitlist.items()) > 0:
         print("ipfs gateway scoreboard:")
-        for gateway, score in dict(sorted(shitlist.items(), key=lambda item: item[1], reverse=True):
+        for gateway, score in dict(sorted(shitlist.items(), key=lambda item: item[1], reverse=True)):
             print(f"Gateway: {gateway}")
             print(f"  Fails: {score}")
         if not critical_file_skipped:
