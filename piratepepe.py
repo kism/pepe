@@ -242,9 +242,9 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
             end="\n",
         )
 
-        timeout = 0.1  # 20 Minutes, IPFS is slow
+        timeout = 1200  # 20 Minutes, IPFS is slow
         if url.endswith("mp4"):
-            timeout = 0.1  # 2 Hours, IPFS is slow
+            timeout = 12000  # 2 Hours, IPFS is slow
 
         # Try download the file
         try:
