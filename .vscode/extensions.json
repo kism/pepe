@@ -3,6 +3,7 @@
         "andromedabohij.tidepool-light",
         "ms-python.vscode-pylance",
         "ms-python.python",
-        "charliermarsh.ruff"
+        "charliermarsh.ruff",
+        "davidanson.vscode-markdownlint"
     ]
 }
