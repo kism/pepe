@@ -357,6 +357,8 @@ def process_ipfs_gateway_list(ipfs_gateway_list):
 
     ipfs_gateway_list = list(dict.fromkeys(ipfs_gateway_list))
 
+    return ipfs_gateway_list
+
 
 def process_pepes(pepe_list):
     """Iterate through the pepes."""
@@ -375,10 +377,9 @@ def process_pepes(pepe_list):
             + " and his NFT json... "
             + Style.RESET_ALL
         )
-        response = None
 
         # Randomise the gateway list so we try a different gateway first
-        ipfs_gateway_list = random.shuffle(ipfs_gateway_list)
+        random.shuffle(ipfs_gateway_list)
 
         # Iterate through a list of ipfs gateways since they probably suck
         for gateway in ipfs_gateway_list[:]:
