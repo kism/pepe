@@ -8,15 +8,17 @@
 # The NFT collection is incomplete
 # I intend to keep pepes_txt updated with the latest releases on the repo, i'll be pretty lazy with it though.
 
+import argparse
+import contextlib
 import os
 import random
-import argparse
 import shutil
-import magic
+import sys
 from collections import Counter
 
+import magic
 import requests
-from colorama import Fore, Back, Style
+from colorama import Back, Fore, Style
 
 debug = False
 critical_file_skipped = False
@@ -193,7 +195,7 @@ def scan_pepe_file(start_point):
         else:
             print_debug(f"Not a pepe: {element.strip()}")
     pepelist = listfresh
-    print_debug(f"Pepe list: [{str(pepelist)}")
+    print_debug(f"Pepe list: [{pepelist!s}")
 
     print(f"Found {len(pepelist)} tokenURIs to look for Pepe")
 
@@ -240,11 +242,23 @@ def download_pepe(url, file_name):
                 timeout = 600
 
             try:
-                with requests.get(url, stream=True, timeout=timeout) as r:
-                    with open("output/" + file_name, "wb") as f:
-                        shutil.copyfileobj(r.raw, f)
+                with requests.get(url, stream=True, timeout=timeout) as r, open("output/" + file_name, "wb") as f:
+                    shutil.copyfileobj(r.raw, f)
+            except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+                print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
+                try:
+                    if not url.endswith("mp4"):
+                        print(Fore.RED + "removing from gateway list" + Style.RESET_ALL)
+                        ipfsgatewaylist.remove(gateway)
+                    else:
+                        print("gateway might not have large file support, ", end="")
 
-                with open("output/" + file_name, "r") as f:
+                    os.remove(file_path)
+                except FileNotFoundError:  # Only need to remove partially downloaded file if it exists
+                    pass
+
+                # We have the file, now see if its heck
+                with open("output/" + file_name) as f:
                     try:
                         file_type = mime.from_buffer(f)
                         if file_type.startswith("text"):
@@ -253,8 +267,6 @@ def download_pepe(url, file_name):
                                     gw_failure = True
                     except TypeError:
                         gw_failure = True
-
-
 
                 if gw_failure:
                     print("Gateway didn't give us the file")
@@ -269,18 +281,6 @@ def download_pepe(url, file_name):
                     print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
                     file_downloaded = True
                     break
-            except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
-                print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
-                try:
-                    if not url.endswith("mp4"):
-                        print(Fore.RED + "removing from gateway list" + Style.RESET_ALL)
-                        ipfsgatewaylist.remove(gateway)
-                    else:
-                        print("gateway might not have large file support, ", end="")
-
-                    os.remove(file_path)
-                except FileNotFoundError:  # Only need to remove partially downloaded file if it exists
-                    pass
 
             print("trying next gateway...")
     else:
@@ -295,17 +295,12 @@ def process_pepe_nft_json(pepenftjson):
     global critical_file_skipped
     # No idea why python json uses a single quote
     nftjson = str(pepenftjson).replace("'", '"')
-    try:
+    with contextlib.suppress(FileExistsError):
         os.mkdir("output")
-    except FileExistsError:
-        pass
 
     # Save the json file of the nft, this might be whats considered the ipfs object metadata
-    nftjsonfile = open("output/" + pepenftjson["name"] + ".json", "w")
-    print_debug("nftjson")
-    print_debug(nftjson)
-    nftjsonfile.write(nftjson)
-    nftjsonfile.close()
+    with open("output/" + pepenftjson["name"] + ".json", "w") as nftjsonfile:
+        nftjsonfile.write(nftjson)
 
     # Download all the things from the json, these are ipfs links
     critical_file_skipped = (
@@ -391,7 +386,7 @@ def main():
                 print(Fore.RED + "Complete gateway failure" + Style.RESET_ALL + ": " + gateway + " no response")
                 ipfsgatewaylist.remove(gateway)
                 failure = True
-            elif response.status_code != 200 and response.status_code != 400:
+            elif response.ok:
                 print(
                     "Gateway: "
                     + gateway
@@ -451,7 +446,7 @@ def main():
             "You might want to find some new ipfs gateways and add them to the script, or get a new IP address since some ipfs gateways will rate-limit or block you for downloading too much."
         )
 
-    exit(exitcode)
+    sys.exit(exitcode)
 
 
 if __name__ == "__main__":
