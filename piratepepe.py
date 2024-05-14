@@ -20,6 +20,7 @@ from collections import Counter
 import magic
 import requests
 from colorama import Back, Fore, Style
+from urllib3.exceptions import ReadTimeoutError
 
 debug = False
 critical_file_skipped = False
@@ -256,7 +257,7 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
                 gw_failure = True
             else:
                 print("gateway might not have large file support")
-        except requests.exceptions.ReadTimeout:
+        except (requests.exceptions.ReadTimeout, ReadTimeoutError):
             print(f"{Fore.RED} Download Failed {Style.RESET_ALL}, Timeout of {timeout} seconds reached")
             gw_failure = True
 
