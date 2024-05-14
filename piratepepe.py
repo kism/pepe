@@ -257,7 +257,8 @@ def download_pepe(url, file_name):
                 except FileNotFoundError:  # Only need to remove partially downloaded file if it exists
                     pass
 
-                # We have the file, now see if its heck
+            # We have the file, now see if its heck
+            if not gw_failure:
                 with open("output/" + file_name) as f:
                     try:
                         file_type = mime.from_buffer(f)
@@ -266,7 +267,7 @@ def download_pepe(url, file_name):
                                 if line == "Hello from IPFS Gateway Checker":
                                     gw_failure = True
                     except TypeError:
-                        gw_failure = True
+                            gw_failure = True
 
             if gw_failure:
                 print("Gateway didn't give us the file")
