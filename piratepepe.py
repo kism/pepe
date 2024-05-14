@@ -52,6 +52,7 @@ ipfsgatewaylist = [
     "https://4everland.io/ipfs/",
     "https://w3s.link/ipfs/",
     "https://nftstorage.link/ipfs/",
+    "https://chainsaw.mypinata.cloud/ipfs/",
 ]
 
 # This is a big list of NFT tokenURIs for the Matt Furie Rare Pepe NFT Collection
