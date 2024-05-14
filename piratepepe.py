@@ -237,9 +237,14 @@ def download_pepe(url, file_name):
                     with open("output/" + file_name, "wb") as f:
                         shutil.copyfileobj(r.raw, f)
 
-                print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
-                file_downloaded = True
-                break
+                if os.path.getsize(file_path) == 0:
+                    print(f"Found empty file, removing: {file_name}")
+                    print(f"Gateway: {gateway} {Fore.RED} acting kinda weird{Style.RESET_ALL}...")
+                    os.remove(file_path)
+                else:
+                    print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
+                    file_downloaded = True
+                    break
             except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
                 print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
                 try:
