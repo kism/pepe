@@ -242,10 +242,13 @@ def download_pepe(url, file_name):
 
                 with open("output/" + file_name, "r") as f:
                     file_type = mime.from_buffer(f)
-                    if file_type.startswith('text'):
-                        for line in f:
-                            if line == "Hello from IPFS Gateway Checker":
-                                gw_failure = True
+                    if file_type.startswith("text"):
+                        try:
+                            for line in f:
+                                if line == "Hello from IPFS Gateway Checker":
+                                    gw_failure = True
+                        except TypeError:
+                            gw_failure = True
 
                 if gw_failure:
                     print("Gateway didn't give us the file")
@@ -304,7 +307,9 @@ def process_pepe_nft_json(pepenftjson):
         download_pepe(pepenftjson["animation_url"], pepenftjson["name"] + " - " + "card.glb") and critical_file_skipped
     )
     try:
-        temp_filecheck = download_pepe(pepenftjson["hifi_media"]["card_front"], pepenftjson["name"] + " - " + "front.png")
+        temp_filecheck = download_pepe(
+            pepenftjson["hifi_media"]["card_front"], pepenftjson["name"] + " - " + "front.png"
+        )
         critical_file_skipped = critical_file_skipped and temp_filecheck
     except KeyError:
         print("No key 'card_front', this is the case with some of the Sparklers.")
