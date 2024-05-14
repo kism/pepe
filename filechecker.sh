@@ -13,7 +13,7 @@ readarray -d '' files < <(find "$directory" -type f -print0)
 readarray -t sorted_files < <(printf '%s\n' "${files[@]}" | sort)
 for file in "${sorted_files[@]}"; do
     echo "Checking: \"$file\"..."
-    if file "$FILE" | grep -q "text"; then
+    if file "$file" | grep -q "text"; then
         echo " Adding \"$file\" to the borked file list"
         borked_files+=("$file")
     else
