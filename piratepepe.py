@@ -214,7 +214,7 @@ def download_pepe(url, file_name):
     if "https://chainsaw.mypinata.cloud/ipfs/" not in ipfsgatewaylist:
         ipfsgatewaylist.append("https://chainsaw.mypinata.cloud/ipfs/")
 
-    if os.path.getsize(file_path) == 0:
+    if os.path.isfile(file_path) and os.path.getsize(file_path) == 0:
         print(f"Found empty file, removing: {file_name}")
         os.remove(file_path)
 
