@@ -422,5 +422,5 @@ if __name__ == "__main__":
         if (sys.argv[1] == "-d" or sys.argv[1] == "--debug"):
             debug = True
         if (sys.argv[1] == "-s" or sys.argv[1] == "--start"):
-            pepes_txt = pepes_txt[sys.argv[2]:] # Trim entries from start of pepes_txt
+            pepes_txt = pepes_txt[int(sys.argv[2]):] # Trim entries from start of pepes_txt
     main()
