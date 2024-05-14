@@ -13,6 +13,7 @@ import random
 import socket
 import http.client
 import argparse
+import shutil
 from collections import Counter
 
 import requests
@@ -227,11 +228,14 @@ def download_pepe(url, filename):
             )
 
             try:
-                urllib.request.urlretrieve(url, "output/" + filename)
+                with requests.get(url, stream=True) as r:
+                    with open("output/" + filename, "wb") as f:
+                        shutil.copyfileobj(r.raw, f)
+
                 print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
                 file_downloaded = True
                 break
-            except (urllib.error.HTTPError, urllib.error.URLError, socket.gaierror, http.client.RemoteDisconnected):
+            except KeyError:
                 print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
                 try:
                     if not url.endswith("mp4"):
