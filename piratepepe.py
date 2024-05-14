@@ -166,14 +166,13 @@ def print_debug(text: str) -> None:
     if debug:
         print(Fore.YELLOW + str(text) + Style.RESET_ALL)
 
+
 def add_to_ipfs_shitlist(gateway: str) -> None:
     """Keep a tally of gateway failures."""
     if gateway not in shitlist:
         shitlist[gateway] = 1
     else:
         shitlist[gateway] += 1
-
-
 
 
 def scan_pepe_file(start_point: int) -> list:
@@ -240,30 +239,28 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
             end="\n",
         )
 
-        timeout = 600
+        timeout = 1200  # 20 Minutes, IPFS is slow
         if url.endswith("mp4"):
-            timeout = 6000
+            timeout = 12000  # 2 Hours, IPFS is slow
 
         # Try download the file
         try:
             with requests.get(url, stream=True, timeout=timeout) as r, open(file_path, "wb") as f:
                 shutil.copyfileobj(r.raw, f)
-        except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+        except requests.exceptions.ConnectionError:
             print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
-            try:
-                if not url.endswith("mp4"):
-                    gw_failure = True
-                else:
-                    print("gateway might not have large file support, ", end="")
-
-            except FileNotFoundError:  # Only need to remove partially downloaded file if it exists
-                pass
+            if not url.endswith("mp4"):
+                gw_failure = True
+            else:
+                print("gateway might not have large file support, ", end="")
+        except requests.exceptions.ReadTimeout:
+            print(f"Timeout of {timeout} seconds reached...")
+            gw_failure = True
 
         gw_failure = check_file(file_path) or gw_failure
 
         if gw_failure:
             print("Gateway didn't give us the file correctly")
-            print(Fore.RED + "CRINGE" + Style.RESET_ALL)
             with contextlib.suppress(FileNotFoundError):
                 os.remove(file_path)
             add_to_ipfs_shitlist(gateway)
