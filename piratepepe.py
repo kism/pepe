@@ -166,11 +166,12 @@ QmWaFvvpnPPy9qoyGLbZH9cR3NJxCNdMubMaHwoVnbCZAf
 QmZ6ZwZE4TX36rPAp9ud1tyzwbvfa6M1T3J42dDxg9mMAS
 QmQcKc5WaSP5W6SVD7zeaLPteTDtFF4LfW1iMENgAm4Ftf
 QmV7wjtYtKS6eNaXwGirLTw5gvTEeoLZESL7ndwXH3hj6C
+# These two seem unlisted on the website, kinda weird
 QmWLG29vFdmFEyY6YTBSRb9gvJ8xkX8quqAmagqmYqzG3T
 QmeQUZt3LopXcefYhwXwrmYpgu9Sv8H81fJBmy18LPjW8n
+# Last one on the website as of checking 2024-05-14
 QmXCHLCWNqcdA9i9QwVkpVc1wcEvtNRGp7Wxo3ZpHrkFyn
 """
-
 
 def print_debug(text):  # Debug messages in yellow if the debug global is true
     if debug:
@@ -209,6 +210,10 @@ def download_pepe(url, filename):
 
     # Randomise the gateway list so we try a different gateway first
     random.shuffle(ipfsgatewaylist)
+
+    # In theory this one should always work, chainsaw nfs should be hosting the assets...
+    if "https://chainsaw.mypinata.cloud/ipfs/" not in ipfsgatewaylist:
+        ipfsgatewaylist.append("https://chainsaw.mypinata.cloud/ipfs/")
 
     if not os.path.isfile(filepath):  # if the asset hasn't already been downloaded
         # try all gateways to download asset
