@@ -235,7 +235,7 @@ def download_pepe(url, filename):
                 print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
                 try:
                     if not url.endswith("mp4"):
-                        print(Back.RED + Fore.BLACK + "removing from gateway list" + Style.RESET_ALL)
+                        print(Fore.RED + "removing from gateway list" + Style.RESET_ALL)
                         ipfsgatewaylist.remove(gateway)
                     else:
                         print("gateway might not have large file support, ", end="")
