@@ -266,7 +266,7 @@ def process_pepe_nft_json(pepenftjson):
     # Save the json file of the nft, this might be whats considered the ipfs object metadata
     nftjsonfile = open("output/" + pepenftjson["name"] + ".json", "w")
     print_debug("nftjson")
-    print_debug(json.dumps(nftjson, indent=2))
+    print_debug(nftjson)
     nftjsonfile.write(nftjson)
     nftjsonfile.close()
 
