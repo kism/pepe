@@ -233,7 +233,7 @@ def download_pepe(url, filename):
                 print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
                 file_downloaded = True
                 break
-            except KeyError:
+            except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
                 print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
                 try:
                     if not url.endswith("mp4"):
