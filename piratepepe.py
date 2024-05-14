@@ -11,8 +11,9 @@ import urllib
 import os
 import sys
 import random
-from collections import Counter
 import socket
+import http.client
+from collections import Counter
 
 import requests
 from colorama import Fore, Back, Style
@@ -230,7 +231,7 @@ def download_pepe(url, filename):
                 print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
                 file_downloaded = True
                 break
-            except (urllib.error.HTTPError, urllib.error.URLError, socket.gaierror):
+            except (urllib.error.HTTPError, urllib.error.URLError, socket.gaierror, http.client.RemoteDisconnected):
                 print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
                 try:
                     if not url.endswith("mp4"):
