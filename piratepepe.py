@@ -14,6 +14,7 @@ import os
 import random
 import shutil
 import sys
+import time
 from collections import Counter
 
 import magic
@@ -24,6 +25,7 @@ debug = False
 critical_file_skipped = False
 start_point = 0
 output_folder = "output"
+slow_mode = False
 
 ipfs_gateway_list = [
     "https://gateway.pinata.cloud/ipfs/",
@@ -237,6 +239,10 @@ def download_pepe_asset(stripped_url, file_name):
     file_path = output_folder + os.sep + file_name
 
     for gateway in ipfs_gateway_list[:]:
+        if slow_mode:
+            print("Waiting a minute before downloading")
+            time.sleep(60)
+
         gw_failure = False
         url = gateway + stripped_url
 
@@ -382,6 +388,10 @@ def process_pepes(pepe_list):
             failure = False
             request = gateway + pepe_ipfs
 
+            if slow_mode:
+                print("Waiting a minute before downloading")
+                time.sleep(60)
+
             print("Trying: " + request, end=" ")
 
             # Here we are getting the json that the nft points to,
@@ -469,12 +479,14 @@ def main():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Matt Furie rarepepes.fun downloader")
     parser.add_argument("-d", "--debug", action="store_true", help="Increase output verbosity")
+    parser.add_argument("-d", "--slow", action="store_true", help="Wait a minute before each download attempt")
     parser.add_argument("-s", "--start", type=int, default=0, help="Number of times to run")
     parser.add_argument("-o", "--output", type=str, default="output", help="Number of times to run")
     args = parser.parse_args()
     start_point = args.start
     debug = args.debug
     output_folder = args.output
+    slow_mode = args.slow
     try:
         main()
     except KeyboardInterrupt:
