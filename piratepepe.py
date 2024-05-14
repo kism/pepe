@@ -221,6 +221,7 @@ def download_pepe(url, file_name):
     if not os.path.isfile(file_path):  # if the asset hasn't already been downloaded
         # try all gateways to download asset
         for gateway in ipfsgatewaylist[:]:
+            gw_failure = False
             url = gateway + strippedurl
 
             print(
@@ -237,7 +238,16 @@ def download_pepe(url, file_name):
                     with open("output/" + file_name, "wb") as f:
                         shutil.copyfileobj(r.raw, f)
 
-                if os.path.getsize(file_path) == 0:
+                with open("output/" + file_name, "r") as f:
+                    for line in f:
+                        if line == "Hello from IPFS Gateway Checker":
+                            gw_failure = True
+
+                if gw_failure:
+                    print("Gateway didn't give us the file")
+                    print(Fore.RED + "removing from gateway list" + Style.RESET_ALL)
+                    ipfsgatewaylist.remove(gateway)
+                elif os.path.getsize(file_path) == 0:
                     print(f"Found empty file, removing: {file_name}")
                     print(f"Gateway: {gateway} {Fore.RED} acting kinda weird{Style.RESET_ALL}...")
                     os.remove(file_path)

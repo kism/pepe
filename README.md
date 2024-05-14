@@ -17,15 +17,33 @@ Racists can get out, Pepe has been reclaimed. widepeepoHappy
 
 ## How to do
 
-`git clone https://github.com/kism/pepe.git`
+```bash
+git clone https://github.com/kism/pepe.git`
+cd pepe
+pip install -r requirements.txt
+python3 piratepepe.py
+```
 
-`cd pepe`
+## If you use poetry
 
-`pip3 install requests`
+```bash
+git clone https://github.com/kism/pepe.git`
+cd pepe
+poetry install
+poetry shell
+python piratepepe.py
+```
 
-`python3 piratepepe.py`
+## Once you are done...
+
+Run filechecker.sh
+
+```bash
+./filechecker.sh
+```
+
+It will tell you which files are corrupted
 
 ## Todo
 
-* Exceptions
-* Colourama
+
