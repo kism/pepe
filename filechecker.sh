@@ -17,7 +17,7 @@ for file in "${sorted_files[@]}"; do
     echo "Checking: $file"
     ffmpeg -v error -i  "$file" -f null -
     if [ $? -ne 0 ]; then
-        echo "Adding $file to the borked file list"
+        echo "Adding \"$file\" to the borked file list"
         borked_files+=("$file")
     fi
 done
