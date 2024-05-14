@@ -459,10 +459,7 @@ def main():
             print("All the Pepes should be downloaded!")
             exitcode = 0
         else:
-            print(
-                "Some Downloads failed, "
-                "this probably means that only a gateway that is working for you doesn't have large file support"
-            )
+            print("Some Downloads failed")
     else:
         print(Fore.RED + "Every ipfs gateway failed lmao" + Style.RESET_ALL)
 
