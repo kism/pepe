@@ -193,7 +193,7 @@ def scan_pepe_file(start_point):  # Scan pepetxt var for ipfs links
 
     if start_point > 0:
         pepelist = pepelist[start_point:]
-        print(f"Trimming first {start_point} entries in list")
+        print(f"Trimming first {start_point} tokenURIs in list")
 
 
     return pepelist
