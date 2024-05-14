@@ -257,7 +257,7 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
             print(Fore.RED + "removing from gateway list" + Style.RESET_ALL)
             with contextlib.suppress(FileNotFoundError):
                 os.remove(file_path)
-            ipfs_gateway_list.remove(gateway)
+            # ipfs_gateway_list.remove(gateway)
         else:
             print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
             file_downloaded = True
@@ -388,7 +388,7 @@ def grab_pepe_json(pepe_ipfs: str) -> str:
 
         if failure:
             print(Fore.RED + "Removing from gateway list" + Style.RESET_ALL)
-            ipfs_gateway_list.remove(gateway)
+            # ipfs_gateway_list.remove(gateway)
 
     return pepe_nft_json
 
