@@ -242,9 +242,9 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
             end="\n",
         )
 
-        timeout = 0.1  # 20 Minutes, IPFS is slow
+        timeout = 1200  # 20 Minutes, IPFS is slow
         if url.endswith("mp4"):
-            timeout = 0.1  # 2 Hours, IPFS is slow
+            timeout = 12000  # 2 Hours, IPFS is slow
 
         # Try download the file
         try:
@@ -447,7 +447,7 @@ def main() -> None:
 
     if len(shitlist.items()) > 0:
         print("ipfs gateway scoreboard:")
-        for gateway, score in dict(sorted(shitlist.items(), key=lambda item: item[1], reverse=True)):
+        for gateway, score in dict(sorted(shitlist.items())):
             print(f"Gateway: {gateway}")
             print(f"  Fails: {score}")
         if not critical_file_skipped:
