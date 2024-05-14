@@ -461,4 +461,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     start_point = args.start
     debug = args.debug
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("🙋‍♀️ Bye")
