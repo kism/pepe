@@ -14,7 +14,7 @@ readarray -t sorted_files < <(printf '%s\n' "${files[@]}" | sort)
 echo "Checking files..."
 for file in "${sorted_files[@]}"; do
     echo
-    echo "Checking: $file"
+    echo "Checking: \"$file\"..."
     ffmpeg -v error -i  "$file" -f null -
     if [ $? -ne 0 ]; then
         echo "Adding \"$file\" to the borked file list"
