@@ -187,7 +187,7 @@ def scan_pepe_file(start_point):  # Scan pepetxt var for ipfs links
         else:
             print_debug(f"Not a pepe: {element.strip()}")
     pepelist = listfresh
-    print_debug("Pepe list: " + str(pepelist))
+    print_debug(f"Pepe list: [{str(pepelist)}")
 
     print(f"Found {len(pepelist)} tokenURIs to look for Pepe")
 
@@ -227,7 +227,7 @@ def download_pepe(url, filename):
                 print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
                 critical_file_skipped = False
                 break
-            except urllib.error.HTTPError:
+            except (urllib.error.HTTPError, urllib.error.URLError):
                 print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
                 critical_file_skipped = True
                 try:
