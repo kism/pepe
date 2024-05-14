@@ -225,8 +225,12 @@ def download_pepe(url, filename):
                 end="\n",
             )
 
+            timeout = 60
+            if url.endswith("mp4"):
+                timeout = 240
+
             try:
-                with requests.get(url, stream=True, timeout=240) as r:
+                with requests.get(url, stream=True, timeout=timeout) as r:
                     with open("output/" + filename, "wb") as f:
                         shutil.copyfileobj(r.raw, f)
 
