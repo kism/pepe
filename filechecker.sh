@@ -7,7 +7,9 @@ directory="output"
 readarray -d '' files < <(find "$directory" -type f \( -name "*.png" -o -name "*.mp4" -o -name "*.gif" \) -print0)
 
 # Print the array elements
-echo "Found files:"
+echo "Checking files..."
 for file in "${files[@]}"; do
-        ffmpeg -v error -i  "$file" -f null -
+    echo
+    echo "Checking: $file"
+    ffmpeg -v error -i  "$file" -f null -
 done
