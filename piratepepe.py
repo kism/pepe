@@ -230,9 +230,9 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
             end="\n",
         )
 
-        timeout = 60
+        timeout = 600
         if url.endswith("mp4"):
-            timeout = 600
+            timeout = 6000
 
         # Try download the file
         try:
