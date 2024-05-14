@@ -160,13 +160,13 @@ QmXCHLCWNqcdA9i9QwVkpVc1wcEvtNRGp7Wxo3ZpHrkFyn
 """
 
 
-def print_debug(text):
+def print_debug(text: str) -> None:
     """Debug messages in yellow if the debug global is true."""
     if debug:
         print(Fore.YELLOW + str(text) + Style.RESET_ALL)
 
 
-def scan_pepe_file(start_point):
+def scan_pepe_file(start_point: int) -> list:
     """Scan pepe_txt var for ipfs links."""
     pepe_list = pepes_txt
 
@@ -189,7 +189,7 @@ def scan_pepe_file(start_point):
     return pepe_list
 
 
-def check_file(file_path):
+def check_file(file_path: str) -> bool:
     """Check if a file is heck."""
     failure = False
     mime = magic.Magic(mime=True)
@@ -212,7 +212,7 @@ def check_file(file_path):
     return failure
 
 
-def download_pepe_asset(stripped_url, file_name):
+def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
     """Try all gateways to download asset."""
     file_downloaded = False
     file_path = output_folder + os.sep + file_name
@@ -268,7 +268,7 @@ def download_pepe_asset(stripped_url, file_name):
     return file_downloaded
 
 
-def download_pepe(url, file_name):
+def download_pepe(url: str, file_name: str) -> bool:
     """Download the asset, hardcoded to output."""
     file_downloaded = False
     file_path = output_folder + os.sep + file_name
@@ -292,7 +292,7 @@ def download_pepe(url, file_name):
     return file_downloaded
 
 
-def process_pepe_nft_json(pepe_nft_json):
+def process_pepe_nft_json(pepe_nft_json: str) -> None:
     """Process the json for the toke, call the download functions."""
     global critical_file_skipped
     # No idea why python json uses a single quote
@@ -314,14 +314,16 @@ def process_pepe_nft_json(pepe_nft_json):
     )
     try:
         temp_filecheck = download_pepe(
-            pepe_nft_json["hifi_media"]["card_front"], pepe_nft_json["name"] + " - " + "front.png"
+            pepe_nft_json["hifi_media"]["card_front"],
+            pepe_nft_json["name"] + " - " + "front.png",
         )
         critical_file_skipped = critical_file_skipped or temp_filecheck
     except KeyError:
         print("No key 'card_front', this is the case with some of the Sparklers.")
     try:
         temp_filecheck = download_pepe(
-            pepe_nft_json["hifi_media"]["card_back"], pepe_nft_json["name"] + " - " + "back.png"
+            pepe_nft_json["hifi_media"]["card_back"],
+            pepe_nft_json["name"] + " - " + "back.png",
         )
         critical_file_skipped = critical_file_skipped or temp_filecheck
     except KeyError:
@@ -333,7 +335,7 @@ def process_pepe_nft_json(pepe_nft_json):
     )
 
 
-def process_ipfs_gateway_list(ipfs_gateway_list):
+def process_ipfs_gateway_list(ipfs_gateway_list: str) -> list:
     """Clean up the ipfs gateway list."""
     for item, count in Counter(ipfs_gateway_list).items():
         if count > 1:
@@ -342,7 +344,7 @@ def process_ipfs_gateway_list(ipfs_gateway_list):
     return list(dict.fromkeys(ipfs_gateway_list))
 
 
-def grab_pepe_json(pepe_ipfs):
+def grab_pepe_json(pepe_ipfs: str) -> str:
     """Iterate through gateways to get Pepe's json."""  # since they probably suck
     pepe_nft_json = None
 
@@ -391,7 +393,7 @@ def grab_pepe_json(pepe_ipfs):
     return pepe_nft_json
 
 
-def process_pepes(pepe_list):
+def process_pepes(pepe_list: str) -> None:
     """Iterate through the pepes."""
     global critical_file_skipped
 
@@ -404,7 +406,7 @@ def process_pepes(pepe_list):
             + "Pepe"
             + Fore.BLACK
             + " and his NFT json... "
-            + Style.RESET_ALL
+            + Style.RESET_ALL,
         )
 
         # Randomise the gateway list so we try a different gateway first
@@ -420,7 +422,7 @@ def process_pepes(pepe_list):
             critical_file_skipped = True
 
 
-def main():
+def main() -> None:
     """Main."""
     global ipfs_gateway_list
     exitcode = 1
@@ -451,7 +453,7 @@ def main():
         print("Run the script again to try again.")
         print(
             "You might want to find some new ipfs gateways and add them to the script, "
-            "or get a new IP address since some ipfs gateways will rate-limit or block you for downloading too much."
+            "or get a new IP address since some ipfs gateways will rate-limit or block you for downloading too much.",
         )
 
     sys.exit(exitcode)
