@@ -5,7 +5,7 @@
 # I hate NFTs but Matt Furie is cool, Every NFT collection is a Ponzi scheme
 
 # The NFT collection is incomplete
-# I intend to keep pepestxt updated with the latest releases on the repo, i'll be pretty lazy with it though.
+# I intend to keep pepes_txt updated with the latest releases on the repo, i'll be pretty lazy with it though.
 
 import urllib
 import os
@@ -17,7 +17,8 @@ import requests
 from colorama import Fore, Back, Style
 
 debug = False
-criticalfileskipped = False
+critical_file_skipped = False
+start_point = 0
 
 ipfsgatewaylist = [
     "http://cf-ipfs.com/ipfs/",
@@ -63,7 +64,7 @@ ipfsgatewaylist = [
 # Enter the number of the token that you want to retreive
 # Click Query
 # Paste the string that is after ipfs://
-pepestxt = """
+pepes_txt = """
 QmTUTQw7AqGYgDQEJECxzcNqZbVSWVYFbiMvvLUY6PZSbk
 QmSWExPQTeMF873sQKSR31R1R9bxiUYfNJmmEbYvSt72dS
 QmTTTDrBxZnD3bybvRitcn7ptbHF9qgBH3zNWm13VRpcqZ
@@ -176,7 +177,7 @@ def print_debug(text):  # Debug messages in yellow if the debug global is true
 
 
 def scan_pepe_file():  # Scan pepetxt var for ipfs links
-    pepelist = pepestxt
+    pepelist = pepes_txt
 
     listfresh = []
     for element in pepelist.split():
@@ -194,7 +195,7 @@ def scan_pepe_file():  # Scan pepetxt var for ipfs links
 
 
 def download_pepe(url, filename):
-    global criticalfileskipped
+    global critical_file_skipped
     filepath = "output/" + filename
 
     # the nft json for this collection has the ipfs.io gateway hardcoded in lmao, maybe this is normal 🤷
@@ -219,11 +220,11 @@ def download_pepe(url, filename):
             try:
                 urllib.request.urlretrieve(url, "output/" + filename)
                 print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
-                criticalfileskipped = False
+                critical_file_skipped = False
                 break
             except urllib.error.HTTPError:
                 print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
-                criticalfileskipped = True
+                critical_file_skipped = True
                 try:
                     if not url.endswith("mp4"):
                         print(
@@ -280,7 +281,7 @@ def process_pepe_nft_json(pepenftjson):
 
 def main():
     global ipfsgatewaylist
-    global criticalfileskipped
+    global critical_file_skipped
     failure = False
     exitcode = 1
     print(
@@ -389,14 +390,14 @@ def main():
                 + Style.RESET_ALL
                 + " every defined ipfs gateway sucks"
             )
-            criticalfileskipped = True
+            critical_file_skipped = True
             break
 
     print("\n" + Back.WHITE + Fore.BLACK + " Done! " + Style.RESET_ALL)
 
     if len(ipfsgatewaylist) > 0:
         print_debug("ipfs gateways that made it to the end: " + str(ipfsgatewaylist))
-        if not criticalfileskipped:
+        if not critical_file_skipped:
             print("All the Pepes should be downloaded!")
             exitcode = 0
         else:
@@ -406,7 +407,7 @@ def main():
     else:
         print(Fore.RED + "Every ipfs gateway failed lmao" + Style.RESET_ALL)
 
-    if criticalfileskipped:
+    if critical_file_skipped:
         print("There will be some missing Pepes")
         print("Run the script again to try again.")
         print(
@@ -417,6 +418,9 @@ def main():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and (sys.argv[1] == "-d" or sys.argv[1] == "--debug"):
-        debug = True
+    if len(sys.argv) > 1:
+        if (sys.argv[1] == "-d" or sys.argv[1] == "--debug"):
+            debug = True
+        if (sys.argv[1] == "-s" or sys.argv[1] == "--start"):
+            pepes_txt = pepes_txt[sys.argv[2]:] # Trim entries from start of pepes_txt
     main()
