@@ -233,7 +233,7 @@ def download_pepe(url, file_name):
 
             timeout = 60
             if url.endswith("mp4"):
-                timeout = 240
+                timeout = 600
 
             try:
                 with requests.get(url, stream=True, timeout=timeout) as r:
