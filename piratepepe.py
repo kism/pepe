@@ -23,8 +23,9 @@ from colorama import Back, Fore, Style
 debug = False
 critical_file_skipped = False
 start_point = 0
+output_folder = "output"
 
-ipfsgatewaylist = [
+ipfs_gateway_list = [
     "http://cf-ipfs.com/ipfs/",
     "https://ipfs.io/ipfs/",
     "https://gateway.ipfs.io/ipfs/",
@@ -185,109 +186,120 @@ def print_debug(text):
 
 def scan_pepe_file(start_point):
     """Scan pepe_txt var for ipfs links."""
-    pepelist = pepes_txt
+    pepe_list = pepes_txt
 
     listfresh = []
-    for element in pepelist.split():
+    for element in pepe_list.split():
         # Ignore everything that doesn't start with a Q since that's what all them things seem to start with
         if element[0] == "Q":
             listfresh.append(element.strip())
         else:
             print_debug(f"Not a pepe: {element.strip()}")
-    pepelist = listfresh
-    print_debug(f"Pepe list: [{pepelist!s}")
+    pepe_list = listfresh
+    print_debug(f"Pepe list: [{pepe_list!s}")
 
-    print(f"Found {len(pepelist)} tokenURIs to look for Pepe")
+    print(f"Found {len(pepe_list)} tokenURIs to look for Pepe")
 
     if start_point > 0:
-        pepelist = pepelist[start_point:]
+        pepe_list = pepe_list[start_point:]
         print(f"Trimming first {start_point} tokenURIs in list")
 
-    return pepelist
+    return pepe_list
+
+
+def check_file(file_path):
+    """Check if a file is heck."""
+    failure = False
+    mime = magic.Magic(mime=True)
+
+    with open(file_path) as f:
+        try:
+            file_type = mime.from_buffer(f)
+            if file_type.startswith("text"):
+                for line in f:
+                    if line == "Hello from IPFS Gateway Checker":
+                        failure = True
+            else:
+                f.seek(0, os.SEEK_END)
+                if f.tell() == 0:  # If file is empty
+                    failure = True
+
+        except TypeError:
+            failure = True
+        except FileNotFoundError:
+            pass
+
+    return failure
+
+
+def download_pepe_asset(stripped_url, file_name):
+    """Try all gateways to download asset."""
+    file_path = output_folder + os.sep + file_name
+
+    for gateway in ipfs_gateway_list[:]:
+        gw_failure = False
+        url = gateway + stripped_url
+
+        print(
+            "Attempting to download Pepe NFT Asset: '" + file_name + "' from: " + url,
+            end="\n",
+        )
+
+        timeout = 60
+        if url.endswith("mp4"):
+            timeout = 600
+
+        try:
+            with requests.get(url, stream=True, timeout=timeout) as r, open(file_path, "wb") as f:
+                shutil.copyfileobj(r.raw, f)
+        except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+            print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
+            try:
+                if not url.endswith("mp4"):
+                    print(Fore.RED + "removing from gateway list" + Style.RESET_ALL)
+                    ipfs_gateway_list.remove(gateway)
+                    gw_failure = True
+                else:
+                    print("gateway might not have large file support, ", end="")
+
+            except FileNotFoundError:  # Only need to remove partially downloaded file if it exists
+                pass
+
+        gw_failure = check_file(file_path) or gw_failure
+
+        if gw_failure:
+            print("Gateway didn't give us the file correctly")
+            print(Fore.RED + "removing from gateway list" + Style.RESET_ALL)
+            with contextlib.suppress(FileNotFoundError):
+                os.remove(file_path)
+            ipfs_gateway_list.remove(gateway)
+        else:
+            print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
+            file_downloaded = True
+            break
+
+        print("trying next gateway...")
+
+    return file_downloaded
 
 
 def download_pepe(url, file_name):
     """Download the asset, hardcoded to output."""
     file_downloaded = False
-    file_path = "output/" + file_name
-    mime = magic.Magic(mime=True)
+    file_path = output_folder + os.sep + file_name
 
     # the nft json for this collection has the ipfs.io gateway hardcoded in lmao, maybe this is normal 🤷
-    strippedurl = url.replace("https://ipfs.io/ipfs/", "")
+    stripped_url = url.replace("https://ipfs.io/ipfs/", "")
 
     # Randomise the gateway list so we try a different gateway first
-    random.shuffle(ipfsgatewaylist)
+    random.shuffle(ipfs_gateway_list)
 
     # In theory this one should always work, chainsaw nfs should be hosting the assets...
-    if "https://chainsaw.mypinata.cloud/ipfs/" not in ipfsgatewaylist:
-        ipfsgatewaylist.append("https://chainsaw.mypinata.cloud/ipfs/")
+    if "https://chainsaw.mypinata.cloud/ipfs/" not in ipfs_gateway_list:
+        ipfs_gateway_list.append("https://chainsaw.mypinata.cloud/ipfs/")
 
-    if os.path.isfile(file_path) and os.path.getsize(file_path) == 0:
-        print(f"Found empty file, removing: {file_name}")
-        os.remove(file_path)
-
-    if not os.path.isfile(file_path):  # if the asset hasn't already been downloaded
-        # try all gateways to download asset
-        for gateway in ipfsgatewaylist[:]:
-            gw_failure = False
-            url = gateway + strippedurl
-
-            print(
-                "Attempting to download Pepe NFT Asset: '" + file_name + "' from: " + url,
-                end="\n",
-            )
-
-            timeout = 60
-            if url.endswith("mp4"):
-                timeout = 600
-
-            try:
-                with requests.get(url, stream=True, timeout=timeout) as r, open("output/" + file_name, "wb") as f:
-                    shutil.copyfileobj(r.raw, f)
-            except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
-                print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
-                try:
-                    if not url.endswith("mp4"):
-                        print(Fore.RED + "removing from gateway list" + Style.RESET_ALL)
-                        ipfsgatewaylist.remove(gateway)
-                        gw_failure = True
-                    else:
-                        print("gateway might not have large file support, ", end="")
-
-                except FileNotFoundError:  # Only need to remove partially downloaded file if it exists
-                    pass
-
-            # We have the file, now see if its heck
-            if not gw_failure:
-                with open("output/" + file_name) as f:
-                    try:
-                        file_type = mime.from_buffer(f)
-                        if file_type.startswith("text"):
-                            for line in f:
-                                if line == "Hello from IPFS Gateway Checker":
-                                    gw_failure = True
-                    except TypeError:
-                        gw_failure = True
-                    except FileNotFoundError:
-                        pass
-
-            elif os.path.getsize(file_path) == 0:
-                print(f"Found empty file, removing: {file_name}")
-                print(f"Gateway: {gateway} {Fore.RED} acting kinda weird{Style.RESET_ALL}...")
-                gw_failure = True
-
-            if gw_failure:
-                print("Gateway didn't give us the file correctly")
-                print(Fore.RED + "removing from gateway list" + Style.RESET_ALL)
-                with contextlib.suppress(FileNotFoundError):
-                    os.remove(file_path)
-                ipfsgatewaylist.remove(gateway)
-            else:
-                print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
-                file_downloaded = True
-                break
-
-            print("trying next gateway...")
+    if not os.path.isfile(file_path):  # This is where the magic happens
+        file_downloaded = download_pepe_asset(stripped_url, file_name)
     else:
         print("Already downloaded: " + file_name)
         file_downloaded = True
@@ -309,51 +321,48 @@ def process_pepe_nft_json(pepe_nft_json):
 
     # Download all the things from the json, these are ipfs links
     critical_file_skipped = (
-        download_pepe(pepe_nft_json["image"], pepe_nft_json["name"] + " - " + "card.gif") and critical_file_skipped
+        download_pepe(pepe_nft_json["image"], pepe_nft_json["name"] + " - " + "card.gif") or critical_file_skipped
     )
     critical_file_skipped = (
         download_pepe(pepe_nft_json["animation_url"], pepe_nft_json["name"] + " - " + "card.glb")
-        and critical_file_skipped
+        or critical_file_skipped
     )
     try:
         temp_filecheck = download_pepe(
             pepe_nft_json["hifi_media"]["card_front"], pepe_nft_json["name"] + " - " + "front.png"
         )
-        critical_file_skipped = critical_file_skipped and temp_filecheck
+        critical_file_skipped = critical_file_skipped or temp_filecheck
     except KeyError:
         print("No key 'card_front', this is the case with some of the Sparklers.")
     try:
         temp_filecheck = download_pepe(
             pepe_nft_json["hifi_media"]["card_back"], pepe_nft_json["name"] + " - " + "back.png"
         )
-        critical_file_skipped = critical_file_skipped and temp_filecheck
+        critical_file_skipped = critical_file_skipped or temp_filecheck
     except KeyError:
         print("No key 'card_back', this is the case with the Sparklers.")
 
     critical_file_skipped = (
         download_pepe(pepe_nft_json["hifi_media"]["video"], pepe_nft_json["name"] + " - " + "video.mp4")
-        and critical_file_skipped
+        or critical_file_skipped
     )
 
 
-def main():
-    """Main."""
-    global ipfsgatewaylist
-    global critical_file_skipped
-    failure = False
-    exitcode = 1
-    print(Back.WHITE + Fore.BLACK + " pirate" + Fore.GREEN + "pepe" + Fore.BLACK + ".py " + Style.RESET_ALL)
-    print_debug("Debug on!\n")
-
-    for item, count in Counter(ipfsgatewaylist).items():
+def process_ipfs_gateway_list(ipfs_gateway_list):
+    """Clean up the ipfs gateway list."""
+    for item, count in Counter(ipfs_gateway_list).items():
         if count > 1:
             print("Duplicate gateway: " + item)
 
-    ipfsgatewaylist = list(dict.fromkeys(ipfsgatewaylist))
+    ipfs_gateway_list = list(dict.fromkeys(ipfs_gateway_list))
 
-    pepelist = scan_pepe_file(start_point)
 
-    for pepeipfs in pepelist:
+def process_pepes(pepe_list):
+    """Iterate through the pepes."""
+    global critical_file_skipped
+    failure = False
+
+    for pepe_ipfs in pepe_list:
         print(
             Back.WHITE
             + Fore.BLACK
@@ -367,12 +376,12 @@ def main():
         response = None
 
         # Randomise the gateway list so we try a different gateway first
-        random.shuffle(ipfsgatewaylist)
+        random.shuffle(ipfs_gateway_list)
 
         # Iterate through a list of ipfs gateways since they probably suck
-        for gateway in ipfsgatewaylist[:]:
+        for gateway in ipfs_gateway_list[:]:
             failure = False
-            request = gateway + pepeipfs
+            request = gateway + pepe_ipfs
 
             print("Trying: " + request, end=" ")
 
@@ -392,7 +401,7 @@ def main():
 
             if not response:
                 print(Fore.RED + "Complete gateway failure" + Style.RESET_ALL + ": " + gateway + " None")
-                ipfsgatewaylist.remove(gateway)
+                ipfs_gateway_list.remove(gateway)
                 failure = True
             elif not response.ok:
                 print(
@@ -404,7 +413,7 @@ def main():
                     + ", removing from gateway list"
                     + Style.RESET_ALL
                 )
-                ipfsgatewaylist.remove(gateway)
+                ipfs_gateway_list.remove(gateway)
                 failure = True
             else:
                 try:
@@ -419,7 +428,7 @@ def main():
                         + "removing from gateway list"
                         + Style.RESET_ALL
                     )
-                    ipfsgatewaylist.remove(gateway)
+                    ipfs_gateway_list.remove(gateway)
                     failure = True
 
         print("Found a Rare Pepe! : " + pepe_nft_json["name"] + "")
@@ -431,11 +440,24 @@ def main():
             critical_file_skipped = True
             break
 
+
+def main():
+    """Main."""
+    global ipfs_gateway_list
+    exitcode = 1
+    print(Back.WHITE + Fore.BLACK + " pirate" + Fore.GREEN + "pepe" + Fore.BLACK + ".py " + Style.RESET_ALL)
+    print_debug("Debug on!\n")
+
+    ipfs_gateway_list = process_ipfs_gateway_list(ipfs_gateway_list)
+    pepe_list = scan_pepe_file(start_point)
+
+    process_pepes(pepe_list)
+
     print("\n" + Back.WHITE + Fore.BLACK + " Done! " + Style.RESET_ALL)
 
-    if len(ipfsgatewaylist) > 0:
+    if len(ipfs_gateway_list) > 0:
         print("ipfs gateways that made it to the end:")
-        for gateway in ipfsgatewaylist:
+        for gateway in ipfs_gateway_list:
             print(f" {gateway}")
         if not critical_file_skipped:
             print("All the Pepes should be downloaded!")
