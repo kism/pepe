@@ -19,6 +19,8 @@ for file in "${sorted_files[@]}"; do
     if [ $? -ne 0 ]; then
         echo "Adding \"$file\" to the borked file list"
         borked_files+=("$file")
+    else
+        echo "Pass!"
     fi
 done
 
