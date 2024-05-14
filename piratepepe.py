@@ -176,7 +176,7 @@ def print_debug(text):  # Debug messages in yellow if the debug global is true
         print(Fore.YELLOW + str(text) + Style.RESET_ALL)
 
 
-def scan_pepe_file():  # Scan pepetxt var for ipfs links
+def scan_pepe_file(start_point):  # Scan pepetxt var for ipfs links
     pepelist = pepes_txt
 
     listfresh = []
@@ -185,11 +185,16 @@ def scan_pepe_file():  # Scan pepetxt var for ipfs links
         if element[0] == "Q":
             listfresh.append(element.strip())
         else:
-            print_debug("Not a pepe: " + element.strip())
+            print_debug(f"Not a pepe: {element.strip()}")
     pepelist = listfresh
     print_debug("Pepe list: " + str(pepelist))
 
-    print("Found " + str(len(pepelist)) + " tokenURIs to look for Pepe")
+    print(f"Found {len(pepelist)} tokenURIs to look for Pepe")
+
+    if start_point > 0:
+        pepelist = pepelist[start_point:]
+        print(f"Trimming first {start_point} entries in list")
+
 
     return pepelist
 
@@ -302,7 +307,7 @@ def main():
 
     ipfsgatewaylist = list(dict.fromkeys(ipfsgatewaylist))
 
-    pepelist = scan_pepe_file()
+    pepelist = scan_pepe_file(start_point)
 
     for pepeipfs in pepelist:
         print(
@@ -422,5 +427,5 @@ if __name__ == "__main__":
         if (sys.argv[1] == "-d" or sys.argv[1] == "--debug"):
             debug = True
         if (sys.argv[1] == "-s" or sys.argv[1] == "--start"):
-            pepes_txt = pepes_txt[int(sys.argv[2]):] # Trim entries from start of pepes_txt
+            start_point = int(sys.argv[2])
     main()
