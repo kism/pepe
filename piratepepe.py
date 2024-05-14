@@ -352,7 +352,7 @@ def main():
                 response = None
 
             if not response:
-                print(Fore.RED + "Complete gateway failure" + Style.RESET_ALL + ": " + gateway)
+                print(Fore.RED + "Complete gateway failure" + Style.RESET_ALL + ": " + gateway + " no response")
                 ipfsgatewaylist.remove(gateway)
                 failure = True
             elif response.status_code != 200 and response.status_code != 400:
