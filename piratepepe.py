@@ -212,8 +212,8 @@ def check_file(file_path):
     failure = False
     mime = magic.Magic(mime=True)
 
-    with open(file_path) as f:
-        try:
+    try:
+        with open(file_path) as f:
             file_type = mime.from_buffer(f)
             if file_type.startswith("text"):
                 for line in f:
@@ -224,10 +224,10 @@ def check_file(file_path):
                 if f.tell() == 0:  # If file is empty
                     failure = True
 
-        except TypeError:
-            failure = True
-        except FileNotFoundError:
-            pass
+    except TypeError:
+        failure = True
+    except FileNotFoundError:
+        pass
 
     return failure
 
