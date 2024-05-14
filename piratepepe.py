@@ -12,6 +12,7 @@ import os
 import sys
 import random
 from collections import Counter
+import socket
 
 import requests
 from colorama import Fore, Back, Style
@@ -227,7 +228,7 @@ def download_pepe(url, filename):
                 print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
                 critical_file_skipped = False
                 break
-            except (urllib.error.HTTPError, urllib.error.URLError):
+            except (urllib.error.HTTPError, urllib.error.URLError, socket.gaierror):
                 print(Fore.RED + "Download Failed" + Style.RESET_ALL, end=", ")
                 critical_file_skipped = True
                 try:
