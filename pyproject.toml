@@ -17,12 +17,20 @@ black = "^24.4.0"
 pylance = "^0.10.15"
 ruff = "^0.4.3"
 
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
 [tool.black]
 line-length = 120
 
 [tool.ruff]
 line-length = 120
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.ruff.lint]
+select = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+

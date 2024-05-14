@@ -241,14 +241,16 @@ def download_pepe(url, file_name):
                         shutil.copyfileobj(r.raw, f)
 
                 with open("output/" + file_name, "r") as f:
-                    file_type = mime.from_buffer(f)
+                    try:
+                        file_type = mime.from_buffer(f)
+                    except TypeError:
+                        gw_failure = True
+
                     if file_type.startswith("text"):
-                        try:
-                            for line in f:
-                                if line == "Hello from IPFS Gateway Checker":
-                                    gw_failure = True
-                        except TypeError:
-                            gw_failure = True
+                        for line in f:
+                            if line == "Hello from IPFS Gateway Checker":
+                                gw_failure = True
+
 
                 if gw_failure:
                     print("Gateway didn't give us the file")
