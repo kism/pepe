@@ -269,21 +269,26 @@ def process_pepe_nft_json(pepenftjson):
     nftjsonfile.close()
 
     # Download all the things from the json, these are ipfs links
-    critical_file_skipped = critical_file_skipped and download_pepe(
-        pepenftjson["image"], pepenftjson["name"] + " - " + "card.gif"
+    critical_file_skipped = (
+        download_pepe(pepenftjson["image"], pepenftjson["name"] + " - " + "card.gif") and critical_file_skipped
     )
-    critical_file_skipped = critical_file_skipped and download_pepe(
-        pepenftjson["animation_url"], pepenftjson["name"] + " - " + "card.glb"
+    critical_file_skipped = (
+        download_pepe(pepenftjson["animation_url"], pepenftjson["name"] + " - " + "card.glb") and critical_file_skipped
     )
-    critical_file_skipped = critical_file_skipped and download_pepe(
-        pepenftjson["hifi_media"]["card_front"],
-        pepenftjson["name"] + " - " + "front.png",
+    critical_file_skipped = (
+        download_pepe(
+            pepenftjson["hifi_media"]["card_front"],
+            pepenftjson["name"] + " - " + "front.png",
+        )
+        and critical_file_skipped
     )
-    critical_file_skipped = critical_file_skipped and download_pepe(
-        pepenftjson["hifi_media"]["card_back"], pepenftjson["name"] + " - " + "back.png"
+    critical_file_skipped = (
+        download_pepe(pepenftjson["hifi_media"]["card_back"], pepenftjson["name"] + " - " + "back.png")
+        and critical_file_skipped
     )
-    critical_file_skipped = critical_file_skipped and download_pepe(
-        pepenftjson["hifi_media"]["video"], pepenftjson["name"] + " - " + "video.mp4"
+    critical_file_skipped = (
+        download_pepe(pepenftjson["hifi_media"]["video"], pepenftjson["name"] + " - " + "video.mp4")
+        and critical_file_skipped
     )
 
 
@@ -384,7 +389,9 @@ def main():
     print("\n" + Back.WHITE + Fore.BLACK + " Done! " + Style.RESET_ALL)
 
     if len(ipfsgatewaylist) > 0:
-        print("ipfs gateways that made it to the end: " + str(ipfsgatewaylist))
+        print("ipfs gateways that made it to the end:")
+        for gateway in ipfsgatewaylist:
+            print(f" {gateway}")
         if not critical_file_skipped:
             print("All the Pepes should be downloaded!")
             exitcode = 0
@@ -407,8 +414,8 @@ def main():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Matt Furie rarepepes.fun downloader")
-    parser.add_argument('-d', '--debug', action='store_true', help="Increase output verbosity")
-    parser.add_argument('-s', '--start', type=int, default=0, help="Number of times to run")
+    parser.add_argument("-d", "--debug", action="store_true", help="Increase output verbosity")
+    parser.add_argument("-s", "--start", type=int, default=0, help="Number of times to run")
     args = parser.parse_args()
     start_point = args.start
     debug = args.debug
