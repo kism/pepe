@@ -9,10 +9,10 @@
 
 import urllib
 import os
-import sys
 import random
 import socket
 import http.client
+import argparse
 from collections import Counter
 
 import requests
@@ -263,6 +263,7 @@ def process_pepe_nft_json(pepenftjson):
 
     # Save the json file of the nft, this might be whats considered the ipfs object metadata
     nftjsonfile = open("output/" + pepenftjson["name"] + ".json", "w")
+    print_debug("nftjson")
     print_debug(nftjson)
     nftjsonfile.write(nftjson)
     nftjsonfile.close()
@@ -383,7 +384,7 @@ def main():
     print("\n" + Back.WHITE + Fore.BLACK + " Done! " + Style.RESET_ALL)
 
     if len(ipfsgatewaylist) > 0:
-        print_debug("ipfs gateways that made it to the end: " + str(ipfsgatewaylist))
+        print("ipfs gateways that made it to the end: " + str(ipfsgatewaylist))
         if not critical_file_skipped:
             print("All the Pepes should be downloaded!")
             exitcode = 0
@@ -405,9 +406,10 @@ def main():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "-d" or sys.argv[1] == "--debug":
-            debug = True
-        if sys.argv[1] == "-s" or sys.argv[1] == "--start":
-            start_point = int(sys.argv[2])
+    parser = argparse.ArgumentParser(description="Matt Furie rarepepes.fun downloader")
+    parser.add_argument('-d', '--debug', action='store_true', help="Increase output verbosity")
+    parser.add_argument('-s', '--start', type=int, default=0, help="Number of times to run")
+    args = parser.parse_args()
+    start_point = args.start
+    debug = args.debug
     main()
