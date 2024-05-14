@@ -41,26 +41,6 @@ ipfs_gateway_list = [
     "https://gateway.ipfs.io/ipfs/",
     "https://cloudflare-ipfs.com/ipfs/",
     "https://chainsaw.mypinata.cloud/ipfs/",
-    # "https://ipfs.fleek.co/ipfs/",
-    # "https://ipfs.telos.miami/ipfs/",
-    # "http://cf-ipfs.com/ipfs/",
-    # "https://crustwebsites.net/ipfs/",
-    # "https://ipfs.eternum.io/ipfs/",
-    # "https://ipfs.2read.net/",
-    # "https://ipfs.azurewebsites.net/ipfs/",
-    # "https://hardbin.com/ipfs/",
-    # "https://ipfs.tubby.cloud/ipfs/",
-    # "https://video.oneloveipfs.com/ipfs/",
-    # "https://ipfs.astyanax.io/ipfs/",
-    # "https://ipfs.infura-ipfs.io/ipfs/",
-    # "https://ipfs.best-practice.se/ipfs/",
-    # "https://ipfs.2read.net/ipfs/",
-    # "https://ipfs.mihir.ch/ipfs/",
-    # "https://jorropo.net/ipfs/",
-    # "https://ipfs.litnet.work/ipfs/",
-    # "https://ipfs.lain.la/ipfs/",
-    # "https://ipfs.subutai.io/ipfs/",
-    # "https://ipfs.yt/ipfs/",
 ]
 
 # This is a big list of NFT tokenURIs for the Matt Furie Rare Pepe NFT Collection
@@ -218,10 +198,8 @@ def check_file(file_path):
         with open(file_path) as f:
             file_type = mime.from_buffer(f)
             if file_type.startswith("text"):
-                for line in f:
-                    if line == "Hello from IPFS Gateway Checker":
-                        failure = True
-            else:
+                failure = True
+            else:  # I think this will never run
                 f.seek(0, os.SEEK_END)
                 if f.tell() == 0:  # If file is empty
                     failure = True
@@ -364,10 +342,58 @@ def process_ipfs_gateway_list(ipfs_gateway_list):
     return list(dict.fromkeys(ipfs_gateway_list))
 
 
+def grab_pepe_json(pepe_ipfs):
+    """Iterate through gateways to get Pepe's json."""  # since they probably suck
+    pepe_nft_json = None
+
+    for gateway in ipfs_gateway_list[:]:
+        failure = False
+        request = gateway + pepe_ipfs
+
+        if slow_mode:
+            print("Waiting a minute before downloading")
+            time.sleep(60)
+
+        print("Trying: " + request, end=" ")
+
+        # Here we are getting the json that the nft points to,
+        # as I understand the etherium contract points at an ipfs object that
+        # has a json file that points to the other assets on ipfs
+        response = None
+        try:
+            response = requests.get(request, timeout=5)
+            print()
+        except requests.exceptions.ConnectionError:
+            print("ConnectionError")
+            response = None
+        except requests.exceptions.ReadTimeout:
+            print("ReadTimeout")
+            response = None
+
+        if not response:
+            print(Fore.RED + "Complete gateway failure" + Style.RESET_ALL + ": " + gateway + " None")
+            failure = True
+        elif not response.ok:
+            print("Gateway: " + gateway + " sucks, HTTP: " + str(response.status_code))
+            failure = True
+        else:
+            try:
+                pepe_nft_json = response.json()
+                break
+            except requests.exceptions.JSONDecodeError:
+                print("Gateway: " + gateway + " gave us garbage json")
+                failure = True
+
+        if failure:
+            print(Fore.RED + "Removing from gateway list" + Style.RESET_ALL)
+            ipfs_gateway_list.remove(gateway)
+
+    return pepe_nft_json
+
+
 def process_pepes(pepe_list):
     """Iterate through the pepes."""
     global critical_file_skipped
-    failure = False
 
     for pepe_ipfs in pepe_list:
         print(
@@ -384,57 +410,14 @@ def process_pepes(pepe_list):
         # Randomise the gateway list so we try a different gateway first
         random.shuffle(ipfs_gateway_list)
 
-        # Iterate through a list of ipfs gateways since they probably suck
-        for gateway in ipfs_gateway_list[:]:
-            failure = False
-            request = gateway + pepe_ipfs
+        pepe_nft_json = grab_pepe_json(pepe_ipfs)
 
-            if slow_mode:
-                print("Waiting a minute before downloading")
-                time.sleep(60)
-
-            print("Trying: " + request, end=" ")
-
-            # Here we are getting the json that the nft points to,
-            # as I understand the etherium contract points at an ipfs object that
-            # has a json file that points to the other assets on ipfs
-            response = None
-            try:
-                response = requests.get(request, timeout=5)
-                print()
-            except requests.exceptions.ConnectionError:
-                print("ConnectionError")
-                response = None
-            except requests.exceptions.ReadTimeout:
-                print("ReadTimeout")
-                response = None
-
-            if not response:
-                print(Fore.RED + "Complete gateway failure" + Style.RESET_ALL + ": " + gateway + " None")
-                failure = True
-            elif not response.ok:
-                print("Gateway: " + gateway + " sucks, HTTP: " + str(response.status_code))
-                failure = True
-            else:
-                try:
-                    pepe_nft_json = response.json()
-                    break
-                except requests.exceptions.JSONDecodeError:
-                    print("Gateway: " + gateway + " gave us garbage json")
-                    failure = True
-
-            if failure:
-                print(Fore.RED + "Removing from gateway list" + Style.RESET_ALL)
-                ipfs_gateway_list.remove(gateway)
-
-        print("Found a Rare Pepe! : " + pepe_nft_json["name"] + "")
-        process_pepe_nft_json(pepe_nft_json)
-
-        # we have the nft json, lets grab the assets
-        if failure:
+        if pepe_nft_json:
+            print("Found a Rare Pepe! : " + pepe_nft_json["name"] + "")
+            process_pepe_nft_json(pepe_nft_json)
+        else:
             print(Fore.RED + "All is heck" + Style.RESET_ALL + " every defined ipfs gateway sucks")
             critical_file_skipped = True
-            break
 
 
 def main():
