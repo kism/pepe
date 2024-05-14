@@ -253,6 +253,7 @@ def download_pepe(url, file_name):
                 if gw_failure:
                     print("Gateway didn't give us the file")
                     print(Fore.RED + "removing from gateway list" + Style.RESET_ALL)
+                    os.remove(file_path)
                     ipfsgatewaylist.remove(gateway)
                 elif os.path.getsize(file_path) == 0:
                     print(f"Found empty file, removing: {file_name}")
