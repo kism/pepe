@@ -1,8 +1,4 @@
-*.json
-*.glb
-*.gif
-*.png
-*.mp4
+output/*
 
 
 # Byte-compiled / optimized / DLL files
