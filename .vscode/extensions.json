@@ -1,5 +1,8 @@
 {
     "recommendations": [
-        "andromedabohij.tidepool-light"
+        "andromedabohij.tidepool-light",
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "charliermarsh.ruff"
     ]
 }

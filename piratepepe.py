@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""pepe.py main."""
 
 # pepe.py
 # https://github.com/kism/pepe
@@ -174,12 +175,14 @@ QmXCHLCWNqcdA9i9QwVkpVc1wcEvtNRGp7Wxo3ZpHrkFyn
 """
 
 
-def print_debug(text):  # Debug messages in yellow if the debug global is true
+def print_debug(text):
+    """Debug messages in yellow if the debug global is true."""
     if debug:
         print(Fore.YELLOW + str(text) + Style.RESET_ALL)
 
 
-def scan_pepe_file(start_point):  # Scan pepetxt var for ipfs links
+def scan_pepe_file(start_point):
+    """Scan pepe_txt var for ipfs links."""
     pepelist = pepes_txt
 
     listfresh = []
@@ -202,6 +205,7 @@ def scan_pepe_file(start_point):  # Scan pepetxt var for ipfs links
 
 
 def download_pepe(url, file_name):
+    """Download the asset, hardcoded to output."""
     file_downloaded = False
     file_path = "output/" + file_name
     mime = magic.Magic(mime=True)
@@ -251,7 +255,6 @@ def download_pepe(url, file_name):
                             if line == "Hello from IPFS Gateway Checker":
                                 gw_failure = True
 
-
                 if gw_failure:
                     print("Gateway didn't give us the file")
                     print(Fore.RED + "removing from gateway list" + Style.RESET_ALL)
@@ -287,6 +290,7 @@ def download_pepe(url, file_name):
 
 
 def process_pepe_nft_json(pepenftjson):
+    """Process the json for the toke, call the download functions."""
     global critical_file_skipped
     # No idea why python json uses a single quote
     nftjson = str(pepenftjson).replace("'", '"')
@@ -329,6 +333,7 @@ def process_pepe_nft_json(pepenftjson):
 
 
 def main():
+    """Main."""
     global ipfsgatewaylist
     global critical_file_skipped
     failure = False
