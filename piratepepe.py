@@ -11,6 +11,7 @@ import os
 import random
 import argparse
 import shutil
+import magic
 from collections import Counter
 
 import requests
@@ -203,6 +204,7 @@ def scan_pepe_file(start_point):  # Scan pepetxt var for ipfs links
 def download_pepe(url, file_name):
     file_downloaded = False
     file_path = "output/" + file_name
+    mime = magic.Magic(mime=True)
 
     # the nft json for this collection has the ipfs.io gateway hardcoded in lmao, maybe this is normal 🤷
     strippedurl = url.replace("https://ipfs.io/ipfs/", "")
@@ -239,9 +241,11 @@ def download_pepe(url, file_name):
                         shutil.copyfileobj(r.raw, f)
 
                 with open("output/" + file_name, "r") as f:
-                    for line in f:
-                        if line == "Hello from IPFS Gateway Checker":
-                            gw_failure = True
+                    file_type = mime.from_buffer(file_name)
+                    if file_type.startswith('text'):
+                        for line in f:
+                            if line == "Hello from IPFS Gateway Checker":
+                                gw_failure = True
 
                 if gw_failure:
                     print("Gateway didn't give us the file")
