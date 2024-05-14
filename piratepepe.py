@@ -307,7 +307,8 @@ def process_pepe_nft_json(pepe_nft_json):
         download_pepe(pepe_nft_json["image"], pepe_nft_json["name"] + " - " + "card.gif") and critical_file_skipped
     )
     critical_file_skipped = (
-        download_pepe(pepe_nft_json["animation_url"], pepe_nft_json["name"] + " - " + "card.glb") and critical_file_skipped
+        download_pepe(pepe_nft_json["animation_url"], pepe_nft_json["name"] + " - " + "card.glb")
+        and critical_file_skipped
     )
     try:
         temp_filecheck = download_pepe(
@@ -317,7 +318,9 @@ def process_pepe_nft_json(pepe_nft_json):
     except KeyError:
         print("No key 'card_front', this is the case with some of the Sparklers.")
     try:
-        temp_filecheck = download_pepe(pepe_nft_json["hifi_media"]["card_back"], pepe_nft_json["name"] + " - " + "back.png")
+        temp_filecheck = download_pepe(
+            pepe_nft_json["hifi_media"]["card_back"], pepe_nft_json["name"] + " - " + "back.png"
+        )
         critical_file_skipped = critical_file_skipped and temp_filecheck
     except KeyError:
         print("No key 'card_back', this is the case with the Sparklers.")
@@ -434,7 +437,8 @@ def main():
             exitcode = 0
         else:
             print(
-                "Some Downloads failed, this probably means that only a gateway that is working for you doesn't have large file support"
+                "Some Downloads failed, "
+                "this probably means that only a gateway that is working for you doesn't have large file support"
             )
     else:
         print(Fore.RED + "Every ipfs gateway failed lmao" + Style.RESET_ALL)
@@ -443,7 +447,8 @@ def main():
         print("There will be some missing Pepes")
         print("Run the script again to try again.")
         print(
-            "You might want to find some new ipfs gateways and add them to the script, or get a new IP address since some ipfs gateways will rate-limit or block you for downloading too much."
+            "You might want to find some new ipfs gateways and add them to the script, "
+            "or get a new IP address since some ipfs gateways will rate-limit or block you for downloading too much."
         )
 
     sys.exit(exitcode)

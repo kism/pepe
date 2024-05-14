@@ -45,6 +45,8 @@ ignore = [
     "E402",   # false positives for local imports
     "TRY003", # external messages in exceptions are too verbose
     "FIX002", # too verbose descriptions of todos
+    "T201", # KG print is fine for this scale
+    "PLW0603", # KG globals are fine for this scale
 ]
 
 [tool.ruff.lint.pydocstyle]
