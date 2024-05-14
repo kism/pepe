@@ -241,16 +241,16 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
             end="\n",
         )
 
-        timeout = 1  # 20 Minutes, IPFS is slow
+        timeout = 1200  # 20 Minutes, IPFS is slow
         if url.endswith("mp4"):
-            timeout = 1  # 2 Hours, IPFS is slow
+            timeout = 12000  # 2 Hours, IPFS is slow
 
         # Try download the file
         try:
             with requests.get(url, stream=True, timeout=timeout) as r, open(file_path, "wb") as f:
                 shutil.copyfileobj(r.raw, f)
         except requests.exceptions.ConnectionError:
-            print(f"{Fore.RED} Download Failed {Style.RESET_ALL}", end=", ")
+            print(f"{Fore.RED}Download Failed{Style.RESET_ALL}", end=", ")
             if not url.endswith("mp4"):
                 print("ConnectionError")
                 gw_failure = True
