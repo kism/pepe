@@ -249,6 +249,7 @@ def download_pepe_asset(stripped_url, file_name):
         if url.endswith("mp4"):
             timeout = 600
 
+        # Try download the file
         try:
             with requests.get(url, stream=True, timeout=timeout) as r, open(file_path, "wb") as f:
                 shutil.copyfileobj(r.raw, f)
@@ -359,6 +360,7 @@ def process_ipfs_gateway_list(ipfs_gateway_list):
 
 def process_pepes(pepe_list):
     """Iterate through the pepes."""
+    global ipfs_gateway_list
     global critical_file_skipped
     failure = False
 
@@ -376,7 +378,7 @@ def process_pepes(pepe_list):
         response = None
 
         # Randomise the gateway list so we try a different gateway first
-        random.shuffle(ipfs_gateway_list)
+        ipfs_gateway_list = random.shuffle(ipfs_gateway_list)
 
         # Iterate through a list of ipfs gateways since they probably suck
         for gateway in ipfs_gateway_list[:]:
