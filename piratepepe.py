@@ -396,7 +396,6 @@ def grab_pepe_json(pepe_ipfs: str) -> str:
                 failure = True
 
         if failure:
-            print(Fore.RED + "CRINGE" + Style.RESET_ALL)
             add_to_ipfs_shitlist(gateway)
 
     return pepe_nft_json
