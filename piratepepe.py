@@ -236,6 +236,7 @@ def check_file(file_path):
 
 def download_pepe_asset(stripped_url, file_name):
     """Try all gateways to download asset."""
+    file_downloaded = False
     file_path = output_folder + os.sep + file_name
 
     for gateway in ipfs_gateway_list[:]:
