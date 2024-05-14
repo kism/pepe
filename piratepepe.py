@@ -11,7 +11,6 @@ import os
 import random
 import argparse
 import shutil
-import json
 from collections import Counter
 
 import requests
@@ -201,9 +200,9 @@ def scan_pepe_file(start_point):  # Scan pepetxt var for ipfs links
     return pepelist
 
 
-def download_pepe(url, filename):
+def download_pepe(url, file_name):
     file_downloaded = False
-    filepath = "output/" + filename
+    file_path = "output/" + file_name
 
     # the nft json for this collection has the ipfs.io gateway hardcoded in lmao, maybe this is normal 🤷
     strippedurl = url.replace("https://ipfs.io/ipfs/", "")
@@ -215,13 +214,17 @@ def download_pepe(url, filename):
     if "https://chainsaw.mypinata.cloud/ipfs/" not in ipfsgatewaylist:
         ipfsgatewaylist.append("https://chainsaw.mypinata.cloud/ipfs/")
 
-    if not os.path.isfile(filepath):  # if the asset hasn't already been downloaded
+    if os.path.getsize(file_path) == 0:
+        print(f"Found empty file, removing: {file_name}")
+        os.remove(file_path)
+
+    if not os.path.isfile(file_path):  # if the asset hasn't already been downloaded
         # try all gateways to download asset
         for gateway in ipfsgatewaylist[:]:
             url = gateway + strippedurl
 
             print(
-                "Attempting to download Pepe NFT Asset: '" + filename + "' from: " + url,
+                "Attempting to download Pepe NFT Asset: '" + file_name + "' from: " + url,
                 end="\n",
             )
 
@@ -231,7 +234,7 @@ def download_pepe(url, filename):
 
             try:
                 with requests.get(url, stream=True, timeout=timeout) as r:
-                    with open("output/" + filename, "wb") as f:
+                    with open("output/" + file_name, "wb") as f:
                         shutil.copyfileobj(r.raw, f)
 
                 print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
@@ -246,13 +249,13 @@ def download_pepe(url, filename):
                     else:
                         print("gateway might not have large file support, ", end="")
 
-                    os.remove(filepath)
+                    os.remove(file_path)
                 except FileNotFoundError:  # Only need to remove partially downloaded file if it exists
                     pass
 
             print("trying next gateway...")
     else:
-        print("Already downloaded: " + filename)
+        print("Already downloaded: " + file_name)
         file_downloaded = True
 
     return file_downloaded
