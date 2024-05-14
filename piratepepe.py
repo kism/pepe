@@ -281,13 +281,11 @@ def process_pepe_nft_json(pepenftjson):
     critical_file_skipped = (
         download_pepe(pepenftjson["animation_url"], pepenftjson["name"] + " - " + "card.glb") and critical_file_skipped
     )
-    critical_file_skipped = (
-        download_pepe(
-            pepenftjson["hifi_media"]["card_front"],
-            pepenftjson["name"] + " - " + "front.png",
-        )
-        and critical_file_skipped
-    )
+    try:
+        temp_filecheck = download_pepe(pepenftjson["hifi_media"]["card_front"], pepenftjson["name"] + " - " + "front.png")
+        critical_file_skipped = critical_file_skipped and temp_filecheck
+    except KeyError:
+        print("No key 'card_front', this is the case with some of the Sparklers.")
     try:
         temp_filecheck = download_pepe(pepenftjson["hifi_media"]["card_back"], pepenftjson["name"] + " - " + "back.png")
         critical_file_skipped = critical_file_skipped and temp_filecheck
