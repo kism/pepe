@@ -355,14 +355,11 @@ def process_ipfs_gateway_list(ipfs_gateway_list):
         if count > 1:
             print("Duplicate gateway: " + item)
 
-    ipfs_gateway_list = list(dict.fromkeys(ipfs_gateway_list))
-
-    return ipfs_gateway_list
+    return list(dict.fromkeys(ipfs_gateway_list))
 
 
 def process_pepes(pepe_list):
     """Iterate through the pepes."""
-    global ipfs_gateway_list
     global critical_file_skipped
     failure = False
 
