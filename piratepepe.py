@@ -230,6 +230,8 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
     file_downloaded = False
     file_path = output_folder + os.sep + file_name
 
+    random.shuffle(ipfs_gateway_list)
+
     for gateway in ipfs_gateway_list[:]:
         if slow_mode:
             print("Waiting a minute before downloading")
@@ -318,7 +320,7 @@ def process_pepe_nft_json(pepe_nft_json: str) -> None:
         nftjsonfile.write(nftjson)
 
     # Download all the things from the json, these are ipfs links
-    download_pepe(pepe_nft_json["image"], pepe_nft_json["name"] + " - " + "card.gif") or critical_file_skipped
+    download_pepe(pepe_nft_json["image"], pepe_nft_json["name"] + " - " + "card.gif")
     download_pepe(pepe_nft_json["animation_url"], pepe_nft_json["name"] + " - " + "card.glb")
 
     try:
@@ -351,6 +353,8 @@ def process_ipfs_gateway_list(ipfs_gateway_list: str) -> list:
 def grab_pepe_json(pepe_ipfs: str) -> str:
     """Iterate through gateways to get Pepe's json."""  # since they probably suck
     pepe_nft_json = None
+
+    random.shuffle(ipfs_gateway_list)
 
     for gateway in ipfs_gateway_list[:]:
         failure = False
@@ -398,8 +402,6 @@ def grab_pepe_json(pepe_ipfs: str) -> str:
 
 def process_pepes(pepe_list: str) -> None:
     """Iterate through the pepes."""
-    global critical_file_skipped
-
     for pepe_ipfs in pepe_list:
         print(
             Back.WHITE
@@ -412,9 +414,6 @@ def process_pepes(pepe_list: str) -> None:
             + Style.RESET_ALL,
         )
 
-        # Randomise the gateway list so we try a different gateway first
-        random.shuffle(ipfs_gateway_list)
-
         pepe_nft_json = grab_pepe_json(pepe_ipfs)
 
         if pepe_nft_json:
@@ -422,17 +421,15 @@ def process_pepes(pepe_list: str) -> None:
             process_pepe_nft_json(pepe_nft_json)
         else:
             print(Fore.RED + "All is heck" + Style.RESET_ALL + " every defined ipfs gateway sucks")
-            critical_file_skipped = True
+            files_skipped.append("Entire Pepe Json: " + pepe_ipfs)
 
 
 def main() -> None:
     """Main."""
-    global ipfs_gateway_list
     exitcode = 1
     print(Back.WHITE + Fore.BLACK + " pirate" + Fore.GREEN + "pepe" + Fore.BLACK + ".py " + Style.RESET_ALL)
     print_debug("Debug on!\n")
 
-    ipfs_gateway_list = process_ipfs_gateway_list(ipfs_gateway_list)
     pepe_list = scan_pepe_file(start_point)
 
     process_pepes(pepe_list)
@@ -452,15 +449,11 @@ def main() -> None:
                 print(f"Gateway: {gateway}")
                 print(f"  Fails: {score}")
 
-        if not critical_file_skipped:
-            print("All the Pepes should be downloaded!")
-            exitcode = 0
-        else:
-            print("Some Downloads failed")
     else:
         print(Fore.RED + "Every ipfs gateway failed lmao" + Style.RESET_ALL)
 
     if len(files_skipped) > 0:
+        print("Some Downloads failed")
         print("MISSING Pepe Assets:")
         for file in files_skipped:
             print(f" {file}")
@@ -469,6 +462,10 @@ def main() -> None:
             "You might want to find some new ipfs gateways and add them to the script, "
             "or get a new IP address since some ipfs gateways will rate-limit or block you for downloading too much.",
         )
+    else:
+        print("All the Pepes should be downloaded!")
+        exitcode = 0
+
     sys.exit(exitcode)
 
 
@@ -483,6 +480,8 @@ if __name__ == "__main__":
     debug = args.debug
     output_folder = args.output
     slow_mode = args.slow
+
+    ipfs_gateway_list = process_ipfs_gateway_list(ipfs_gateway_list)
     try:
         main()
     except KeyboardInterrupt:
