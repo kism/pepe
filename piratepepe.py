@@ -15,7 +15,7 @@ import random
 import shutil
 import sys
 import time
-from collections import Counter, OrderedDict
+from collections import Counter
 
 import magic
 import requests
@@ -448,7 +448,7 @@ def main() -> None:
     if len(shitlist.items()) > 0:
         print("ipfs gateway scoreboard:")
         try:
-            for gateway, score in OrderedDict(sorted(shitlist.items())):
+            for gateway, score in sorted(shitlist.items(), key=lambda item: item[1])):
                 print(f"Gateway: {gateway}")
                 print(f"  Fails: {score}")
         except ValueError as exc:
