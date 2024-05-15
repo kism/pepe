@@ -447,9 +447,17 @@ def main() -> None:
 
     if len(shitlist.items()) > 0:
         print("ipfs gateway scoreboard:")
-        for gateway, score in OrderedDict(sorted(shitlist.items())):
-            print(f"Gateway: {gateway}")
-            print(f"  Fails: {score}")
+        try:
+            for gateway, score in OrderedDict(sorted(shitlist.items())):
+                print(f"Gateway: {gateway}")
+                print(f"  Fails: {score}")
+        except ValueError as exc:
+            print("Lmao")
+            print(exc)
+            for gateway, score in shitlist.items():
+                print(f"Gateway: {gateway}")
+                print(f"  Fails: {score}")
+
         if not critical_file_skipped:
             print("All the Pepes should be downloaded!")
             exitcode = 0
