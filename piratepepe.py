@@ -216,7 +216,8 @@ def check_file(file_path: str) -> bool:
                     print(f"{Fore.RED} Downloaded file is empty {Style.RESET_ALL}")
                     failure = True
 
-    except TypeError:
+    except TypeError as err:
+        print(f"{Fore.RED} Downloaded file is wrong format {Style.RESET_ALL}, type: {err}")
         failure = True
     except FileNotFoundError:
         pass
