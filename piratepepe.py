@@ -217,7 +217,8 @@ def check_file(file_path: str) -> bool:
                     failure = True
 
     except TypeError as err:
-        print(f"{Fore.RED}Downloaded might be wrong format?{Style.RESET_ALL}, type: {err}")
+        print(f"{Fore.RED}Downloaded might be wrong format{Style.RESET_ALL}, type: {err}")
+        failure = True
     except FileNotFoundError:
         pass
 
