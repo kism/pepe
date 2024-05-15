@@ -17,6 +17,10 @@ Racists can get out, Pepe has been reclaimed. widepeepoHappy
 
 ## How to do
 
+<https://pypi.org/project/python-magic/>
+
+### Install Pip Packages
+
 ```bash
 git clone https://github.com/kism/pepe.git`
 cd pepe
@@ -24,7 +28,7 @@ pip install -r requirements.txt
 python3 piratepepe.py
 ```
 
-## If you use poetry
+### If you use poetry
 
 ```bash
 git clone https://github.com/kism/pepe.git`
@@ -34,7 +38,7 @@ poetry shell
 python piratepepe.py
 ```
 
-## Once you are done...
+## Once you are done
 
 Run filechecker.sh
 
@@ -45,5 +49,3 @@ Run filechecker.sh
 It will tell you which files are corrupted
 
 ## Todo
-
-
