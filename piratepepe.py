@@ -208,16 +208,16 @@ def check_file(file_path: str) -> bool:
         with open(file_path) as f:
             file_type = mime.from_buffer(f)
             if file_type.startswith("text"):
-                print(f"{Fore.RED} Downloaded file is wrong format {Style.RESET_ALL}, type: {file_type}")
+                print(f"{Fore.RED}Downloaded file is wrong format {Style.RESET_ALL}, type: {file_type}")
                 failure = True
             else:  # I think this will never run
                 f.seek(0, os.SEEK_END)
                 if f.tell() == 0:  # If file is empty
-                    print(f"{Fore.RED} Downloaded file is empty {Style.RESET_ALL}")
+                    print(f"{Fore.RED}Downloaded file is empty {Style.RESET_ALL}")
                     failure = True
 
     except TypeError as err:
-        print(f"{Fore.RED} Downloaded file is wrong format {Style.RESET_ALL}, type: {err}")
+        print(f"{Fore.RED}Downloaded file is wrong format {Style.RESET_ALL}, type: {err}")
         failure = True
     except FileNotFoundError:
         pass
@@ -259,7 +259,7 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
             else:
                 print("gateway might not have large file support")
         except (requests.exceptions.ReadTimeout, ReadTimeoutError):
-            print(f"{Fore.RED} Download Failed {Style.RESET_ALL}, Timeout of {timeout} seconds reached")
+            print(f"{Fore.RED}Download Failed{Style.RESET_ALL}, Timeout of {timeout} seconds reached")
             gw_failure = True
 
         gw_failure = check_file(file_path) or gw_failure
