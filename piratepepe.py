@@ -448,7 +448,7 @@ def main() -> None:
     if len(shitlist.items()) > 0:
         print("ipfs gateway scoreboard:")
         try:
-            for gateway, score in sorted(shitlist.items(), key=lambda item: item[1])):
+            for gateway, score in sorted(shitlist.items(), key=lambda item: item[1]):
                 print(f"Gateway: {gateway}")
                 print(f"  Fails: {score}")
         except ValueError as exc:
