@@ -32,19 +32,13 @@ select = [
 ]
 ignore = [
     #### modules
-    # "ANN", # flake8-annotations
-    # "COM", # flake8-commas
-    # "C90", # mccabe complexity
-    # "DJ",  # django
-    # "EXE", # flake8-executable
-    # "T10", # debugger
-    # "TID", # flake8-tidy-imports
+    "DJ",  # django
     "PTH", # KG builtin-open is fine
 
     #### specific rules
-    "E402",   # false positives for local imports
-    "TRY003", # external messages in exceptions are too verbose
-    "FIX002", # too verbose descriptions of todos
+    # "E402",   # false positives for local imports
+    # "TRY003", # external messages in exceptions are too verbose
+    # "FIX002", # too verbose descriptions of todos
     "T201", # KG print is fine for this scale
     "PLW0603", # KG globals are fine for this scale
 ]

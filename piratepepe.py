@@ -15,7 +15,7 @@ import random
 import shutil
 import sys
 import time
-from collections import Counter
+from collections import Counter, OrderedDict
 
 import magic
 import requests
@@ -447,7 +447,7 @@ def main() -> None:
 
     if len(shitlist.items()) > 0:
         print("ipfs gateway scoreboard:")
-        for gateway, score in dict(sorted(shitlist.items())):
+        for gateway, score in OrderedDict(sorted(shitlist.items())):
             print(f"Gateway: {gateway}")
             print(f"  Fails: {score}")
         if not critical_file_skipped:
