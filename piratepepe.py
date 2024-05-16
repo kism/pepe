@@ -424,10 +424,6 @@ def process_pepes(pepe_list: str) -> None:
             files_skipped.append("Entire Pepe Json: " + pepe_ipfs)
 
 
-# def __custom_dict_sort(item: list) -> int:
-#     return item[1]["nfails"]
-
-
 def main() -> None:
     """Main."""
     exitcode = 1
@@ -450,7 +446,7 @@ def main() -> None:
                 for error, count in failures["fails"]:
                     print(f"      {error}: {count}")
         except (ValueError, TypeError) as exc:
-            print("Lmao")
+            print("lmao the sort failed")
             print(exc)
             for gateway, score in shitlist.items():
                 print(f"Gateway: {gateway}")
