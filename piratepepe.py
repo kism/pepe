@@ -445,7 +445,7 @@ def main() -> None:
             print(" Specific:")
             sorted_fails = dict(sorted(failures["fails"].items(), key=lambda item: item[1]))
             for error, count in sorted_fails.items():
-                print(f"      {error}: {count}")
+                print(f"         {count} {error}")
 
     else:
         print(f"{Fore.RED}Every ipfs gateway failed lmao{Style.RESET_ALL}")
