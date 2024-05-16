@@ -373,7 +373,7 @@ def grab_pepe_json(pepe_ipfs: str) -> str:
             print("Waiting a minute before downloading")
             time.sleep(60)
 
-        print(f"Trying: {request}", end=" ")
+        print(f"Trying: {request}")
 
         # Here we are getting the json that the nft points to,
         # as I understand the etherium contract points at an ipfs object that
