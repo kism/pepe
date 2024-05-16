@@ -28,7 +28,7 @@ output_folder = "output"
 slow_mode = False
 shitlist = {}
 headers = {"User-Agent": "Safari/537.3"}
-HTTP_TIMEOUT = 10
+HTTP_TIMEOUT = 5
 
 ipfs_gateway_list = [
     "https://gateway.pinata.cloud/ipfs/",
