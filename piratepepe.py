@@ -180,7 +180,7 @@ def add_to_ipfs_shitlist(gateway: str, error: str) -> None:
     shitlist[gateway]["fails"] += 1
 
     if error not in shitlist[gateway]:
-        shitlist[gateway] = [error]
+        # shitlist[gateway] = [error]
         shitlist[gateway][error] = 0
     shitlist[gateway][error] += 1
 
