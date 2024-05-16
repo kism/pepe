@@ -204,7 +204,7 @@ def scan_pepe_file(start_point: int) -> list:
 
     print(f"Found {len(pepe_list)} tokenURIs to look for Pepe")
 
-    if start_point > 0:
+    if start_point > -1:
         pepe_list = pepe_list[start_point:]
         print(f"Trimming first {start_point} tokenURIs in list")
 
@@ -492,7 +492,7 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--start", type=int, default=0, help="Number of times to run")
     parser.add_argument("-o", "--output", type=str, default="output", help="Number of times to run")
     args = parser.parse_args()
-    start_point = args.start
+    start_point = args.start + -1
     debug = args.debug
     output_folder = args.output
     slow_mode = args.slow
