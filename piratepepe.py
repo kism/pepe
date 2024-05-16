@@ -165,7 +165,7 @@ QmXCHLCWNqcdA9i9QwVkpVc1wcEvtNRGp7Wxo3ZpHrkFyn
 def print_debug(text: str) -> None:
     """Debug messages in yellow if the debug global is true."""
     if debug:
-        print(Fore.YELLOW + str(text) + Style.RESET_ALL)
+        print(f"{Fore.YELLOW}{text}{Style.RESET_ALL}")
 
 
 def add_to_ipfs_shitlist(gateway: str, error: str) -> None:
@@ -248,10 +248,7 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
         gw_failure = False
         url = gateway + stripped_url
 
-        print(
-            "Attempting to download Pepe NFT Asset: '" + file_name + "' from: " + url,
-            end="\n",
-        )
+        print(f"Attempting to download Pepe NFT Asset: '{file_name}' from: {url}")
 
         timeout = 1200  # 20 Minutes, IPFS is slow
         if url.endswith("mp4"):
@@ -280,7 +277,7 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
             with contextlib.suppress(FileNotFoundError):
                 os.remove(file_path)
         else:
-            print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
+            print(f"{Back.WHITE}{Fore.GREEN} Success! {Style.RESET_ALL}")
             file_downloaded = True
             break
 
@@ -307,7 +304,7 @@ def download_pepe(url: str, file_name: str) -> bool:
     if not os.path.isfile(file_path):  # This is where the magic happens
         file_downloaded = download_pepe_asset(stripped_url, file_name)
     else:
-        print("Already downloaded: " + file_name)
+        print(f"Already downloaded: {file_name}")
         file_downloaded = True
 
     if not file_downloaded:
@@ -353,7 +350,7 @@ def process_ipfs_gateway_list(ipfs_gateway_list: str) -> list:
     """Clean up the ipfs gateway list."""
     for item, count in Counter(ipfs_gateway_list).items():
         if count > 1:
-            print("Duplicate gateway: " + item)
+            print(f"Duplicate gateway: {item}")
 
     return list(dict.fromkeys(ipfs_gateway_list))
 
@@ -372,7 +369,7 @@ def grab_pepe_json(pepe_ipfs: str) -> str:
             print("Waiting a minute before downloading")
             time.sleep(60)
 
-        print("Trying: " + request, end=" ")
+        print(f"Trying: {request}", end=" ")
 
         # Here we are getting the json that the nft points to,
         # as I understand the etherium contract points at an ipfs object that
@@ -414,23 +411,16 @@ def process_pepes(pepe_list: str) -> None:
     """Iterate through the pepes."""
     for pepe_ipfs in pepe_list:
         print(
-            Back.WHITE
-            + Fore.BLACK
-            + " Looking for "
-            + Fore.GREEN
-            + "Pepe"
-            + Fore.BLACK
-            + " and his NFT json... "
-            + Style.RESET_ALL,
+            f"{Back.WHITE}{Fore.BLACK} Looking for {Fore.GREEN}Pepe{Fore.BLACK} and his NFT json... {Style.RESET_ALL}",
         )
 
         pepe_nft_json = grab_pepe_json(pepe_ipfs)
 
         if pepe_nft_json:
-            print("Found a Rare Pepe! : " + pepe_nft_json["name"] + "")
+            print(f"Found a Rare Pepe! : {pepe_nft_json["name"]}")
             process_pepe_nft_json(pepe_nft_json)
         else:
-            print(Fore.RED + "All is heck" + Style.RESET_ALL + " every defined ipfs gateway sucks")
+            print(f"{Fore.RED}All is heck{Style.RESET_ALL} every defined ipfs gateway sucks")
             files_skipped.append("Entire Pepe Json: " + pepe_ipfs)
 
 
@@ -441,14 +431,14 @@ def __custom_dict_sort(item: list) -> int:
 def main() -> None:
     """Main."""
     exitcode = 1
-    print(Back.WHITE + Fore.BLACK + " pirate" + Fore.GREEN + "pepe" + Fore.BLACK + ".py " + Style.RESET_ALL)
+    print(f"{Back.WHITE}{Fore.BLACK} pirate{Fore.GREEN}pepe {Fore.BLACK}.py {Style.RESET_ALL}")
     print_debug("Debug on!\n")
 
     pepe_list = scan_pepe_file(start_point)
 
     process_pepes(pepe_list)
 
-    print("\n" + Back.WHITE + Fore.BLACK + " Done! " + Style.RESET_ALL)
+    print(f"\n {Back.WHITE}{Fore.BLACK} Done! {Style.RESET_ALL}")
 
     if len(shitlist.items()) > 0:
         print("ipfs gateway scoreboard:")
@@ -467,7 +457,7 @@ def main() -> None:
                 print(f"  Fails: {score}")
 
     else:
-        print(Fore.RED + "Every ipfs gateway failed lmao" + Style.RESET_ALL)
+        print(f"{Fore.RED}Every ipfs gateway failed lmao{Style.RESET_ALL}")
 
     if len(files_skipped) > 0:
         print("Some Downloads failed")
