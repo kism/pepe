@@ -227,6 +227,7 @@ def check_file(file_path: str, gateway: str) -> bool:
     except TypeError as err:
         # add_to_ipfs_shitlist(gateway, f"FileWrongFormat {err}")
         # failure = True
+        pass
     except FileNotFoundError:
         pass
 
