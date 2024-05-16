@@ -168,12 +168,21 @@ def print_debug(text: str) -> None:
         print(Fore.YELLOW + str(text) + Style.RESET_ALL)
 
 
-def add_to_ipfs_shitlist(gateway: str) -> None:
+def add_to_ipfs_shitlist(gateway: str, error: str) -> None:
     """Keep a tally of gateway failures."""
+    print(f"{Fore.RED}Gateway failure{Style.RESET_ALL}: {error}")
+
     if gateway not in shitlist:
-        shitlist[gateway] = 1
-    else:
-        shitlist[gateway] += 1
+        shitlist[gateway] = {}
+
+    if "fails" not in shitlist[gateway]:
+        shitlist[gateway]["fails"] = 0
+    shitlist[gateway]["fails"] += 1
+
+    if error not in shitlist[gateway]:
+        shitlist[gateway] = [error]
+        shitlist[gateway][error] = 0
+    shitlist[gateway][error] += 1
 
 
 def scan_pepe_file(start_point: int) -> list:
@@ -199,7 +208,7 @@ def scan_pepe_file(start_point: int) -> list:
     return pepe_list
 
 
-def check_file(file_path: str) -> bool:
+def check_file(file_path: str, gateway: str) -> bool:
     """Check if a file is heck."""
     failure = False
     mime = magic.Magic(mime=True)
@@ -208,16 +217,16 @@ def check_file(file_path: str) -> bool:
         with open(file_path) as f:
             file_type = mime.from_buffer(f)
             if file_type.startswith("text"):
-                print(f"{Fore.RED}Downloaded file is wrong format {Style.RESET_ALL}, type: {file_type}")
+                add_to_ipfs_shitlist(gateway, f"FileWrongFormat {file_type}")
                 failure = True
             else:  # I think this will never run
                 f.seek(0, os.SEEK_END)
                 if f.tell() == 0:  # If file is empty
-                    print(f"{Fore.RED}Downloaded file is empty {Style.RESET_ALL}")
+                    add_to_ipfs_shitlist(gateway, "FileEmpty")
                     failure = True
 
     except TypeError as err:
-        print(f"{Fore.RED}Downloaded might be wrong format{Style.RESET_ALL}, type: {err}")
+        add_to_ipfs_shitlist(gateway, f"FileWrongFormat {err}")
         failure = True
     except FileNotFoundError:
         pass
@@ -256,21 +265,21 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
         except requests.exceptions.ConnectionError:
             print(f"{Fore.RED}Download Failed{Style.RESET_ALL}", end=", ")
             if not url.endswith("mp4"):
-                print("ConnectionError")
+                add_to_ipfs_shitlist(gateway, "ConnectionError")
                 gw_failure = True
             else:
                 print("gateway might not have large file support")
         except (requests.exceptions.ReadTimeout, ReadTimeoutError):
-            print(f"{Fore.RED}Download Failed{Style.RESET_ALL}, Timeout of {timeout} seconds reached")
+            print(f"Timeout of {timeout} seconds reached")
+            add_to_ipfs_shitlist(gateway, "ReadTimeout")
             gw_failure = True
 
-        gw_failure = check_file(file_path) or gw_failure
+        gw_failure = check_file(file_path, gateway) or gw_failure
 
         if gw_failure:
-            print("Gateway didn't give us the file correctly")
+            print("Gateway didn't give us the file correctly, removing file if it exists")
             with contextlib.suppress(FileNotFoundError):
                 os.remove(file_path)
-            add_to_ipfs_shitlist(gateway)
         else:
             print(Back.WHITE + Fore.BLACK + " Success! " + Style.RESET_ALL)
             file_downloaded = True
@@ -353,11 +362,11 @@ def process_ipfs_gateway_list(ipfs_gateway_list: str) -> list:
 def grab_pepe_json(pepe_ipfs: str) -> str:
     """Iterate through gateways to get Pepe's json."""  # since they probably suck
     pepe_nft_json = None
+    failure = False
 
     random.shuffle(ipfs_gateway_list)
 
     for gateway in ipfs_gateway_list[:]:
-        failure = False
         request = gateway + pepe_ipfs
 
         if slow_mode:
@@ -374,28 +383,29 @@ def grab_pepe_json(pepe_ipfs: str) -> str:
             response = requests.get(request, timeout=5)
             print()
         except requests.exceptions.ConnectionError:
-            print("ConnectionError")
+            add_to_ipfs_shitlist(gateway, "ConnectionError")
             response = None
         except requests.exceptions.ReadTimeout:
+            add_to_ipfs_shitlist(gateway, "ReadTimeout")
             print("ReadTimeout")
             response = None
 
         if not response:
-            print(Fore.RED + "Complete gateway failure" + Style.RESET_ALL + ": " + gateway + " None")
             failure = True
         elif not response.ok:
-            print("Gateway: " + gateway + " sucks, HTTP: " + str(response.status_code))
+            add_to_ipfs_shitlist(gateway, f"HTTP {response.status_code}")
             failure = True
         else:
             try:
                 pepe_nft_json = response.json()
+                failure = False
                 break
             except requests.exceptions.JSONDecodeError:
-                print("Gateway: " + gateway + " gave us garbage json")
+                add_to_ipfs_shitlist(gateway, "GarbageJson")
                 failure = True
 
-        if failure:
-            add_to_ipfs_shitlist(gateway)
+    if failure:
+        print("All gateways failed getting the json...")
 
     return pepe_nft_json
 
@@ -423,6 +433,8 @@ def process_pepes(pepe_list: str) -> None:
             print(Fore.RED + "All is heck" + Style.RESET_ALL + " every defined ipfs gateway sucks")
             files_skipped.append("Entire Pepe Json: " + pepe_ipfs)
 
+def __custom_dict_sort(item: list) -> int:
+    return item[1]["fails"]
 
 def main() -> None:
     """Main."""
@@ -439,9 +451,12 @@ def main() -> None:
     if len(shitlist.items()) > 0:
         print("ipfs gateway scoreboard:")
         try:
-            for gateway, score in sorted(shitlist.items(), key=lambda item: item[1]):
+            for gateway, failures in dict(sorted(shitlist.items(), key=__custom_dict_sort)):
                 print(f"Gateway: {gateway}")
-                print(f"  Fails: {score}")
+                print(f"    Fails: {failures['fails']}")
+                print( " Specific:")
+                for error, count in failures:
+                    print(f"      {error}: {count}")
         except ValueError as exc:
             print("Lmao")
             print(exc)
@@ -485,4 +500,5 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("\n🙋‍♀️ Bye")
+        print()
+        print("🙋‍♀️ Bye")

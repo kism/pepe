@@ -33,11 +33,13 @@ select = [
 ignore = [
     # Modules
     "DJ",  # Django
-    "PTH", # KG builtin-open is fine
+    "PTH", # builtin open is fine
 
     # Specific rules
-    "TD002", # KG Verbose TODO, only I work on this project
-    "TD003", # KG Verbose TODO, only I work on this project
+    "T201", # Print is fine at this scale
+    "TD002", # Verbose TODO, only I work on this project
+    "TD002", # Verbose TODO, only I work on this project
+    "TD003", # Verbose TODO, only I work on this project
 ]
 
 [tool.ruff.lint.pydocstyle]
