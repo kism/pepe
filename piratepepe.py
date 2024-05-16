@@ -214,9 +214,10 @@ def scan_pepe_file(start_point: int) -> list:
 def check_file(file_path: str, gateway: str) -> bool:
     """Check if a file is heck."""
     failure = False
+    mime = magic.Magic(mime=True, uncompress=True)
 
     try:
-        file_type = magic.from_file(file_path)
+        file_type = mime.from_file(file_path)
 
         print(f"Found file type: {file_type}")
         if file_type.startswith("text"):
