@@ -9,7 +9,7 @@ borked_files=()
 
 echo
 echo "-- Checking files for incorrect content type --"
-readarray -d '' files < <(find "$directory" -type f -print0)
+readarray -d '' files < <(find "$directory" -type f \( -name "*.glb" -name "*.png" -o -name "*.mp4" -o -name "*.gif" \) -print0)
 readarray -t sorted_files < <(printf '%s\n' "${files[@]}" | sort)
 for file in "${sorted_files[@]}"; do
     echo "FILE checking: \"$file\"..."
