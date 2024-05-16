@@ -22,7 +22,7 @@ for file in "${sorted_files[@]}"; do
 done
 
 
-if [ "$1" == "--quick" ]; then
+if [ "$1" != "--quick" ]; then
     echo
     echo "-- Checking AV files with ffmpeg --"
     readarray -d '' files < <(find "$directory" -type f \( -name "*.png" -o -name "*.mp4" -o -name "*.gif" \) -print0)
