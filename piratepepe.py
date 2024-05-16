@@ -388,7 +388,6 @@ def grab_pepe_json(pepe_ipfs: str) -> str:
             response = None
         except requests.exceptions.ReadTimeout:
             add_to_ipfs_shitlist(gateway, "ReadTimeout")
-            print("ReadTimeout")
             response = None
 
         if not response:
