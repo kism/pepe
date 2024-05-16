@@ -424,8 +424,8 @@ def process_pepes(pepe_list: str) -> None:
             files_skipped.append("Entire Pepe Json: " + pepe_ipfs)
 
 
-def __custom_dict_sort(item: list) -> int:
-    return item[1]["nfails"]
+# def __custom_dict_sort(item: list) -> int:
+#     return item[1]["nfails"]
 
 
 def main() -> None:
@@ -443,7 +443,7 @@ def main() -> None:
     if len(shitlist.items()) > 0:
         print("ipfs gateway scoreboard:")
         try:
-            for gateway, failures in dict(sorted(shitlist.items(), key=__custom_dict_sort)):
+            for gateway, failures in dict(sorted(shitlist.items(), key="nfails")):
                 print(f"Gateway: {gateway}")
                 print(f"    Fails: {failures['nfails']}")
                 print(" Specific:")
