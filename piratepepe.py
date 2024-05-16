@@ -28,6 +28,7 @@ output_folder = "output"
 slow_mode = False
 shitlist = {}
 headers = {"User-Agent": "Safari/537.3"}
+HTTP_TIMEOUT = 10
 
 ipfs_gateway_list = [
     "https://gateway.pinata.cloud/ipfs/",
@@ -218,6 +219,7 @@ def check_file(file_path: str, gateway: str) -> bool:
     try:
         with open(file_path) as f:
             file_type = mime.from_buffer(f)
+            print("fFound file type: {file_type}")
             if file_type.startswith("text"):
                 add_to_ipfs_shitlist(gateway, f"FileWrongFormat {file_type}")
                 failure = True
@@ -228,7 +230,7 @@ def check_file(file_path: str, gateway: str) -> bool:
                     failure = True
 
     except TypeError as err:
-        # add_to_ipfs_shitlist(gateway, f"FileWrongFormat {err}")
+        add_to_ipfs_shitlist(gateway, f"FileWrongFormat {err}")
         # failure = True
         pass
     except FileNotFoundError:
@@ -254,13 +256,9 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
 
         print(f"Attempting to download Pepe NFT Asset: '{file_name}' from: {url}")
 
-        timeout = 10
-        # if url.endswith("mp4"):
-        #     timeout = 240  # 4 minutes, IPFS is slow
-
         # Try download the file
         try:
-            with requests.get(url, stream=True, headers=headers, timeout=timeout) as r, open(file_path, "wb") as f:
+            with requests.get(url, stream=True, headers=headers, timeout=HTTP_TIMEOUT) as r, open(file_path, "wb") as f:
                 for chunk in r.iter_content(chunk_size=8192):
                     print(".", end="")
                     # If you have chunk encoded response uncomment if
@@ -278,7 +276,7 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
                 print("gateway might not have large file support")
         except (requests.exceptions.ReadTimeout, ReadTimeoutError):
             print()
-            print(f"Timeout of {timeout} seconds reached")
+            print(f"Timeout of {HTTP_TIMEOUT} seconds reached")
             add_to_ipfs_shitlist(gateway, "ReadTimeout")
             gw_failure = True
 
