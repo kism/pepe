@@ -448,9 +448,6 @@ def main() -> None:
             for error, count in sorted_fails.items():
                 print(f"               {count} {error}")
 
-    else:
-        print(f"{Fore.RED}Every ipfs gateway failed lmao{Style.RESET_ALL}")
-
     if len(files_skipped) > 0:
         print("Some Downloads failed")
         print()
