@@ -445,12 +445,12 @@ def main() -> None:
                 print(f"Gateway: {gateway}")
                 print(f"    Fails: {failures['nfails']}")
                 print(" Specific:")
-                for error, count in failures["fails"]:
+                for error, count in failures["fails"].items():
                     print(f"      {error}: {count}")
         except (ValueError, TypeError) as exc:
             print("lmao the sort failed")
             print(exc)
-            for gateway, score in shitlist.items():
+            for gateway, score in sorted_shitlist.items():
                 print(f"Gateway: {gateway}")
                 print(f"  Fails: {score}")
 
