@@ -232,8 +232,13 @@ def check_file(file_path: str, gateway: str) -> bool:
     except TypeError as err:
         add_to_ipfs_shitlist(gateway, f"FileWrongFormat {err}")
         failure = True
+
         with open(file_path) as f:
-            print(f.read())
+            lines = f.read().splitlines()
+            for index, line in enumerate(lines):
+                print(line)
+                if index >= 3:
+                    break
     except FileNotFoundError:
         pass
 
