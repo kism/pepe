@@ -412,7 +412,7 @@ def process_pepes(pepe_list: str) -> None:
     for index, pepe_ipfs in enumerate(pepe_list):
         print()
         print(
-            f"{Back.WHITE}{Fore.BLACK} Looking for {Fore.GREEN}Pepe{Fore.BLACK} {index} and his NFT json... {Style.RESET_ALL}",
+            f"{Back.WHITE}{Fore.BLACK} Looking for {Fore.GREEN}Pepe{Fore.BLACK} {index + 1} and his NFT json... {Style.RESET_ALL}",
         )
 
         pepe_nft_json = grab_pepe_json(pepe_ipfs)
