@@ -225,8 +225,8 @@ def check_file(file_path: str, gateway: str) -> bool:
                     failure = True
 
     except TypeError as err:
-        add_to_ipfs_shitlist(gateway, f"FileWrongFormat {err}")
-        failure = True
+        # add_to_ipfs_shitlist(gateway, f"FileWrongFormat {err}")
+        # failure = True
     except FileNotFoundError:
         pass
 
@@ -258,12 +258,14 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
         try:
             with requests.get(url, stream=True, headers=headers, timeout=timeout) as r, open(file_path, "wb") as f:
                 for chunk in r.iter_content(chunk_size=8192):
+                    print(".", end='')
                     # If you have chunk encoded response uncomment if
                     # and set chunk_size parameter to None.
                     # if chunk:
                     f.write(chunk)
-
+            print()
         except requests.exceptions.ConnectionError:
+            print()
             print(f"{Fore.RED}Download Failed{Style.RESET_ALL}")
             if not url.endswith("mp4"):
                 add_to_ipfs_shitlist(gateway, "ConnectionError")
@@ -271,6 +273,7 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
             else:
                 print("gateway might not have large file support")
         except (requests.exceptions.ReadTimeout, ReadTimeoutError):
+            print()
             print(f"Timeout of {timeout} seconds reached")
             add_to_ipfs_shitlist(gateway, "ReadTimeout")
             gw_failure = True
