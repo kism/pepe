@@ -438,21 +438,16 @@ def main() -> None:
 
     if len(shitlist.items()) > 0:
         print("ipfs gateway scoreboard:")
-        try:
-            sorted_shitlist = dict(sorted(shitlist.items(), key=lambda item: item[1]["nfails"]))
-            print(sorted_shitlist)
-            for gateway, failures in sorted_shitlist.items():
-                print(f"Gateway: {gateway}")
-                print(f"    Fails: {failures['nfails']}")
-                print(" Specific:")
-                for error, count in failures["fails"].items():
-                    print(f"      {error}: {count}")
-        except (ValueError, TypeError) as exc:
-            print("lmao the sort failed")
-            print(exc)
-            for gateway, score in sorted_shitlist.items():
-                print(f"Gateway: {gateway}")
-                print(f"  Fails: {score}")
+        sorted_shitlist = dict(sorted(shitlist.items(), key=lambda item: item[1]["nfails"]))
+        print(sorted_shitlist)
+        for gateway, failures in sorted_shitlist.items():
+            print(f"Gateway: {gateway}")
+            print(f"    Fails: {failures['nfails']}")
+            print(" Specific:")
+            sorted_fails = dict(sorted(failures.items(), key=lambda item: item[1]))
+            for error, count in sorted_fails.items():
+                print(f"      {error}: {count}")
+
 
     else:
         print(f"{Fore.RED}Every ipfs gateway failed lmao{Style.RESET_ALL}")
