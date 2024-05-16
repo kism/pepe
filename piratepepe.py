@@ -438,12 +438,12 @@ def main() -> None:
 
     if len(shitlist.items()) > 0:
         print("ipfs gateway scoreboard:")
-        sorted_shitlist = dict(sorted(shitlist.items(), key=lambda item: item[1]["nfails"]))
+        sorted_shitlist = dict(sorted(shitlist.items(), key=lambda item: item[1]["nfails"], reverse=True))
         for gateway, failures in sorted_shitlist.items():
             print(f"Gateway: {gateway}")
             print(f"    Fails: {failures['nfails']}")
             print(" Specific:")
-            sorted_fails = dict(sorted(failures["fails"].items(), key=lambda item: item[1]))
+            sorted_fails = dict(sorted(failures["fails"].items(), key=lambda item: item[1], reverse=True))
             for error, count in sorted_fails.items():
                 print(f"           {count}: {error}")
 
