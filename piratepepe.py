@@ -452,9 +452,11 @@ def main() -> None:
 
     if len(files_skipped) > 0:
         print("Some Downloads failed")
+        print()
         print("MISSING Pepe Assets:")
         for file in files_skipped:
             print(f" {file}")
+        print()
         print("Run the script again to try again.")
         print(
             "You might want to find some new ipfs gateways and add them to the script, "
