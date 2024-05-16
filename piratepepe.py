@@ -436,7 +436,7 @@ def process_pepes(pepe_list: str) -> None:
 
 
 def __custom_dict_sort(item: list) -> int:
-    return item[1]["fails"]
+    return item[1]["nfails"]
 
 
 def main() -> None:
@@ -460,7 +460,7 @@ def main() -> None:
                 print(" Specific:")
                 for error, count in failures["fails"]:
                     print(f"      {error}: {count}")
-        except ValueError as exc:
+        except (ValueError, TypeError) as exc:
             print("Lmao")
             print(exc)
             for gateway, score in shitlist.items():
