@@ -453,7 +453,7 @@ def main() -> None:
     if len(files_skipped) > 0:
         print("Some Downloads failed")
         print()
-        print("MISSING Pepe Assets:")
+        print(f"{Fore.RED}Missing Pepe Assets{Style.RESET_ALL}:")
         for file in files_skipped:
             print(f" {file}")
         print()
