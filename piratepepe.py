@@ -249,7 +249,10 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
 
         # Try download the file
         try:
-            with requests.get(url, stream=True, headers=headers, timeout=HTTP_TIMEOUT) as r, open(file_path, "wb") as f:
+            with (
+                requests.get(url, stream=True, headers=headers, timeout=HTTP_TIMEOUT * 2) as r,
+                open(file_path, "wb") as f,
+            ):
                 for chunk in r.iter_content(chunk_size=8192):
                     print(".", end="")
                     # If you have chunk encoded response uncomment if
