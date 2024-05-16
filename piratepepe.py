@@ -214,31 +214,15 @@ def scan_pepe_file(start_point: int) -> list:
 def check_file(file_path: str, gateway: str) -> bool:
     """Check if a file is heck."""
     failure = False
-    mime = magic.Magic(mime=True)
 
     try:
-        with open(file_path) as f:
-            file_type = mime.from_buffer(f)
-            print(f"Found file type: {file_type}")
-            if file_type.startswith("text"):
-                add_to_ipfs_shitlist(gateway, f"FileWrongFormat {file_type}")
-                failure = True
-            else:  # I think this will never run
-                f.seek(0, os.SEEK_END)
-                if f.tell() == 0:  # If file is empty
-                    add_to_ipfs_shitlist(gateway, "FileEmpty")
-                    failure = True
+        file_type = magic.from_file(file_path)
 
-    except TypeError as err:
-        add_to_ipfs_shitlist(gateway, f"FileWrongFormat {err}")
-        failure = True
+        print(f"Found file type: {file_type}")
+        if file_type.startswith("text"):
+            add_to_ipfs_shitlist(gateway, f"FileWrongFormat {file_type}")
+            failure = True
 
-        with open(file_path) as f:
-            lines = f.read().splitlines()
-            for index, line in enumerate(lines):
-                print(line)
-                if index >= 3:
-                    break
     except FileNotFoundError:
         pass
 
