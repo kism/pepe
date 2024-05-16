@@ -27,6 +27,7 @@ start_point = 0
 output_folder = "output"
 slow_mode = False
 shitlist = {}
+headers = {"User-Agent": "Safari/537.3"}
 
 ipfs_gateway_list = [
     "https://gateway.pinata.cloud/ipfs/",
@@ -255,7 +256,7 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
 
         # Try download the file
         try:
-            with requests.get(url, stream=True, timeout=timeout) as r, open(file_path, "wb") as f:
+            with requests.get(url, stream=True, headers=headers, timeout=timeout) as r, open(file_path, "wb") as f:
                 for chunk in r.iter_content(chunk_size=8192):
                     # If you have chunk encoded response uncomment if
                     # and set chunk_size parameter to None.
@@ -380,7 +381,7 @@ def grab_pepe_json(pepe_ipfs: str) -> str:
         # has a json file that points to the other assets on ipfs
         response = None
         try:
-            response = requests.get(request, timeout=5)
+            response = requests.get(request, headers=headers, timeout=5)
             if not response:
                 add_to_ipfs_shitlist(gateway, "None")
         except requests.exceptions.ConnectionError:
