@@ -249,9 +249,9 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
 
         print(f"Attempting to download Pepe NFT Asset: '{file_name}' from: {url}")
 
-        timeout = 1200  # 20 Minutes, IPFS is slow
+        timeout = 60  # 1 minute, IPFS is slow
         if url.endswith("mp4"):
-            timeout = 12000  # 2 Hours, IPFS is slow
+            timeout = 240  # 4 minutes, IPFS is slow
 
         # Try download the file
         try:
