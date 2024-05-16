@@ -175,13 +175,16 @@ def add_to_ipfs_shitlist(gateway: str, error: str) -> None:
     if gateway not in shitlist:
         shitlist[gateway] = {}
 
-    if "fails" not in shitlist[gateway]:
-        shitlist[gateway]["fails"] = 0
-    shitlist[gateway]["fails"] += 1
+    if "nfails" not in shitlist[gateway]:
+        shitlist[gateway]["nfails"] = 0
+    shitlist[gateway]["nfails"] += 1
 
-    if error not in shitlist[gateway]:
-        shitlist[gateway][error] = 0
-    shitlist[gateway][error] += 1
+    if "fails" not in shitlist[gateway]:
+        shitlist[gateway]["fails"] = {}
+
+    if error not in shitlist[gateway]["fails"]:
+        shitlist[gateway]["fails"][error] = 0
+    shitlist[gateway]["fails"][error] += 1
 
 
 def scan_pepe_file(start_point: int) -> list:
@@ -259,7 +262,7 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
         try:
             with requests.get(url, stream=True, headers=headers, timeout=timeout) as r, open(file_path, "wb") as f:
                 for chunk in r.iter_content(chunk_size=8192):
-                    print(".", end='')
+                    print(".", end="")
                     # If you have chunk encoded response uncomment if
                     # and set chunk_size parameter to None.
                     # if chunk:
@@ -453,9 +456,9 @@ def main() -> None:
         try:
             for gateway, failures in dict(sorted(shitlist.items(), key=__custom_dict_sort)):
                 print(f"Gateway: {gateway}")
-                print(f"    Fails: {failures['fails']}")
+                print(f"    Fails: {failures['nfails']}")
                 print(" Specific:")
-                for error, count in failures:
+                for error, count in failures["fails"]:
                     print(f"      {error}: {count}")
         except ValueError as exc:
             print("Lmao")
