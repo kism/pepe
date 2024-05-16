@@ -439,7 +439,7 @@ def main() -> None:
     if len(shitlist.items()) > 0:
         print("ipfs gateway scoreboard:")
         try:
-            for gateway, failures in dict(sorted(shitlist.items(), key=lambda item: item[1]["nfails"])):
+            for gateway, failures in dict(sorted(shitlist.items(), key=lambda item: item[1]["nfails"])).items():
                 print(f"Gateway: {gateway}")
                 print(f"    Fails: {failures['nfails']}")
                 print(" Specific:")
