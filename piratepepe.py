@@ -219,7 +219,7 @@ def check_file(file_path: str, gateway: str) -> bool:
     try:
         with open(file_path) as f:
             file_type = mime.from_buffer(f)
-            print("fFound file type: {file_type}")
+            print(f"Found file type: {file_type}")
             if file_type.startswith("text"):
                 add_to_ipfs_shitlist(gateway, f"FileWrongFormat {file_type}")
                 failure = True
@@ -231,8 +231,9 @@ def check_file(file_path: str, gateway: str) -> bool:
 
     except TypeError as err:
         add_to_ipfs_shitlist(gateway, f"FileWrongFormat {err}")
-        # failure = True
-        pass
+        failure = True
+        with open(file_path) as f:
+            print(f)
     except FileNotFoundError:
         pass
 
