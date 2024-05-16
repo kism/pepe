@@ -263,7 +263,7 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
             with requests.get(url, stream=True, timeout=timeout) as r, open(file_path, "wb") as f:
                 shutil.copyfileobj(r.raw, f)
         except requests.exceptions.ConnectionError:
-            print(f"{Fore.RED}Download Failed{Style.RESET_ALL}", end=", ")
+            print(f"{Fore.RED}Download Failed{Style.RESET_ALL}")
             if not url.endswith("mp4"):
                 add_to_ipfs_shitlist(gateway, "ConnectionError")
                 gw_failure = True
@@ -381,7 +381,8 @@ def grab_pepe_json(pepe_ipfs: str) -> str:
         response = None
         try:
             response = requests.get(request, timeout=5)
-            print()
+            if not response:
+                add_to_ipfs_shitlist(gateway, "None")
         except requests.exceptions.ConnectionError:
             add_to_ipfs_shitlist(gateway, "ConnectionError")
             response = None
@@ -433,8 +434,10 @@ def process_pepes(pepe_list: str) -> None:
             print(Fore.RED + "All is heck" + Style.RESET_ALL + " every defined ipfs gateway sucks")
             files_skipped.append("Entire Pepe Json: " + pepe_ipfs)
 
+
 def __custom_dict_sort(item: list) -> int:
     return item[1]["fails"]
+
 
 def main() -> None:
     """Main."""
@@ -454,7 +457,7 @@ def main() -> None:
             for gateway, failures in dict(sorted(shitlist.items(), key=__custom_dict_sort)):
                 print(f"Gateway: {gateway}")
                 print(f"    Fails: {failures['fails']}")
-                print( " Specific:")
+                print(" Specific:")
                 for error, count in failures:
                     print(f"      {error}: {count}")
         except ValueError as exc:
