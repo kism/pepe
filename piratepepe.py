@@ -259,7 +259,7 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
                 for chunk in r.iter_content(chunk_size=8192):
                     # If you have chunk encoded response uncomment if
                     # and set chunk_size parameter to None.
-                    #if chunk:
+                    # if chunk:
                     f.write(chunk)
 
         except requests.exceptions.ConnectionError:
@@ -421,7 +421,7 @@ def process_pepes(pepe_list: str) -> None:
         pepe_nft_json = grab_pepe_json(pepe_ipfs)
 
         if pepe_nft_json:
-            print(f"Found a Rare Pepe! : {pepe_nft_json["name"]}")
+            print(f"Found a Rare Pepe! : {pepe_nft_json['name']}")
             process_pepe_nft_json(pepe_nft_json)
         else:
             print(f"{Fore.RED}All is heck{Style.RESET_ALL} every defined ipfs gateway sucks")
