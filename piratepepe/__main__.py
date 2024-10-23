@@ -317,7 +317,7 @@ def download_pepe(url: str, file_name: str) -> bool:
     return file_downloaded
 
 
-def process_pepe_nft_json(pepe_nft_json: str) -> None:
+def process_pepe_nft_json(pepe_nft_json: dict) -> None:
     """Process the json for the toke, call the download functions."""
     # No idea why python json uses a single quote
     nftjson = str(pepe_nft_json).replace("'", '"')
@@ -359,9 +359,9 @@ def process_ipfs_gateway_list(ipfs_gateway_list: list) -> list:
     return list(dict.fromkeys(ipfs_gateway_list))
 
 
-def grab_pepe_json(pepe_ipfs: str) -> str | None:
+def grab_pepe_json(pepe_ipfs: str) -> dict | None:
     """Iterate through gateways to get Pepe's json."""  # since they probably suck
-    pepe_nft_json: str | None = None
+    pepe_nft_json: dict | None = None
     failure = False
 
     random.shuffle(ipfs_gateway_list)
