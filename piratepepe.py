@@ -474,8 +474,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Matt Furie rarepepes.fun downloader")
     parser.add_argument("-d", "--debug", action="store_true", help="Increase output verbosity")
     parser.add_argument("--slow", action="store_true", help="Wait a minute before each download attempt")
-    parser.add_argument("-s", "--start", type=int, default=0, help="Number of times to run")
-    parser.add_argument("-o", "--output", type=str, default="output", help="Number of times to run")
+    parser.add_argument("-s", "--start", type=int, default=0, help="n Pepe to start from")
+    parser.add_argument("-o", "--output", type=str, default="output", help="Output folder")
     args = parser.parse_args()
     start_point = args.start + -1
     debug = args.debug
