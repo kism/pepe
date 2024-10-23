@@ -7,14 +7,17 @@ authors = ["Kieran Gee <kieran.lost.the.game@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 requests = "^2.31.0"
 colorama = "^0.4.6"
 python-magic = "^0.4.27"
 
 [tool.poetry.group.dev.dependencies]
-pylance = "^0.10.15"
-ruff = "^0.4.3"
+pylance = "*"
+ruff = "*"
+mypy = "*"
+types-requests = "*"
+types-colorama = "*"
 
 [build-system]
 requires = ["poetry-core"]
@@ -40,6 +43,9 @@ ignore = [
     "TD003", # Verbose TODO, only I work on this project
 ]
 
+[tool.ruff.lint.flake8-pytest-style]
+fixture-parentheses = false
+
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
@@ -48,3 +54,16 @@ quote-style = "double"
 indent-style = "space"
 docstring-code-format = true
 docstring-code-line-length = 40
+
+[tool.mypy]
+files = ["{{cookiecutter.__app_package}}", "tests"]
+namespace_packages = true
+explicit_package_bases = true
+show_error_codes = true
+strict = false
+enable_error_code = [
+    "ignore-without-code",
+    "redundant-expr",
+    "truthy-bool",
+    "type-arg",
+]

@@ -26,7 +26,7 @@ files_skipped = []
 start_point = 0
 output_folder = "output"
 slow_mode = False
-shitlist = {}
+shitlist: dict = {}
 headers = {"User-Agent": "Safari/537.3"}
 HTTP_TIMEOUT = 5
 
@@ -190,10 +190,10 @@ def add_to_ipfs_shitlist(gateway: str, error: str) -> None:
 
 def scan_pepe_file(start_point: int) -> list:
     """Scan pepe_txt var for ipfs links."""
-    pepe_list = pepes_txt
+    pepe_list_str = pepes_txt
 
-    listfresh = []
-    for element in pepe_list.split():
+    listfresh: list = []
+    for element in pepe_list_str.split():
         # Ignore everything that doesn't start with a Q since that's what all them things seem to start with
         if element[0] == "Q":
             listfresh.append(element.strip())
@@ -350,7 +350,7 @@ def process_pepe_nft_json(pepe_nft_json: str) -> None:
     download_pepe(pepe_nft_json["hifi_media"]["video"], pepe_nft_json["name"] + " - " + "video.mp4")
 
 
-def process_ipfs_gateway_list(ipfs_gateway_list: str) -> list:
+def process_ipfs_gateway_list(ipfs_gateway_list: list) -> list:
     """Clean up the ipfs gateway list."""
     for item, count in Counter(ipfs_gateway_list).items():
         if count > 1:
@@ -359,9 +359,9 @@ def process_ipfs_gateway_list(ipfs_gateway_list: str) -> list:
     return list(dict.fromkeys(ipfs_gateway_list))
 
 
-def grab_pepe_json(pepe_ipfs: str) -> str:
+def grab_pepe_json(pepe_ipfs: str) -> str | None:
     """Iterate through gateways to get Pepe's json."""  # since they probably suck
-    pepe_nft_json = None
+    pepe_nft_json: str | None = None
     failure = False
 
     random.shuffle(ipfs_gateway_list)
@@ -410,7 +410,7 @@ def grab_pepe_json(pepe_ipfs: str) -> str:
     return pepe_nft_json
 
 
-def process_pepes(pepe_list: str) -> None:
+def process_pepes(pepe_list: list) -> None:
     """Iterate through the pepes."""
     for pepe_ipfs in pepe_list:
         print()
