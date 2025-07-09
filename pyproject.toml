@@ -37,10 +37,12 @@ ignore = [
     "PTH", # builtin open is fine
 
     # Specific rules
-    "T201", # Print is fine at this scale
-    "TD002", # Verbose TODO, only I work on this project
-    "TD002", # Verbose TODO, only I work on this project
-    "TD003", # Verbose TODO, only I work on this project
+    "T201",   # Print is fine at this scale
+    "TD002",  # Verbose TODO, only I work on this project
+    "TD002",  # Verbose TODO, only I work on this project
+    "TD003",  # Verbose TODO, only I work on this project
+    "ISC001", # KG conflict in the formatter
+    "COM812", # KG conflict in the formatter
 ]
 
 [tool.ruff.lint.flake8-pytest-style]
