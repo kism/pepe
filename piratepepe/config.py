@@ -11,7 +11,6 @@ class AppConfig:
     output_folder: Path = Path("output")
     start_point: int = 0
     http_timeout: int = 5
-    debug: bool = False
     slow_mode: bool = False
     headers: dict[str, str] = field(default_factory=lambda: {"User-Agent": "Safari/537.3"})
 

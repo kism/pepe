@@ -13,6 +13,7 @@ dependencies = [
     "tqdm>=4.67.1",
     "pydantic>=2.12.5",
     "typed-ffmpeg>=3.8.1",
+    "rich>=14.2.0",
 ]
 
 [project.optional-dependencies]

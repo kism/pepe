@@ -11,9 +11,13 @@ from . import skipped_files
 from .config import config
 from .helpers import print_debug, scan_pepe_file
 from .ipfs_gateways import gateway_handler
+from .logger import get_logger, setup_logger
 from .models import PepeNFT
 from .pepe_download import download_pepe
 from .pepe_json import grab_pepe_json
+
+logger = get_logger(__name__)
+setup_logger()
 
 
 def process_pepe_nft_json(pepe_nft: PepeNFT, pepe_ipfs: str) -> None:
@@ -98,13 +102,15 @@ def main() -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Matt Furie rarepepes.fun downloader")
-    parser.add_argument("-d", "--debug", action="store_true", help="Increase output verbosity")
     parser.add_argument("--slow", action="store_true", help="Wait a minute before each download attempt")
     parser.add_argument("-s", "--start", type=int, default=0, help="n Pepe to start from")
     parser.add_argument("-o", "--output", type=Path, default="output", help="Output folder")
+    parser.add_argument(
+        "-v", "--verbose", action="count", default=0, help="Increase verbosity level (can be used multiple times)"
+    )
     args = parser.parse_args()
+    setup_logger(verbosity=args.verbose)
 
-    config.debug = args.debug
     config.output_folder = args.output
     config.start_point = args.start - 1
     config.slow_mode = args.slow

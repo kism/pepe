@@ -7,13 +7,12 @@ from pathlib import Path
 import requests
 from colorama import Back, Fore, Style
 from requests import RequestException
-from tqdm import tqdm
+from tqdm.rich import tqdm
 from urllib3.exceptions import ReadTimeoutError
 
 from . import skipped_files
 from .checker import check_file
 from .config import config
-from .constants import FUN_TQDM_LOADING_BAR
 from .ipfs_gateways import gateway_handler
 
 
@@ -42,7 +41,6 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
                     unit_scale=True,
                     unit_divisor=1024,
                     leave=False,
-                    ascii=FUN_TQDM_LOADING_BAR,
                 ) as pbar:
                     for chunk in r.iter_content(chunk_size=8192):
                         f.write(chunk)
