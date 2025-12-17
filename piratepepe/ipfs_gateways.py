@@ -108,13 +108,5 @@ class IPFSGatewayHandler:
         for gateway_url, gateway in sorted_gateways:
             print(f"  {gateway_url}: {gateway.failures} failures, {gateway.successes} successes")
 
-        if not gateways_with_failures:
-            return
-
-        print("\nGateway Statistics:")
-        sorted_gateways = sorted(gateways_with_failures.items(), key=lambda x: x[1].failures, reverse=True)
-        for gateway_url, gateway in sorted_gateways:
-            print(f"  {gateway_url}: {gateway.failures} failures, {gateway.successes} successes")
-
 
 gateway_handler = IPFSGatewayHandler(IPFS_GATEWAY_LIST)

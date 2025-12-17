@@ -18,7 +18,6 @@ AV_EXTENSIONS = [".mp4", ".gif"]
 
 def _check_file_type(file_path: Path) -> bool:
     """Check if file has correct content type using python-magic."""
-    print(f'FILE checking: "{file_path}"...')
     mime = magic.from_file(str(file_path), mime=True)
 
     expected_mime = MIME_MAP.get(file_path.suffix.lower())
@@ -36,8 +35,6 @@ def _check_file_type(file_path: Path) -> bool:
 
 def _check_av_file_with_ffmpeg(file_path: Path) -> bool:
     """Check AV file integrity using ffmpeg."""
-    print(f'FFMPEG checking: "{file_path}"...')
-
     try:
         # Use ffmpeg to validate the file
         # -v error: only show errors
@@ -58,8 +55,8 @@ def _check_av_file_with_ffmpeg(file_path: Path) -> bool:
             print(f' Adding "{file_path}" to the borked file list')
             return False
 
-        print(" FFMPEG Pass!")
-        return True
+    print(" FFMPEG Pass!")
+    return True
 
 
 def _check_av_files(files: list[Path], existing_borked: list[Path]) -> list[Path]:
@@ -73,7 +70,14 @@ def _check_av_files(files: list[Path], existing_borked: list[Path]) -> list[Path
 
 def check_file(file_path: Path) -> bool:
     """Check a single file for content type and integrity issues."""
+    will_check_av = file_path.suffix.lower() in AV_EXTENSIONS
+
+    if will_check_av:
+        print(f" Checking AV file: {file_path.name}")
+    else:
+        print(f" Checking file: {file_path.name}")
+
     if not _check_file_type(file_path):
         return False
 
-    return not (file_path.suffix.lower() in AV_EXTENSIONS and not _check_av_file_with_ffmpeg(file_path))
+    return not (will_check_av and not _check_av_file_with_ffmpeg(file_path))

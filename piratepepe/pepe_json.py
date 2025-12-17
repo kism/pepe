@@ -19,7 +19,7 @@ def grab_pepe_json(pepe_ipfs: str) -> PepeNFT | None:
     output_dir = config.output_folder
     for filepath in output_dir.glob("*.json"):
         if pepe_ipfs in filepath.name:
-            print(f"JSON for {pepe_ipfs} already exists at {filepath}, loading from disk.")
+            print(f"JSON already exists at {filepath}, loading from disk.")
             json_data = json.loads(filepath.read_text())
             try:
                 return PepeNFT(**json_data)
