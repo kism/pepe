@@ -78,23 +78,10 @@ class IPFSGatewayHandler:
 
     def get_weighted_gateways(self) -> list[str]:
         """Get gateways sorted by weighted random selection."""
-        gateway_urls = list(self.gateways.keys())
-        weights = [self.gateways[url].weight for url in gateway_urls]
+        items = list(self.gateways.items())
 
-        # Return all gateways but sorted by weighted random
-        # Sample without replacement to get all gateways in weighted order
-        result = []
-        remaining_gateways = gateway_urls[:]
-        remaining_weights = weights[:]
-
-        while remaining_gateways:
-            selected = random.choices(remaining_gateways, weights=remaining_weights, k=1)[0]
-            result.append(selected)
-            idx = remaining_gateways.index(selected)
-            remaining_gateways.pop(idx)
-            remaining_weights.pop(idx)
-
-        return result
+        # Sort by weighted random key
+        return [url for url, _ in sorted(items, key=lambda x: random.random() ** (1 / x[1].weight))]
 
     def try_gateways(self, callback: Callable[[str], tuple[bool, str | None]]) -> bool:
         """Try gateways in weighted order using the provided callback."""
@@ -113,6 +100,14 @@ class IPFSGatewayHandler:
     def print_statistics(self) -> None:
         """Print gateway failure statistics."""
         gateways_with_failures = {url: gw for url, gw in self.gateways.items() if gw.failures > 0}
+        if not gateways_with_failures:
+            return
+
+        print("\nGateway Statistics:")
+        sorted_gateways = sorted(gateways_with_failures.items(), key=lambda x: x[1].failures, reverse=True)
+        for gateway_url, gateway in sorted_gateways:
+            print(f"  {gateway_url}: {gateway.failures} failures, {gateway.successes} successes")
+
         if not gateways_with_failures:
             return
 

@@ -5,7 +5,6 @@ from pathlib import Path
 
 import magic
 
-
 MIME_MAP = {
     ".gif": "image/gif",
     ".glb": "data",
@@ -25,14 +24,11 @@ def _check_file_type(file_path: Path) -> bool:
     expected_mime = MIME_MAP.get(file_path.suffix.lower())
     if expected_mime is None:
         print(f" Unknown file extension: {file_path.suffix}")
-        print(f' Adding "{file_path}" to the borked file list')
         return False
 
     if mime != expected_mime:
         print(f" Expected MIME: {expected_mime}, Detected MIME: {mime}")
-        print(f' Adding "{file_path}" to the borked file list')
         return False
-
 
     print(" MIME Pass!")
     return True
@@ -64,11 +60,6 @@ def _check_av_file_with_ffmpeg(file_path: Path) -> bool:
 
         print(" FFMPEG Pass!")
         return True
-
-
-def _check_file_types(files: list[Path]) -> list[Path]:
-    """Check file types for all files and return borked files."""
-    return [file_path for file_path in files if not _check_file_type(file_path)]
 
 
 def _check_av_files(files: list[Path], existing_borked: list[Path]) -> list[Path]:

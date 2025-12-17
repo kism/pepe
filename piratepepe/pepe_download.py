@@ -58,7 +58,7 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
             return (False, error_name)
 
         # Check if file is valid
-        if check_file(file_path):
+        if not check_file(file_path):
             print("Gateway didn't give us the file correctly, removing file if it exists")
             with contextlib.suppress(FileNotFoundError):
                 file_path.unlink()
