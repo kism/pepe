@@ -7,7 +7,7 @@ import magic
 
 MIME_MAP = {
     ".gif": "image/gif",
-    ".glb": "data",
+    ".glb": "application/octet-stream",
     ".png": "image/png",
     ".mp4": "video/mp4",
     ".json": "application/json",
