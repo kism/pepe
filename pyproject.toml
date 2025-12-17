@@ -36,8 +36,7 @@ extend-fixable = ["B", "I001"]
 select = ["ALL"] # include all the rules, including new ones
 ignore = [
     # Modules
-    "DJ",  # Django
-    "PTH", # builtin open is fine
+    "DJ", # Django
 
     # Specific rules
     "T201",   # Print is fine at this scale

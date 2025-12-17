@@ -5,6 +5,7 @@ from collections import Counter
 from collections.abc import Callable
 
 from .config import config
+from .constants import IPFS_GATEWAY_LIST
 
 
 class IPFSGatewayHandler:
@@ -95,3 +96,6 @@ class IPFSGatewayHandler:
         for gateway, failure_count in sorted_gateways:
             weight = self.weights.get(gateway, 0)
             print(f"  {gateway}: {failure_count} failures (weight: {weight:.3f})")
+
+
+gateway_handler = IPFSGatewayHandler(IPFS_GATEWAY_LIST)
