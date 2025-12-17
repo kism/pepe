@@ -24,7 +24,7 @@ def grab_pepe_json(pepe_ipfs: str) -> PepeNFT | None:
             try:
                 return PepeNFT(**json_data)
             except ValidationError as e:
-                summarize_validation_error(f"Validation error for existing JSON at {filepath}:", e)
+                summarize_validation_error(f"existing JSON at {filepath}:", e)
                 break
 
     pepe_nft: PepeNFT | None = None
@@ -58,7 +58,7 @@ def grab_pepe_json(pepe_ipfs: str) -> PepeNFT | None:
         except KeyError as e:
             return (False, type(e).__name__)
         except ValidationError as e:
-            summarize_validation_error(f"Validation error for JSON from {request}:", e)
+            summarize_validation_error(f"JSON from {request}:", e)
             return (False, "ValidationError")
 
         return (True, None)

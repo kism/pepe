@@ -76,7 +76,8 @@ def summarize_validation_error(context: str, e: ValidationError) -> None:
     def print_red(text: str) -> None:
         print(f"{Fore.RED}{text}{Style.RESET_ALL}")
 
-    print_red(context)
+    print_red("Validation error:")
+    print_red(" " + context)
     if missing:
         print_red(f"  Missing fields: {', '.join(missing)}")
     if extra:
