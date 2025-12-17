@@ -1,27 +1,30 @@
-[tool.poetry]
-name = "pepe"
-version = "0.1.0"
+[project]
+name = "piratepepe"
+version = "0.1.1"
 description = "Download the official Matt Furie PEPE NFTs"
-license = "MIT"
-authors = ["Kieran Gee <kieran.lost.the.game@gmail.com>"]
 readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Kieran Gee", email = "kieran.lost.the.game@gmail.com" }]
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.32.5",
+    "colorama>=0.4.6",
+    "python-magic>=0.4.27",
+    "tqdm>=4.67.1",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-requests = "^2.31.0"
-colorama = "^0.4.6"
-python-magic = "^0.4.27"
-
-[tool.poetry.group.dev.dependencies]
-pylance = "*"
-ruff = "*"
-mypy = "*"
-types-requests = "*"
-types-colorama = "*"
+[project.optional-dependencies]
+dev = ["ruff", "mypy", "types-requests", "types-colorama", "types-tqdm"]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.9.15,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = ""
+
+[project.scripts]
+piratepepe = "piratepepe.__main__:main"
 
 [tool.ruff]
 cache-dir = "~/.cache/ruff"
@@ -43,6 +46,7 @@ ignore = [
     "TD003",  # Verbose TODO, only I work on this project
     "ISC001", # KG conflict in the formatter
     "COM812", # KG conflict in the formatter
+    "S311",   # KG No crypto done here
 ]
 
 [tool.ruff.lint.flake8-pytest-style]
@@ -58,11 +62,11 @@ docstring-code-format = true
 docstring-code-line-length = 40
 
 [tool.mypy]
-files = ["{{cookiecutter.__app_package}}", "tests"]
+files = ["piratepepe"]
 namespace_packages = true
 explicit_package_bases = true
 show_error_codes = true
-strict = false
+strict = true
 enable_error_code = [
     "ignore-without-code",
     "redundant-expr",
