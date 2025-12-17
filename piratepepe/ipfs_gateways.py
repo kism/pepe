@@ -19,6 +19,7 @@ class IPFSGateway:
         self.url = url
         self.weight = weight
         self.failures = 0
+        self.successes = 0
         self.failure_reasons: list[str] = []
 
     def reduce_weight(self, reason: str) -> None:
@@ -30,6 +31,7 @@ class IPFSGateway:
     def increase_weight(self) -> None:
         """Increase weight due to success."""
         self.weight = min(self.weight * 1.5, _MAX_WEIGHT)
+        self.successes += 1
 
     def __repr__(self) -> str:
         """String representation of the gateway."""
@@ -117,7 +119,7 @@ class IPFSGatewayHandler:
         print("\nGateway Statistics:")
         sorted_gateways = sorted(gateways_with_failures.items(), key=lambda x: x[1].failures, reverse=True)
         for gateway_url, gateway in sorted_gateways:
-            print(f"  {gateway_url}: {gateway.failures} failures (weight: {gateway.weight:.3f})")
+            print(f"  {gateway_url}: {gateway.failures} failures, {gateway.successes} successes")
 
 
 gateway_handler = IPFSGatewayHandler(IPFS_GATEWAY_LIST)
