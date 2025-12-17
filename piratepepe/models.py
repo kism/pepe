@@ -20,3 +20,4 @@ class PepeNFT:
     image: str
     animation_url: str
     hifi_media: HifiMedia
+    pepe_ipfs: str | None = None

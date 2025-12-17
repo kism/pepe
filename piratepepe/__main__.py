@@ -3,6 +3,7 @@
 
 import argparse
 import contextlib
+import json
 import os
 import sys
 import time
@@ -146,7 +147,22 @@ def download_pepe(url: str, file_name: str) -> bool:
 def process_pepe_nft_json(pepe_nft: PepeNFT) -> None:
     """Process the json for the toke, call the download functions."""
     # No idea why python json uses a single quote
-    nftjson = str(pepe_nft).replace("'", '"')
+    import json
+
+    nftjson = json.dumps(
+        {
+            "name": pepe_nft.name,
+            "image": pepe_nft.image,
+            "animation_url": pepe_nft.animation_url,
+            "hifi_media": {
+                "video": pepe_nft.hifi_media.video,
+                "card_front": pepe_nft.hifi_media.card_front,
+                "card_back": pepe_nft.hifi_media.card_back,
+            },
+            "pepe_ipfs": pepe_nft.pepe_ipfs,
+        },
+        indent=2,
+    )
     with contextlib.suppress(FileExistsError):
         os.mkdir(config.output_folder)
 
@@ -179,6 +195,33 @@ def process_pepe_nft_json(pepe_nft: PepeNFT) -> None:
 
 def grab_pepe_json(pepe_ipfs: str) -> PepeNFT | None:
     """Iterate through gateways to get Pepe's json."""  # since they probably suck
+
+    # Check if JSON already exists on disk
+    if os.path.isdir(config.output_folder):
+        for filename in os.listdir(config.output_folder):
+            if filename.endswith(".json"):
+                filepath = os.path.join(config.output_folder, filename)
+                try:
+                    with open(filepath, "r") as f:
+                        json_data = json.load(f)
+                        if json_data.get("pepe_ipfs") == pepe_ipfs:
+                            print(f"Found existing JSON on disk: {filename}")
+                            hifi_media = HifiMedia(
+                                video=json_data["hifi_media"]["video"],
+                                card_front=json_data["hifi_media"].get("card_front"),
+                                card_back=json_data["hifi_media"].get("card_back"),
+                            )
+                            return PepeNFT(
+                                name=json_data["name"],
+                                image=json_data["image"],
+                                animation_url=json_data["animation_url"],
+                                hifi_media=hifi_media,
+                                pepe_ipfs=pepe_ipfs,
+                            )
+                except (json.JSONDecodeError, KeyError) as e:
+                    print_debug(f"Error reading {filename}: {e}")
+                    continue
+
     pepe_nft: PepeNFT | None = None
 
     def try_fetch_json(gateway: str) -> tuple[bool, str | None]:
@@ -213,6 +256,7 @@ def grab_pepe_json(pepe_ipfs: str) -> PepeNFT | None:
                 image=json_data["image"],
                 animation_url=json_data["animation_url"],
                 hifi_media=hifi_media,
+                pepe_ipfs=pepe_ipfs,
             )
 
         except RequestException as e:

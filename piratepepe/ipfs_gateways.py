@@ -77,8 +77,8 @@ class IPFSGatewayHandler:
             success, failure_reason = callback(gateway)
 
             if success:
-                return True
                 self.increase_weight(gateway)
+                return True
             if failure_reason:
                 self.reduce_weight(gateway, failure_reason)
                 print("trying next gateway...")
