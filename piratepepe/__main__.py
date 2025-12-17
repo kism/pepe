@@ -89,19 +89,7 @@ def main() -> None:
 
     gateway_handler.print_statistics()
 
-    if skipped_files.has_skipped_files():
-        print("Some Downloads failed")
-        print()
-        print(f"{Fore.RED}Missing Pepe Assets{Style.RESET_ALL}:")
-        for file in skipped_files.get_skipped_files():
-            print(f" {file}")
-        print()
-        print("Run the script again to try again.")
-        print(
-            "You might want to find some new ipfs gateways and add them to the script, "
-            "or get a new IP address since some ipfs gateways will rate-limit or block you for downloading too much.",
-        )
-    else:
+    if not skipped_files.has_skipped_files():
         print("All the Pepes should be downloaded!")
         exitcode = 0
 

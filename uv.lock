@@ -241,6 +241,7 @@ dependencies = [
     { name = "python-magic" },
     { name = "requests" },
     { name = "tqdm" },
+    { name = "typed-ffmpeg" },
 ]
 
 [package.optional-dependencies]
@@ -261,6 +262,7 @@ requires-dist = [
     { name = "requests", specifier = ">=2.32.5" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "tqdm", specifier = ">=4.67.1" },
+    { name = "typed-ffmpeg", specifier = ">=3.8.1" },
     { name = "types-colorama", marker = "extra == 'dev'" },
     { name = "types-requests", marker = "extra == 'dev'" },
     { name = "types-tqdm", marker = "extra == 'dev'" },
@@ -439,6 +441,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2", size = 169737, upload-time = "2024-11-24T20:12:22.481Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d0/30/dc54f88dd4a2b5dc8a0279bdd7270e735851848b762aeb1c1184ed1f6b14/tqdm-4.67.1-py3-none-any.whl", hash = "sha256:26445eca388f82e72884e0d580d5464cd801a3ea01e63e5601bdff9ba6a48de2", size = 78540, upload-time = "2024-11-24T20:12:19.698Z" },
+]
+
+[[package]]
+name = "typed-ffmpeg"
+version = "3.8.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/98/2d/00136baf7f29b96dbc54bffbfbddf3961dbeae546d828f5dd9c07766528f/typed_ffmpeg-3.8.1.tar.gz", hash = "sha256:008cab674c9de79b67c5d82bb64a62df91a3bdc420800bc51aab0548fc3be452", size = 645957, upload-time = "2025-12-07T04:17:00.867Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/93/cd/451014a20be88d73f17780a1aae40d583215e567f28e710ecbcabe6720a8/typed_ffmpeg-3.8.1-py3-none-any.whl", hash = "sha256:70ea5801c9e93100773cf09b037567c5fe341edebd8fb886e3fe737751159c2f", size = 697634, upload-time = "2025-12-07T04:16:59.313Z" },
 ]
 
 [[package]]

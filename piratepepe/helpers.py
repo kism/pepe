@@ -39,18 +39,6 @@ def scan_pepe_file(start_point: int) -> list[str]:
     return pepe_list
 
 
-def check_file(file_path: Path) -> bool:
-    """Check if a file is heck."""
-    mime = magic.Magic(mime=True, uncompress=True)
-
-    try:
-        file_type = mime.from_file(str(file_path))
-        print(f"Found file type: {file_type}")
-        return file_type.startswith("text")
-    except FileNotFoundError:
-        return False
-
-
 def summarize_validation_error(context: str, e: ValidationError) -> None:
     """Summarize Pydantic validation errors for debugging."""
     missing = []

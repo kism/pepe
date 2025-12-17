@@ -6,14 +6,14 @@ from pathlib import Path
 
 import requests
 from colorama import Back, Fore, Style
+from requests import RequestException
 from tqdm import tqdm
 from urllib3.exceptions import ReadTimeoutError
-from requests import RequestException
 
 from . import skipped_files
+from .checker import check_file
 from .config import config
 from .constants import FUN_TQDM_LOADING_BAR
-from .helpers import check_file
 from .ipfs_gateways import gateway_handler
 
 
@@ -74,6 +74,13 @@ def download_pepe(url: str, file_name: str) -> bool:
     """Download the asset, hardcoded to output."""
     file_downloaded = False
     file_path = Path(config.output_folder) / file_name
+
+    # Check the existing file if it exists
+    if file_path.is_file():
+        check_file_ok = check_file(file_path)
+        if not check_file_ok:
+            with contextlib.suppress(FileNotFoundError):
+                file_path.unlink()
 
     # the nft json for this collection has the ipfs.io gateway hardcoded in lmao, maybe this is normal 🤷
     stripped_url = url.replace("https://ipfs.io/ipfs/", "")
