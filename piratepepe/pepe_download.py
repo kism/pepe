@@ -8,6 +8,7 @@ import requests
 from colorama import Back, Fore, Style
 from tqdm import tqdm
 from urllib3.exceptions import ReadTimeoutError
+from requests import RequestException
 
 from . import skipped_files
 from .config import config
@@ -46,11 +47,10 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
                     for chunk in r.iter_content(chunk_size=8192):
                         f.write(chunk)
                         pbar.update(len(chunk))
-        except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, ReadTimeoutError) as e:
-            print()
+        except (RequestException, ReadTimeoutError) as e:
             error_name = type(e).__name__
+            print(f"{Fore.RED}Download Failed{Style.RESET_ALL}")
             if isinstance(e, requests.exceptions.ConnectionError):
-                print(f"{Fore.RED}Download Failed{Style.RESET_ALL}")
                 if url.endswith("mp4"):
                     print("gateway might not have large file support")
             else:
