@@ -78,11 +78,6 @@ def download_pepe(url: str, file_name: str) -> bool:
     # the nft json for this collection has the ipfs.io gateway hardcoded in lmao, maybe this is normal 🤷
     stripped_url = url.replace("https://ipfs.io/ipfs/", "")
 
-    # In theory this one should always work, chainsaw nfs should be hosting the assets...
-    chainsaw_gateway = "https://chainsaw.mypinata.cloud/ipfs/"
-
-    gateway_handler.add_gateway(chainsaw_gateway)
-
     if not file_path.is_file():  # This is where the magic happens
         file_downloaded = download_pepe_asset(stripped_url, file_name)
     else:

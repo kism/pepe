@@ -1,23 +1,38 @@
 """Data models for Pirate Pepe NFTs."""
 
-from dataclasses import dataclass
+from pydantic import BaseModel, ConfigDict
 
 
-@dataclass
-class HifiMedia:
+class Attribute(BaseModel):
+    """An attribute of the NFT."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    trait_type: str
+    value: str | int | float
+    display_type: str | None = None
+
+
+class HifiMedia(BaseModel):
     """High fidelity media URLs for the NFT."""
+
+    model_config = ConfigDict(extra="forbid")
 
     video: str
     card_front: str | None = None
     card_back: str | None = None
 
 
-@dataclass
-class PepeNFT:
+class PepeNFT(BaseModel):
     """Pepe NFT metadata."""
 
+    model_config = ConfigDict(extra="forbid")
+
     name: str
+    description: str
+    tokenId: int  # noqa: N815
+    external_url: str
     image: str
     animation_url: str
     hifi_media: HifiMedia
-    pepe_ipfs: str | None = None
+    attributes: list[Attribute]

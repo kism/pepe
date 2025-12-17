@@ -4,6 +4,7 @@ from pathlib import Path
 
 import magic
 from colorama import Fore, Style
+from pydantic import ValidationError
 
 from .config import config
 from .constants import PEPES_TXT
@@ -48,3 +49,35 @@ def check_file(file_path: Path) -> bool:
         return file_type.startswith("text")
     except FileNotFoundError:
         return False
+
+
+def summarize_validation_error(e: ValidationError) -> None:
+    """Summarize Pydantic validation errors for debugging."""
+    missing = []
+    extra = []
+    invalid = []
+
+    for err in e.errors():
+        field = ".".join(str(x) for x in err["loc"])
+        err_type = err["type"]
+
+        if err_type == "missing":
+            missing.append(field)
+        elif err_type == "extra_forbidden":
+            extra.append(field)
+        else:
+            invalid.append(
+                {
+                    "field": field,
+                    "reason": err["msg"],
+                }
+            )
+
+    print_debug("Validation Error Summary:")
+    if missing:
+        print_debug(f"  Missing fields: {', '.join(missing)}")
+    if extra:
+        print_debug(f"  Extra fields: {', '.join(extra)}")
+    if invalid:
+        for inv in invalid:
+            print_debug(f"  Invalid field: {inv['field']} - Reason: {inv['reason']}")

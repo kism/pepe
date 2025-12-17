@@ -7,6 +7,9 @@ from collections.abc import Callable
 from .config import config
 from .constants import IPFS_GATEWAY_LIST
 
+_MAX_WEIGHT = 10.0
+_INITIAL_WEIGHT = 1.0
+
 
 class IPFSGatewayHandler:
     """Manages IPFS gateways with weighted random selection based on failure rates."""
@@ -29,28 +32,30 @@ class IPFSGatewayHandler:
         """Add a new gateway if it doesn't exist."""
         if gateway not in self.weights:
             self.gateways.append(gateway)
-            self.weights[gateway] = 1.0
+            self.weights[gateway] = _INITIAL_WEIGHT
 
     def reduce_weight(self, gateway: str, reason: str) -> None:
         """Reduce the weight of a gateway due to failure."""
-        if gateway in self.weights:
-            self.weights[gateway] *= 0.5
-            self.failures[gateway] = self.failures.get(gateway, 0) + 1
+        self.add_gateway(gateway)
 
-            if gateway not in self.failure_reasons:
-                self.failure_reasons[gateway] = []
-            self.failure_reasons[gateway].append(reason)
+        self.weights[gateway] *= 0.5
+        self.failures[gateway] = self.failures.get(gateway, 0) + 1
 
-            if config.debug:
-                print(f"Gateway {gateway} failed ({reason}), new weight: {self.weights[gateway]:.3f}")
+        if gateway not in self.failure_reasons:
+            self.failure_reasons[gateway] = []
+        self.failure_reasons[gateway].append(reason)
+
+        if config.debug:
+            print(f"Gateway {gateway} failed ({reason}), new weight: {self.weights[gateway]:.3f}")
 
     def increase_weight(self, gateway: str) -> None:
         """Increase the weight of a gateway due to success."""
-        if gateway in self.weights:
-            self.weights[gateway] = min(self.weights[gateway] * 1.5, 10.0)
+        self.add_gateway(gateway)
 
-            if config.debug:
-                print(f"Gateway {gateway} succeeded, new weight: {self.weights[gateway]:.3f}")
+        self.weights[gateway] = min(self.weights[gateway] * 1.5, _MAX_WEIGHT)
+
+        if config.debug:
+            print(f"Gateway {gateway} succeeded, new weight: {self.weights[gateway]:.3f}")
 
     def get_weighted_gateways(self) -> list[str]:
         """Get gateways sorted by weighted random selection."""

@@ -3,7 +3,6 @@
 import argparse
 import json
 import sys
-from dataclasses import asdict
 from pathlib import Path
 
 from colorama import Back, Fore, Style
@@ -19,7 +18,7 @@ from .pepe_json import grab_pepe_json
 
 def process_pepe_nft_json(pepe_nft: PepeNFT) -> None:
     """Process the json for the toke, call the download functions."""
-    nftjson = json.dumps(asdict(pepe_nft), indent=2)
+    nftjson = json.dumps(pepe_nft.model_dump(), indent=2)
     output_dir = Path(config.output_folder)
     output_dir.mkdir(exist_ok=True)
 

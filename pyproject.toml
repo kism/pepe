@@ -11,6 +11,7 @@ dependencies = [
     "colorama>=0.4.6",
     "python-magic>=0.4.27",
     "tqdm>=4.67.1",
+    "pydantic>=2.12.5",
 ]
 
 [project.optional-dependencies]

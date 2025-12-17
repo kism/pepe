@@ -4,12 +4,13 @@ import json
 import time
 
 import requests
+from pydantic import ValidationError
 from requests.exceptions import RequestException
 
 from .config import config
-from .helpers import print_debug
+from .helpers import print_debug, summarize_validation_error
 from .ipfs_gateways import gateway_handler
-from .models import HifiMedia, PepeNFT
+from .models import PepeNFT
 
 
 def grab_pepe_json(pepe_ipfs: str) -> PepeNFT | None:
@@ -20,21 +21,13 @@ def grab_pepe_json(pepe_ipfs: str) -> PepeNFT | None:
         try:
             json_data = json.loads(filepath.read_text())
             if json_data.get("pepe_ipfs") == pepe_ipfs:
-                print(f"Found existing JSON on disk: {filepath.name}")
-                hifi_media = HifiMedia(
-                    video=json_data["hifi_media"]["video"],
-                    card_front=json_data["hifi_media"].get("card_front"),
-                    card_back=json_data["hifi_media"].get("card_back"),
-                )
-                return PepeNFT(
-                    name=json_data["name"],
-                    image=json_data["image"],
-                    animation_url=json_data["animation_url"],
-                    hifi_media=hifi_media,
-                    pepe_ipfs=pepe_ipfs,
-                )
-        except (json.JSONDecodeError, KeyError) as e:
+                return PepeNFT(**json_data)
+        except json.JSONDecodeError as e:
             print_debug(f"Error reading {filepath.name}: {e}")
+            continue
+        except ValidationError as e:
+            print_debug(f"Validation error reading {filepath.name}:")
+            summarize_validation_error(e)
             continue
 
     pepe_nft: PepeNFT | None = None
@@ -60,24 +53,17 @@ def grab_pepe_json(pepe_ipfs: str) -> PepeNFT | None:
                 return (False, f"HTTP {response.status_code}")
 
             json_data = response.json()
-            # Construct the dataclass from the JSON response
-            hifi_media = HifiMedia(
-                video=json_data["hifi_media"]["video"],
-                card_front=json_data["hifi_media"].get("card_front"),
-                card_back=json_data["hifi_media"].get("card_back"),
-            )
-            pepe_nft = PepeNFT(
-                name=json_data["name"],
-                image=json_data["image"],
-                animation_url=json_data["animation_url"],
-                hifi_media=hifi_media,
-                pepe_ipfs=pepe_ipfs,
-            )
+
+            pepe_nft = PepeNFT(**json_data)
 
         except RequestException as e:
             return (False, type(e).__name__)
         except KeyError as e:
             return (False, type(e).__name__)
+        except ValidationError as e:
+            print_debug(f"Validation error for JSON from {request}:")
+            summarize_validation_error(e)
+            return (False, "ValidationError")
 
         return (True, None)
 
