@@ -43,6 +43,14 @@ class IPFSGatewayHandler:
             if config.debug:
                 print(f"Gateway {gateway} failed ({reason}), new weight: {self.weights[gateway]:.3f}")
 
+    def increase_weight(self, gateway: str) -> None:
+        """Increase the weight of a gateway due to success."""
+        if gateway in self.weights:
+            self.weights[gateway] = min(self.weights[gateway] * 1.5, 10.0)
+
+            if config.debug:
+                print(f"Gateway {gateway} succeeded, new weight: {self.weights[gateway]:.3f}")
+
     def get_weighted_gateways(self) -> list[str]:
         """Get gateways sorted by weighted random selection."""
         gateways = list(self.weights.keys())
@@ -70,6 +78,7 @@ class IPFSGatewayHandler:
 
             if success:
                 return True
+                self.increase_weight(gateway)
             if failure_reason:
                 self.reduce_weight(gateway, failure_reason)
                 print("trying next gateway...")

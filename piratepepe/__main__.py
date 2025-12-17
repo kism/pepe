@@ -16,7 +16,7 @@ from urllib3.exceptions import ReadTimeoutError
 
 from . import skipped_files
 from .config import config
-from .constants import IPFS_GATEWAY_LIST, PEPES_TXT
+from .constants import FUN_TQDM_LOADING_BAR, IPFS_GATEWAY_LIST, PEPES_TXT
 from .ipfs_gateways import IPFSGatewayHandler
 from .models import HifiMedia, PepeNFT
 
@@ -83,7 +83,14 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
                 open(file_path, "wb") as f,
             ):
                 total_size = int(r.headers.get("content-length", 0))
-                with tqdm(total=total_size, unit="B", unit_scale=True, unit_divisor=1024) as pbar:
+                with tqdm(
+                    total=total_size,
+                    unit="B",
+                    unit_scale=True,
+                    unit_divisor=1024,
+                    leave=False,
+                    ascii=FUN_TQDM_LOADING_BAR,
+                ) as pbar:
                     for chunk in r.iter_content(chunk_size=8192):
                         f.write(chunk)
                         pbar.update(len(chunk))
@@ -252,6 +259,7 @@ def main() -> None:
     try:
         process_pepes(pepe_list)
     except KeyboardInterrupt:
+        skipped_files.add_skipped_file("<Interrupted by user>")
         print("Exiting due to ^C")
 
     print(f"\n {Back.WHITE}{Fore.BLACK} Done! {Style.RESET_ALL}")

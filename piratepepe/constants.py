@@ -131,3 +131,5 @@ IPFS_GATEWAY_LIST = [
     "https://cloudflare-ipfs.com/ipfs/",
     "https://chainsaw.mypinata.cloud/ipfs/",
 ]
+
+FUN_TQDM_LOADING_BAR = " ▖▘▝▗▚▞█"
