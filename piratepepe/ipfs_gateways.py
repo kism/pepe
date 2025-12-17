@@ -11,15 +11,38 @@ _MAX_WEIGHT = 10.0
 _INITIAL_WEIGHT = 1.0
 
 
+class IPFSGateway:
+    """Represents an IPFS gateway with its weight, failure count, and failure reasons."""
+
+    def __init__(self, url: str, weight: float = _INITIAL_WEIGHT) -> None:
+        """Initialize gateway with URL and optional weight."""
+        self.url = url
+        self.weight = weight
+        self.failures = 0
+        self.failure_reasons: list[str] = []
+
+    def reduce_weight(self, reason: str) -> None:
+        """Reduce weight due to failure."""
+        self.weight *= 0.5
+        self.failures += 1
+        self.failure_reasons.append(reason)
+
+    def increase_weight(self) -> None:
+        """Increase weight due to success."""
+        self.weight = min(self.weight * 1.5, _MAX_WEIGHT)
+
+    def __repr__(self) -> str:
+        """String representation of the gateway."""
+        return f"IPFSGateway(url={self.url}, weight={self.weight:.3f}, failures={self.failures})"
+
+
 class IPFSGatewayHandler:
     """Manages IPFS gateways with weighted random selection based on failure rates."""
 
     def __init__(self, gateways: list[str]) -> None:
         """Initialize with a list of gateways."""
-        self.gateways = self._deduplicate_gateways(gateways)
-        self.weights = dict.fromkeys(self.gateways, 1.0)
-        self.failures: dict[str, int] = {}
-        self.failure_reasons: dict[str, list[str]] = {}
+        gateway_urls = self._deduplicate_gateways(gateways)
+        self.gateways: dict[str, IPFSGateway] = {url: IPFSGateway(url) for url in gateway_urls}
 
     def _deduplicate_gateways(self, gateways: list[str]) -> list[str]:
         """Remove duplicate gateways and warn about them."""
@@ -28,44 +51,38 @@ class IPFSGatewayHandler:
                 print(f"Duplicate gateway: {item}")
         return list(dict.fromkeys(gateways))
 
-    def add_gateway(self, gateway: str) -> None:
+    def get_gateway(self, gateway_url: str) -> IPFSGateway:
         """Add a new gateway if it doesn't exist."""
-        if gateway not in self.weights:
-            self.gateways.append(gateway)
-            self.weights[gateway] = _INITIAL_WEIGHT
+        if gateway_url not in self.gateways:
+            self.gateways[gateway_url] = IPFSGateway(gateway_url)
 
-    def reduce_weight(self, gateway: str, reason: str) -> None:
+        return self.gateways[gateway_url]
+
+    def reduce_weight(self, gateway_url: str, reason: str) -> None:
         """Reduce the weight of a gateway due to failure."""
-        self.add_gateway(gateway)
-
-        self.weights[gateway] *= 0.5
-        self.failures[gateway] = self.failures.get(gateway, 0) + 1
-
-        if gateway not in self.failure_reasons:
-            self.failure_reasons[gateway] = []
-        self.failure_reasons[gateway].append(reason)
+        gw = self.get_gateway(gateway_url)
+        gw.reduce_weight(reason)
 
         if config.debug:
-            print(f"Gateway {gateway} failed ({reason}), new weight: {self.weights[gateway]:.3f}")
+            print(f"Gateway {gateway_url} failed ({reason}), new weight: {gw.weight:.3f}")
 
-    def increase_weight(self, gateway: str) -> None:
+    def increase_weight(self, gateway_url: str) -> None:
         """Increase the weight of a gateway due to success."""
-        self.add_gateway(gateway)
-
-        self.weights[gateway] = min(self.weights[gateway] * 1.5, _MAX_WEIGHT)
+        gw = self.get_gateway(gateway_url)
+        gw.increase_weight()
 
         if config.debug:
-            print(f"Gateway {gateway} succeeded, new weight: {self.weights[gateway]:.3f}")
+            print(f"Gateway {gateway_url} succeeded, new weight: {gw.weight:.3f}")
 
     def get_weighted_gateways(self) -> list[str]:
         """Get gateways sorted by weighted random selection."""
-        gateways = list(self.weights.keys())
-        weights = [self.weights[g] for g in gateways]
+        gateway_urls = list(self.gateways.keys())
+        weights = [self.gateways[url].weight for url in gateway_urls]
 
         # Return all gateways but sorted by weighted random
         # Sample without replacement to get all gateways in weighted order
         result = []
-        remaining_gateways = gateways[:]
+        remaining_gateways = gateway_urls[:]
         remaining_weights = weights[:]
 
         while remaining_gateways:
@@ -79,28 +96,28 @@ class IPFSGatewayHandler:
 
     def try_gateways(self, callback: Callable[[str], tuple[bool, str | None]]) -> bool:
         """Try gateways in weighted order using the provided callback."""
-        for gateway in self.get_weighted_gateways():
-            success, failure_reason = callback(gateway)
+        for gateway_url in self.get_weighted_gateways():
+            success, failure_reason = callback(gateway_url)
 
             if success:
-                self.increase_weight(gateway)
+                self.increase_weight(gateway_url)
                 return True
             if failure_reason:
-                self.reduce_weight(gateway, failure_reason)
+                self.reduce_weight(gateway_url, failure_reason)
                 print("trying next gateway...")
 
         return False
 
     def print_statistics(self) -> None:
         """Print gateway failure statistics."""
-        if not self.failures:
+        gateways_with_failures = {url: gw for url, gw in self.gateways.items() if gw.failures > 0}
+        if not gateways_with_failures:
             return
 
         print("\nGateway Statistics:")
-        sorted_gateways = sorted(self.failures.items(), key=lambda x: x[1], reverse=True)
-        for gateway, failure_count in sorted_gateways:
-            weight = self.weights.get(gateway, 0)
-            print(f"  {gateway}: {failure_count} failures (weight: {weight:.3f})")
+        sorted_gateways = sorted(gateways_with_failures.items(), key=lambda x: x[1].failures, reverse=True)
+        for gateway_url, gateway in sorted_gateways:
+            print(f"  {gateway_url}: {gateway.failures} failures (weight: {gateway.weight:.3f})")
 
 
 gateway_handler = IPFSGatewayHandler(IPFS_GATEWAY_LIST)
