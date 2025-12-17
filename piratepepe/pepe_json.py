@@ -18,17 +18,14 @@ def grab_pepe_json(pepe_ipfs: str) -> PepeNFT | None:
     # Check if JSON already exists on disk
     output_dir = config.output_folder
     for filepath in output_dir.glob("*.json"):
-        try:
+        if pepe_ipfs in filepath.name:
+            print(f"JSON for {pepe_ipfs} already exists at {filepath}, loading from disk.")
             json_data = json.loads(filepath.read_text())
-            if json_data.get("pepe_ipfs") == pepe_ipfs:
+            try:
                 return PepeNFT(**json_data)
-        except json.JSONDecodeError as e:
-            print_debug(f"Error reading {filepath.name}: {e}")
-            continue
-        except ValidationError as e:
-            print_debug(f"Validation error reading {filepath.name}:")
-            summarize_validation_error(e)
-            continue
+            except ValidationError as e:
+                summarize_validation_error(f"Validation error for existing JSON at {filepath}:", e)
+                break
 
     pepe_nft: PepeNFT | None = None
 
@@ -61,8 +58,7 @@ def grab_pepe_json(pepe_ipfs: str) -> PepeNFT | None:
         except KeyError as e:
             return (False, type(e).__name__)
         except ValidationError as e:
-            print_debug(f"Validation error for JSON from {request}:")
-            summarize_validation_error(e)
+            summarize_validation_error(f"Validation error for JSON from {request}:", e)
             return (False, "ValidationError")
 
         return (True, None)

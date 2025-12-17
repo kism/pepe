@@ -51,7 +51,7 @@ def check_file(file_path: Path) -> bool:
         return False
 
 
-def summarize_validation_error(e: ValidationError) -> None:
+def summarize_validation_error(context: str, e: ValidationError) -> None:
     """Summarize Pydantic validation errors for debugging."""
     missing = []
     extra = []
@@ -73,11 +73,14 @@ def summarize_validation_error(e: ValidationError) -> None:
                 }
             )
 
-    print_debug("Validation Error Summary:")
+    def print_red(text: str) -> None:
+        print(f"{Fore.RED}{text}{Style.RESET_ALL}")
+
+    print_red(context)
     if missing:
-        print_debug(f"  Missing fields: {', '.join(missing)}")
+        print_red(f"  Missing fields: {', '.join(missing)}")
     if extra:
-        print_debug(f"  Extra fields: {', '.join(extra)}")
+        print_red(f"  Extra fields: {', '.join(extra)}")
     if invalid:
         for inv in invalid:
-            print_debug(f"  Invalid field: {inv['field']} - Reason: {inv['reason']}")
+            print_red(f"  Invalid field: {inv['field']} - Reason: {inv['reason']}")

@@ -16,14 +16,18 @@ from .pepe_download import download_pepe
 from .pepe_json import grab_pepe_json
 
 
-def process_pepe_nft_json(pepe_nft: PepeNFT) -> None:
+def process_pepe_nft_json(pepe_nft: PepeNFT, pepe_ipfs: str) -> None:
     """Process the json for the toke, call the download functions."""
     nftjson = json.dumps(pepe_nft.model_dump(), indent=2)
     output_dir = Path(config.output_folder)
     output_dir.mkdir(exist_ok=True)
 
     # Save the json file of the nft, this might be what's considered the ipfs object metadata
-    json_file = output_dir / f"{pepe_nft.name}.json"
+    old_json_file = output_dir / f"{pepe_nft.name}.json"
+    if old_json_file.exists():
+        old_json_file.unlink()
+
+    json_file = output_dir / f"{pepe_nft.name}.{pepe_ipfs}.json"
     json_file.write_text(nftjson)
 
     # Download all the things from the json, these are ipfs links
@@ -61,7 +65,7 @@ def process_pepes(pepe_list: list[str]) -> None:
 
         if pepe_nft:
             print(f"Found a Rare Pepe! : {pepe_nft.name}")
-            process_pepe_nft_json(pepe_nft)
+            process_pepe_nft_json(pepe_nft, pepe_ipfs)
         else:
             print(f"{Fore.RED}All is heck{Style.RESET_ALL} every defined ipfs gateway sucks")
             skipped_files.add_skipped_file("Entire Pepe Json: " + pepe_ipfs)
