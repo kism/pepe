@@ -31,10 +31,8 @@ class IPFSGateway:
 
     def increase_weight(self) -> None:
         """Increase weight due to success."""
-        logger.critical("Increasing weight for gateway: %s", self.url)
         self.weight = min(self.weight * 1.5, _MAX_WEIGHT)
         self.successes += 1
-        logger.critical("New weight: %.3f, successes: %d", self.weight, self.successes)
 
     def __repr__(self) -> str:
         """String representation of the gateway."""
