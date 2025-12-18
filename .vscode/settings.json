@@ -1,9 +1,11 @@
 {
-    "[python]": {
-      "editor.formatOnType": true,
-      "editor.defaultFormatter": "charliermarsh.ruff"
-    },
-    "python.languageServer": "Pylance",
-    "python.terminal.activateEnvInCurrentTerminal": true,
-    "workbench.colorTheme": "Tidepool Light",
-  }
+  "[python]": {
+    "editor.formatOnType": true,
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "python.languageServer": "Pylance",
+  "python.terminal.activateEnvInCurrentTerminal": true,
+  "workbench.colorTheme": "Tidepool Light",
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "mypy.dmypyExecutable": "${workspaceFolder}/.venv/bin/dmypy"
+}

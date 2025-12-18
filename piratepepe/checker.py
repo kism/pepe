@@ -1,9 +1,14 @@
 """Check media files for incorrect content types and integrity issues."""
 
-import subprocess
+import contextlib
 from pathlib import Path
 
+import ffmpeg
 import magic
+
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 MIME_MAP = {
     ".gif": "image/gif",
@@ -15,6 +20,13 @@ MIME_MAP = {
 
 AV_EXTENSIONS = [".mp4", ".gif"]
 
+FFMPEG_AVAILABLE = False
+with contextlib.suppress(FileNotFoundError):
+    ffmpeg.input("testsrc=duration=0.5:size=16x16:rate=1", f="lavfi").output(filename="-", f="null").run(
+        quiet=True, capture_stderr=True
+    )
+    FFMPEG_AVAILABLE = True
+
 
 def _check_file_type(file_path: Path) -> bool:
     """Check if file has correct content type using python-magic."""
@@ -22,50 +34,37 @@ def _check_file_type(file_path: Path) -> bool:
 
     expected_mime = MIME_MAP.get(file_path.suffix.lower())
     if expected_mime is None:
-        print(f" Unknown file extension: {file_path.suffix}")
+        logger.error("Unknown file extension: %s", file_path.suffix)
         return False
 
     if mime != expected_mime:
-        print(f" Expected MIME: {expected_mime}, Detected MIME: {mime}")
+        logger.error("Expected MIME: %s, Detected MIME: %s", expected_mime, mime)
         return False
 
-    print(" MIME Pass!")
+    logger.debug(" MIME Pass!")
     return True
 
 
 def _check_av_file_with_ffmpeg(file_path: Path) -> bool:
     """Check AV file integrity using ffmpeg."""
-    try:
-        # Use ffmpeg to validate the file
-        # -v error: only show errors
-        # -i: input file
-        # -f null -: output to null (just validate, don't write)
-        result = subprocess.run(
-            ["ffmpeg", "-v", "error", "-i", str(file_path), "-f", "null", "-"],  # noqa: S607
-            capture_output=True,
-            text=True,
-            check=False,
+    if not FFMPEG_AVAILABLE:
+        msg = (
+            "FFMPEG not available, skipping AV file integrity check."
+            "\n"
+            "You should really install it since the files are often corrupted."
         )
-    except (subprocess.SubprocessError, OSError) as e:
-        print(f" Error checking file: {e}")
-        print(f' Adding "{file_path}" to the borked file list')
+        logger.warning(msg)
+        return True
+
+    try:
+        ff_output = ffmpeg.input(file_path).output(filename="-", f="null").run(quiet=True, capture_stderr=True)
+    except ffmpeg.exceptions.FFMpegError as e:
+        logger.error(" FFMPEG Error: %s", e.stderr.decode().strip())  # noqa: TRY400
+        logger.error(ff_output.stderr.decode().strip())  # noqa: TRY400
         return False
-    else:
-        if result.returncode != 0:
-            print(f' Adding "{file_path}" to the borked file list')
-            return False
 
-    print(" FFMPEG Pass!")
+    logger.debug(" FFMPEG Pass!")
     return True
-
-
-def _check_av_files(files: list[Path], existing_borked: list[Path]) -> list[Path]:
-    """Check AV files with ffmpeg and return newly identified borked files."""
-    return [
-        file_path
-        for file_path in files
-        if not _check_av_file_with_ffmpeg(file_path) and file_path not in existing_borked
-    ]
 
 
 def check_file(file_path: Path) -> bool:
@@ -73,11 +72,15 @@ def check_file(file_path: Path) -> bool:
     will_check_av = file_path.suffix.lower() in AV_EXTENSIONS
 
     if will_check_av:
-        print(f" Checking AV file: {file_path.name}")
+        logger.debug(" Checking AV file: %s", file_path.name)
     else:
-        print(f" Checking file: {file_path.name}")
+        logger.debug(" Checking file: %s", file_path.name)
 
     if not _check_file_type(file_path):
         return False
 
-    return not (will_check_av and not _check_av_file_with_ffmpeg(file_path))
+    result = not (will_check_av and not _check_av_file_with_ffmpeg(file_path))
+    if result:
+        logger.debug("File check passed: %s", file_path.name)
+
+    return result

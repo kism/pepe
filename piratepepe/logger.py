@@ -68,6 +68,8 @@ def setup_logger(
 
     # Configure modules that are external and have their own loggers
     logging.getLogger("urllib3").setLevel(logging.WARNING)  # Bit noisy when set to info, used by requests module.
+    if level > logging.DEBUG:
+        logging.getLogger("ffmpeg").setLevel(logging.WARNING)  # Too verbose
 
     logger.debug("Logger configuration set!")
 
@@ -114,7 +116,7 @@ def _set_log_level(in_logger: logging.Logger, log_level: int | str) -> None:
         in_logger.setLevel(log_level)
 
 
-def get_verbosity_cli(verbosity: int) -> None:
+def get_verbosity_cli(verbosity: int) -> int:
     """Get verbosity level from CLI argument."""
     if verbosity >= 2:  # noqa: PLR2004 Magic number makes sense
         return TRACE_LEVEL_NUM

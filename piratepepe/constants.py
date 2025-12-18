@@ -129,7 +129,8 @@ IPFS_GATEWAY_LIST = [
     "https://nftstorage.link/ipfs/",
     "https://gateway.ipfs.io/ipfs/",
     "https://cloudflare-ipfs.com/ipfs/",
-    "https://chainsaw.mypinata.cloud/ipfs/",
+    "https://chainsaw.mypinata.cloud/ipfs/",  # This is the NTF collections official gateway
+    "https://ipfs.filebase.io/ipfs/",
 ]
 
 FUN_TQDM_LOADING_BAR = " ▖▘▝▗▚▞█"

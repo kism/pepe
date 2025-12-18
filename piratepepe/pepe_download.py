@@ -2,11 +2,13 @@
 
 import contextlib
 import time
+import warnings
 from pathlib import Path
+from typing import Literal
 
 import requests
-from colorama import Back, Fore, Style
 from requests import RequestException
+from tqdm import TqdmExperimentalWarning
 from tqdm.rich import tqdm
 from urllib3.exceptions import ReadTimeoutError
 
@@ -14,6 +16,11 @@ from . import skipped_files
 from .checker import check_file
 from .config import config
 from .ipfs_gateways import gateway_handler
+from .logger import get_logger
+
+warnings.filterwarnings("ignore", category=TqdmExperimentalWarning)
+
+logger = get_logger(__name__)
 
 
 def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
@@ -23,11 +30,11 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
     def try_download(gateway: str) -> tuple[bool, str | None]:
         """Try downloading from a single gateway."""
         if config.slow_mode:
-            print("Waiting a minute before downloading")
+            logger.info("Waiting a minute before downloading")
             time.sleep(60)
 
         url = gateway + stripped_url
-        print(f"Attempting to download Pepe NFT Asset: '{file_name}' from: {url}")
+        logger.info("Attempting to download Pepe NFT Asset: '%s' from: %s", file_name, url)
 
         try:
             with (
@@ -47,29 +54,31 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
                         pbar.update(len(chunk))
         except (RequestException, ReadTimeoutError) as e:
             error_name = type(e).__name__
-            print(f"{Fore.RED}Download Failed{Style.RESET_ALL}")
-            if isinstance(e, requests.exceptions.ConnectionError):
-                if url.endswith("mp4"):
-                    print("gateway might not have large file support")
+
+            if isinstance(e, requests.exceptions.ConnectionError) and url.endswith("mp4"):
+                logger.error("Download Failed: Gateway might not have large file support")  # noqa: TRY400
             else:
-                print(f"Timeout of {config.http_timeout} seconds reached")
+                logger.error("Download Failed: %s", error_name)  # noqa: TRY400
+
             return (False, error_name)
 
         # Check if file is valid
         if not check_file(file_path):
-            print("Gateway didn't give us the file correctly, removing file if it exists")
+            logger.error("Gateway didn't give us the file correctly, removing file if it exists")
             with contextlib.suppress(FileNotFoundError):
                 file_path.unlink()
             return (False, "FileWrongFormat")
 
-        print(f"{Back.WHITE}{Fore.GREEN} Success! {Style.RESET_ALL}")
+        logger.info("Download Complete")
         return (True, None)
 
     return gateway_handler.try_gateways(try_download)
 
 
-def download_pepe(url: str, file_name: str) -> bool:
+def download_pepe(url: str, file_name: str) -> Literal["downloaded", "failed", "exists"]:
     """Download the asset, hardcoded to output."""
+    file_status = "failed"
+
     file_downloaded = False
     file_path = Path(config.output_folder) / file_name
 
@@ -85,11 +94,12 @@ def download_pepe(url: str, file_name: str) -> bool:
 
     if not file_path.is_file():  # This is where the magic happens
         file_downloaded = download_pepe_asset(stripped_url, file_name)
+        file_status = "downloaded" if file_downloaded else "failed"
     else:
-        print(f"Already downloaded: {file_name}")
-        file_downloaded = True
+        logger.debug("Already downloaded: %s", file_name)
+        file_status = "exists"
 
-    if not file_downloaded:
+    if file_status == "failed":
         skipped_files.add_skipped_file(file_name)
 
-    return file_downloaded
+    return file_status

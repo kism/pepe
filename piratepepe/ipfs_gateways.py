@@ -4,9 +4,10 @@ import random
 from collections import Counter
 from collections.abc import Callable
 
-from .config import config
 from .constants import IPFS_GATEWAY_LIST
+from .logger import get_logger
 
+logger = get_logger(__name__)
 _MAX_WEIGHT = 10.0
 _INITIAL_WEIGHT = 1.0
 
@@ -50,7 +51,7 @@ class IPFSGatewayHandler:
         """Remove duplicate gateways and warn about them."""
         for item, count in Counter(gateways).items():
             if count > 1:
-                print(f"Duplicate gateway: {item}")
+                logger.info("Duplicate gateway: %s", item)
         return list(dict.fromkeys(gateways))
 
     def get_gateway(self, gateway_url: str) -> IPFSGateway:
@@ -65,16 +66,27 @@ class IPFSGatewayHandler:
         gw = self.get_gateway(gateway_url)
         gw.reduce_weight(reason)
 
-        if config.debug:
-            print(f"Gateway {gateway_url} failed ({reason}), new weight: {gw.weight:.3f}")
+        logger.debug(
+            "Gateway: %s failed (%s), new weight: %.3f %s/%s",
+            gateway_url,
+            reason,
+            gw.weight,
+            gw.successes,
+            (gw.successes + gw.failures),
+        )
 
     def increase_weight(self, gateway_url: str) -> None:
         """Increase the weight of a gateway due to success."""
         gw = self.get_gateway(gateway_url)
         gw.increase_weight()
 
-        if config.debug:
-            print(f"Gateway {gateway_url} succeeded, new weight: {gw.weight:.3f}")
+        logger.debug(
+            "Gateway: %s succeeded, new weight: %.3f %s/%s",
+            gateway_url,
+            gw.weight,
+            gw.successes,
+            (gw.successes + gw.failures),
+        )
 
     def get_weighted_gateways(self) -> list[str]:
         """Get gateways sorted by weighted random selection."""
@@ -93,7 +105,6 @@ class IPFSGatewayHandler:
                 return True
             if failure_reason:
                 self.reduce_weight(gateway_url, failure_reason)
-                print("trying next gateway...")
 
         return False
 
@@ -103,10 +114,15 @@ class IPFSGatewayHandler:
         if not gateways_with_failures:
             return
 
-        print("\nGateway Statistics:")
+        lines = ["Gateway Statistics:"]
         sorted_gateways = sorted(gateways_with_failures.items(), key=lambda x: x[1].failures, reverse=True)
         for gateway_url, gateway in sorted_gateways:
-            print(f"  {gateway_url}: {gateway.failures} failures, {gateway.successes} successes")
+            total = gateway.successes + gateway.failures
+            ratio = f"{gateway.successes}/{total}"
+            lines.append(f"{ratio:>6} | {gateway_url}")
+
+        msg = "\n".join(lines)
+        logger.info(msg)
 
 
 gateway_handler = IPFSGatewayHandler(IPFS_GATEWAY_LIST)

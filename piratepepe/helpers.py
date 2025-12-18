@@ -1,22 +1,14 @@
 """Helper functions for PiratePepe."""
 
-from pathlib import Path
-
-import magic
-from colorama import Fore, Style
 from pydantic import ValidationError
 
-from .config import config
 from .constants import PEPES_TXT
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 
-def print_debug(text: str) -> None:
-    """Debug messages in yellow if the debug global is true."""
-    if config.debug:
-        print(f"{Fore.YELLOW}{text}{Style.RESET_ALL}")
-
-
-def scan_pepe_file(start_point: int) -> list[str]:
+def scan_pepe_file() -> list[str]:
     """Scan pepe_txt var for ipfs links."""
     pepe_list_str = PEPES_TXT
 
@@ -26,15 +18,11 @@ def scan_pepe_file(start_point: int) -> list[str]:
         if element[0] == "Q":
             listfresh.append(element.strip())
         else:
-            print_debug(f"Not a pepe: {element.strip()}")
+            logger.debug("Not a pepe: %s", element.strip())
     pepe_list = listfresh
-    print_debug(f"Pepe list: [{pepe_list!s}")
+    logger.debug("Pepe list: [%s", pepe_list)
 
-    print(f"Found {len(pepe_list)} tokenURIs to look for Pepe")
-
-    if start_point > -1:
-        pepe_list = pepe_list[start_point:]
-        print(f"Trimming first {start_point} tokenURIs in list")
+    logger.info("Found %d tokenURIs to look for Pepe", len(pepe_list))
 
     return pepe_list
 
@@ -61,15 +49,13 @@ def summarize_validation_error(context: str, e: ValidationError) -> None:
                 }
             )
 
-    def print_red(text: str) -> None:
-        print(f"{Fore.RED}{text}{Style.RESET_ALL}")
-
-    print_red("Validation error:")
-    print_red(" " + context)
+    # Build single message and log once
+    lines = ["Validation error:", f" {context}"]
     if missing:
-        print_red(f"  Missing fields: {', '.join(missing)}")
+        lines.append("  Missing fields: " + ", ".join(missing))
     if extra:
-        print_red(f"  Extra fields: {', '.join(extra)}")
+        lines.append("  Extra fields: " + ", ".join(extra))
     if invalid:
-        for inv in invalid:
-            print_red(f"  Invalid field: {inv['field']} - Reason: {inv['reason']}")
+        lines.extend([f"  Invalid field: {inv['field']} - Reason: {inv['reason']}" for inv in invalid])
+
+    logger.error("\n".join(lines))
