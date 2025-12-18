@@ -6,8 +6,7 @@ logger = get_logger(__name__)
 files_skipped: list[str] = []
 
 
-SPIEL = """
-Run the script again to try again.
+SPIEL = """Run the script again to try again.
 You might want to find some new ipfs gateways and add them to the script,
 or get a new IP address since some ipfs gateways will rate-limit or block you for downloading too much.
 """

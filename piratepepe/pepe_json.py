@@ -49,18 +49,22 @@ def grab_pepe_json(pepe_ipfs: str) -> PepeNFT | None:
 
         try:
             response = requests.get(url, headers=config.headers, timeout=config.http_timeout)
+            response.raise_for_status()
             json_data = response.json()
             pepe_nft = PepeNFT(**json_data)
         except (RequestException, KeyError) as e:
             gateway.report_failure(type(e).__name__)
+            continue
         except ValidationError as e:
             summarize_validation_error(f"JSON from {url}:", e)
             gateway.report_failure("ValidationError")
+            continue
         except Exception as e:  # noqa: BLE001
             gateway.report_failure(type(e).__name__)
-        else:
-            gateway.report_success()
-            return pepe_nft
+            continue
+
+        gateway.report_success()
+        return pepe_nft
 
     logger.info("All gateways failed getting the json...")
     return None

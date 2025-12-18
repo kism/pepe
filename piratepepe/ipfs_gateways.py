@@ -149,13 +149,9 @@ class IPFSGatewayHandler:
         return False
 
     def print_statistics(self) -> None:
-        """Print gateway failure statistics."""
-        gateways_with_failures = {url: gw for url, gw in self.gateways.items() if gw.failures > 0}
-        if not gateways_with_failures:
-            return
-
+        """Print gateway statistics."""
         lines = ["Gateway Statistics:"]
-        sorted_gateways = sorted(gateways_with_failures.items(), key=lambda x: x[1].failures, reverse=True)
+        sorted_gateways = sorted(self.gateways.items(), key=lambda x: (x[1].successes, -x[1].failures), reverse=True)
         for gw_url, gw in sorted_gateways:
             total = gw.successes + gw.failures
             ratio = f"{gw.successes}/{total}"
