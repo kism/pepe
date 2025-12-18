@@ -11,11 +11,11 @@ from .logger import get_logger
 logger = get_logger(__name__)
 
 MIME_MAP = {
-    ".gif": "image/gif",
-    ".glb": "application/octet-stream",
-    ".png": "image/png",
-    ".mp4": "video/mp4",
-    ".json": "application/json",
+    ".gif": ["image/gif"],
+    ".glb": ["application/octet-stream"],
+    ".png": ["image/png", "image/jpeg"],  # Well done idiots.
+    ".mp4": ["video/mp4"],
+    ".json": ["application/json"],
 }
 
 AV_EXTENSIONS = [".mp4", ".gif"]
@@ -37,8 +37,9 @@ def _check_file_type(file_path: Path) -> bool:
         logger.error("Unknown file extension: %s", file_path.suffix)
         return False
 
-    if mime != expected_mime:
-        logger.error("Expected MIME: %s, Detected MIME: %s", expected_mime, mime)
+    if mime not in expected_mime:
+        msg = f"MIME type mismatch for file {file_path.name}\nExpected MIME: {expected_mime}, Detected MIME: {mime}"
+        logger.error(msg)
         return False
 
     logger.debug(" MIME Pass!")
