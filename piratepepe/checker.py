@@ -34,12 +34,12 @@ def _check_file_type(file_path: Path) -> bool:
 
     expected_mime = MIME_MAP.get(file_path.suffix.lower())
     if expected_mime is None:
-        logger.error("Unknown file extension: %s", file_path.suffix)
+        logger.warning("Unknown file extension: %s", file_path.suffix)
         return False
 
     if mime not in expected_mime:
         msg = f"MIME type mismatch for file {file_path.name}\nExpected MIME: {expected_mime}, Detected MIME: {mime}"
-        logger.error(msg)
+        logger.warning(msg)
         return False
 
     logger.debug(" MIME Pass!")
@@ -58,10 +58,11 @@ def _check_av_file_with_ffmpeg(file_path: Path) -> bool:
         return True
 
     try:
-        ff_output = ffmpeg.input(file_path).output(filename="-", f="null").run(quiet=True, capture_stderr=True)
+        ff_output = ffmpeg.input(file_path).output(filename="-", f="null")
+        _, stderr = ff_output.run(quiet=True, capture_stderr=True)
     except ffmpeg.exceptions.FFMpegError as e:
-        logger.error(" FFMPEG Error: %s", e.stderr.decode().strip())  # noqa: TRY400
-        logger.error(ff_output.stderr.decode().strip())  # noqa: TRY400
+        logger.warning(" FFMPEG Error: %s", e)
+        logger.warning(stderr.decode().strip())
         return False
 
     logger.debug(" FFMPEG Pass!")

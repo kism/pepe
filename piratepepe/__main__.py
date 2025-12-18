@@ -84,7 +84,7 @@ def process_pepe_nft_json(pepe_nft: PepeNFT, pepe_ipfs: str) -> None:
             msg = f"{skipped_count}/{total_count} files failed to download."
         else:
             msg = f"{skipped_count}/{total_count} files failed to download, {exists_count}/{total_count} files already exist."  # noqa: E501
-        logger.warning(msg)
+        logger.error(msg)
 
 
 def process_pepes(pepe_list: list[str]) -> None:

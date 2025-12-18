@@ -2,6 +2,7 @@
 
 import json
 import time
+from collections.abc import Callable
 
 import requests
 from pydantic import ValidationError
@@ -46,7 +47,7 @@ def _fetch_json_from_url(url: str) -> dict:
     return response.json()
 
 
-def _create_gateway_callback(pepe_ipfs: str) -> tuple[callable, list]:
+def _create_gateway_callback(pepe_ipfs: str) -> tuple[Callable[[str], tuple[bool, str | None]], list[PepeNFT | None]]:
     """Create a callback function for gateway attempts and a container for results."""
     result_container = [None]  # Use list to allow mutation in nested function
 
