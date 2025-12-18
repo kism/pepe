@@ -2,7 +2,6 @@
 
 import json
 import time
-from collections.abc import Callable
 
 import requests
 from pydantic import ValidationError
@@ -32,50 +31,6 @@ def _load_existing_json(pepe_ipfs: str) -> PepeNFT | None:
     return None
 
 
-def _fetch_json_from_url(url: str) -> dict:
-    """Fetch and parse JSON from a URL."""
-    response = requests.get(url, headers=config.headers, timeout=config.http_timeout)
-
-    if not response:
-        msg = f"Empty response from {url}"
-        raise RequestException(msg)
-
-    if not response.ok:
-        msg = f"Bad response ({response.status_code}) from {url}"
-        raise RequestException(msg)
-
-    return response.json()
-
-
-def _create_gateway_callback(pepe_ipfs: str) -> tuple[Callable[[str], tuple[bool, str | None]], list[PepeNFT | None]]:
-    """Create a callback function for gateway attempts and a container for results."""
-    result_container = [None]  # Use list to allow mutation in nested function
-
-    def try_fetch_json(gateway: str) -> tuple[bool, str | None]:
-        """Try fetching JSON from a single gateway."""
-        if config.slow_mode:
-            logger.info("Waiting a minute before downloading")
-            time.sleep(61)
-
-        url = gateway + pepe_ipfs
-        logger.info("Trying: %s", url)
-
-        try:
-            json_data = _fetch_json_from_url(url)
-            pepe_nft = PepeNFT(**json_data)
-            result_container[0] = pepe_nft
-
-        except (RequestException, KeyError) as e:
-            return (False, type(e).__name__)
-        except ValidationError as e:
-            summarize_validation_error(f"JSON from {url}:", e)
-            return (False, "ValidationError")
-
-        return (True, None)
-
-    return try_fetch_json, result_container
-
-
 def grab_pepe_json(pepe_ipfs: str) -> PepeNFT | None:
     """Fetch Pepe NFT JSON data from IPFS, trying multiple gateways if needed."""
     # First, check if we already have this JSON on disk
@@ -84,11 +39,28 @@ def grab_pepe_json(pepe_ipfs: str) -> PepeNFT | None:
         return existing_pepe
 
     # Try to fetch from IPFS gateways
-    callback, result_container = _create_gateway_callback(pepe_ipfs)
-    success = gateway_handler.try_gateways(callback)
+    for gateway in gateway_handler.iterate_gateways():
+        if config.slow_mode:
+            logger.info("Waiting a minute before downloading")
+            time.sleep(61)
 
-    if not success:
-        logger.info("All gateways failed getting the json...")
-        return None
+        url = gateway.url + pepe_ipfs
+        logger.info("Trying: %s", url)
 
-    return result_container[0]
+        try:
+            response = requests.get(url, headers=config.headers, timeout=config.http_timeout)
+            json_data = response.json()
+            pepe_nft = PepeNFT(**json_data)
+        except (RequestException, KeyError) as e:
+            gateway.report_failure(type(e).__name__)
+        except ValidationError as e:
+            summarize_validation_error(f"JSON from {url}:", e)
+            gateway.report_failure("ValidationError")
+        except Exception as e:  # noqa: BLE001
+            gateway.report_failure(type(e).__name__)
+        else:
+            gateway.report_success()
+            return pepe_nft
+
+    logger.info("All gateways failed getting the json...")
+    return None

@@ -27,13 +27,12 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
     """Try all gateways to download asset."""
     file_path = Path(config.output_folder) / file_name
 
-    def try_download(gateway: str) -> tuple[bool, str | None]:
-        """Try downloading from a single gateway."""
+    for gateway in gateway_handler.iterate_gateways():
         if config.slow_mode:
             logger.info("Waiting a minute before downloading")
             time.sleep(60)
 
-        url = gateway + stripped_url
+        url = gateway.url + stripped_url
         logger.info("Attempting to download Pepe NFT Asset: '%s' from: %s", file_name, url)
 
         try:
@@ -56,28 +55,31 @@ def download_pepe_asset(stripped_url: str, file_name: str) -> bool:
             error_name = type(e).__name__
 
             if isinstance(e, requests.exceptions.ConnectionError) and url.endswith("mp4"):
-                logger.error("Download Failed: Gateway might not have large file support")  # noqa: TRY400
+                logger.warning("Download Failed: Gateway might not have large file support")
             else:
-                logger.error("Download Failed: %s", error_name)  # noqa: TRY400
+                logger.warning("Download Failed: %s", error_name)
 
-            return (False, error_name)
+            gateway.report_failure(error_name)
+            continue
 
         # Check if file is valid
         if not check_file(file_path):
-            logger.error("Gateway didn't give us the file correctly, removing file if it exists")
+            logger.warning("Gateway didn't give us the file correctly, removing file if it exists")
             with contextlib.suppress(FileNotFoundError):
                 file_path.unlink()
-            return (False, "FileWrongFormat")
+            gateway.report_failure("FileWrongFormat")
+            continue
 
-        logger.info("Download Complete")
-        return (True, None)
+        logger.debug("Download Complete, file not checked yet.")
+        gateway.report_success()
+        return True
 
-    return gateway_handler.try_gateways(try_download)
+    return False
 
 
 def download_pepe(url: str, file_name: str) -> Literal["downloaded", "failed", "exists"]:
     """Download the asset, hardcoded to output."""
-    file_status = "failed"
+    file_status: Literal["downloaded", "failed", "exists"] = "failed"
 
     file_downloaded = False
     file_path = Path(config.output_folder) / file_name
@@ -101,5 +103,7 @@ def download_pepe(url: str, file_name: str) -> Literal["downloaded", "failed", "
 
     if file_status == "failed":
         skipped_files.add_skipped_file(file_name)
+    if file_status == "downloaded":
+        logger.info("Successfully downloaded: %s", file_name)
 
     return file_status

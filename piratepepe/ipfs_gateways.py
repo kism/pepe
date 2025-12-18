@@ -2,7 +2,7 @@
 
 import random
 from collections import Counter
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 
 from .constants import IPFS_GATEWAY_LIST
 from .logger import get_logger
@@ -31,12 +31,31 @@ class IPFSGateway:
 
     def increase_weight(self) -> None:
         """Increase weight due to success."""
+        logger.critical("Increasing weight for gateway: %s", self.url)
         self.weight = min(self.weight * 1.5, _MAX_WEIGHT)
         self.successes += 1
+        logger.critical("New weight: %.3f, successes: %d", self.weight, self.successes)
 
     def __repr__(self) -> str:
         """String representation of the gateway."""
         return f"IPFSGateway(url={self.url}, weight={self.weight:.3f}, failures={self.failures})"
+
+
+class GatewayAttempt:
+    """Represents a single attempt to use a gateway with tracking methods."""
+
+    def __init__(self, handler: "IPFSGatewayHandler", url: str) -> None:
+        """Initialize with handler reference and gateway URL."""
+        self.handler = handler
+        self.url = url
+
+    def report_success(self) -> None:
+        """Report that this gateway succeeded."""
+        self.handler.increase_weight(self.url)
+
+    def report_failure(self, reason: str) -> None:
+        """Report that this gateway failed with a reason."""
+        self.handler.reduce_weight(self.url, reason)
 
 
 class IPFSGatewayHandler:
@@ -95,8 +114,29 @@ class IPFSGatewayHandler:
         # Sort by weighted random key
         return [url for url, _ in sorted(items, key=lambda x: random.random() ** (1 / x[1].weight))]
 
+    def iterate_gateways(self) -> "Generator[GatewayAttempt, None, None]":
+        """Iterate through gateways in weighted order with success/failure tracking.
+
+        Yields gateway URLs one at a time. Use report_success() or report_failure()
+        to update gateway weights.
+
+        Example:
+            for gateway in handler.iterate_gateways():
+                try:
+                    result = fetch_from_gateway(gateway.url)
+                    gateway.report_success()
+                    return result
+                except Exception as e:
+                    gateway.report_failure(str(e))
+        """
+        for gateway_url in self.get_weighted_gateways():
+            yield GatewayAttempt(self, gateway_url)
+
     def try_gateways(self, callback: Callable[[str], tuple[bool, str | None]]) -> bool:
-        """Try gateways in weighted order using the provided callback."""
+        """Try gateways in weighted order using the provided callback.
+
+        Deprecated: Use iterate_gateways() for more flexibility.
+        """
         for gateway_url in self.get_weighted_gateways():
             success, failure_reason = callback(gateway_url)
 
@@ -116,10 +156,10 @@ class IPFSGatewayHandler:
 
         lines = ["Gateway Statistics:"]
         sorted_gateways = sorted(gateways_with_failures.items(), key=lambda x: x[1].failures, reverse=True)
-        for gateway_url, gateway in sorted_gateways:
-            total = gateway.successes + gateway.failures
-            ratio = f"{gateway.successes}/{total}"
-            lines.append(f"{ratio:>6} | {gateway_url}")
+        for gw_url, gw in sorted_gateways:
+            total = gw.successes + gw.failures
+            ratio = f"{gw.successes}/{total}"
+            lines.append(f"{ratio:>6} | {gw_url}")
 
         msg = "\n".join(lines)
         logger.info(msg)

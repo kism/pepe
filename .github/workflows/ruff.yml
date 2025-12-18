@@ -1,11 +1,15 @@
 ---
-  name: Ruff
+name: Ruff
 
-  on: [push, pull_request]
+on: [push, pull_request]
 
-  jobs:
-    check:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        - uses: chartboost/ruff-action@v1
+jobs:
+  check_py:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: astral-sh/ruff-action@v3
+        with:
+          version-file: pyproject.toml
