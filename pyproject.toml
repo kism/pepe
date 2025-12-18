@@ -16,7 +16,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["ruff", "mypy", "ty", "types-requests", "types-colorama", "types-tqdm"]
+dev = ["ruff"]
+
+type = ["mypy", "ty", "types-requests", "types-colorama", "types-tqdm"]
 
 [build-system]
 requires = ["uv_build>=0.9.15,<0.10.0"]
